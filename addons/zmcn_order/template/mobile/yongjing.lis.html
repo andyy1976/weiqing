@@ -1,0 +1,33 @@
+{php $aabb=array('未付','已付','完成');}
+{loop $list $od}
+{if $agent['id']==$od['agentid']}
+<a href="javascript:yjdk({$od['id']});" id="yjtem{$od['id']}"  class="weui-media-box weui-media-box_appmsg zmui_media46 f-green">
+{else}
+<a href="javascript:yjfk({$od['id']});" id="yjtem{$od['id']}"  class="weui-media-box weui-media-box_appmsg zmui_media46 f-red">
+{/if}
+	<div class="weui-media-box__hd">
+		{if $od['bagent']['avatar']}
+		<img class="weui-media-box__thumb" src="{php echo tomedia($od['bagent']['avatar']);}">
+		{else}
+			{if $agent['id']==$od['agentid']}
+				<i class="zmui-icon zmui-icon-daoru f-green"></i>
+			{else}
+				<i class="zmui-icon zmui-icon-daochu f-red"></i>
+			{/if}
+		{/if}
+	</div>
+	<div class="weui-media-box__bd">
+		<h4 class="weui-media-box__title">{php echo date('Y-m-d H:i', $od['addtime'])}</h4>
+		<p class="weui-media-box__desc">{$od['remark']}</p>
+	</div>
+	<div class="row-remark">
+		<p>{$aabb[$od['isok']]}</p>
+	{if $agent['id']==$od['agentid']}
+		<p class="f-green">{$od['commission']}</p>
+	{else}
+		<p class="f-red">{$od['commission']}</p>
+	{/if}
+		
+	</div>
+</a>
+{/loop}

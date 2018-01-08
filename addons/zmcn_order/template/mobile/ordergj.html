@@ -1,0 +1,154 @@
+{template '_header'}
+
+<div class="page bg-zmpag">
+<form action="" method="post" class="form-horizontal form" id="setting-form">
+	<div class="weui-btn_primary weui-header">
+		<div class="weui-header-left"><a class="zmui-icon zmui-icon-slider-left f-white" onclick='javascript:history.go(-1);'></a></div>
+		<h1 class="weui-header-title">订单改价</h1>
+		<div class="weui-header-right"><a class="zmui-icon zmui-icon-more f-white open-popup" data-target="#half"></a></div>
+	</div>
+	<div class="weui-panel">
+		<div class="weui-panel__hd">订货方和收货方</div>
+		<div class="weui-panel__bd">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><p class="f15">订货方：</p></div>
+				<div class="weui-cell__bd">
+					<p class="f15">{if !empty($dagent['id'])} {$dagent['name']}{$dagent['phone']} {else}未知{/if}</p>
+				</div>
+			</div>
+			<div class="weui-media-box weui-media-box_text">
+				<h4 class="weui-media-box__title f15">收货方：{$order['consignee']} {$order['tel']}</h4>
+				<p class="weui-media-box__desc" id="add2">{$order['province']} {$order['city']} {$order['district']} {$order['address']} </p>
+			</div>
+		</div>
+	</div>
+	
+
+	<div class="weui-panel">
+		<div class="weui-panel__hd">货品清单</div>
+		<div class="weui-panel__bd">
+			{if $_W['setting']['remote']['type']}{php $imgxz='thumb';}{else}{php $imgxz='sthumb';}{/if}
+			{loop $order['ogoods'] $ogs}
+				<div  class="weui-media-box weui-media-box_appmsg zmui-media74">
+					<a class="weui-media-box__hd zmcn-mark-box" href="javascript:getpro({$ogs['goodsid']});">
+						{if empty($goodss[$ogs['goodsid']][$imgxz])}
+							<i class="zmui-icon zmui-icon-goods"></i>
+						{else}
+							<img class="weui-media-box__thumb" src="{php echo tomedia($goodss[$ogs['goodsid']][$imgxz]);}">
+						{/if}
+					</a>
+					<div class="weui-media-box__bd">
+						<h4 class="weui-media-box__title">{$ogs['goodsname']}</h4>
+						<p class="weui-media-box__desc">{$ogs['optionname']}<br>原单：{php echo get_cdr($ogs['price']);}元X{$ogs['total']}件=<b>{php echo get_cdr($ogs['price'] * $ogs['total']);}</b>元</p>
+						<p class="zmui-jiage">
+							改价：<input class="zmui-count-input" type="tel" id="pr{$ogs['id']}" name="pr[{$ogs['id']}]" data-id="{$ogs['id']}" value="{php echo get_cdr($ogs['price']);}" pattern="[0-9]+(.[0-9]{1,2})?" placeholder="单价"/>X<input class="zmui-count-input total" type="tel" id="to{$ogs['id']}" data-id="{$ogs['id']}" name="to[{$ogs['id']}]" value="{$ogs['total']}" pattern="[0-9]*" placeholder="数量"/>=<b id='zj{$ogs['id']}'>{php echo get_cdr($ogs['price'] * $ogs['total']);}</b>元
+						</p>
+					</div>
+				</div>
+			{/loop}
+		</div>
+	</div>
+	<div class="weui-panel">
+		<div class="weui-panel__hd">款项明细</div>
+		<div class="weui-cell">
+			<div class="weui-cell__hd"><label class="weui-label">货款总额：</label></div>
+			<div class="weui-cell__bd"> 
+				<input type="text" class="weui-input"  name="goodsprice" id="goodsprice" placeholder="总货款" pattern="[0-9]+(.[0-9]{1,2})?" value="{php echo get_cdr($order['goodsprice']);}" readonly="true" />
+			</div>
+			<div class="weui-cell__ft">元</div>
+		</div>
+		<div class="weui-cell">
+			<div class="weui-cell__hd"><label class="weui-label">运费(加)：</label></div>
+			<div class="weui-cell__bd">
+				<input class="weui-input" type="tel" name="sendfee" id="sendfee" pattern="[0-9]+(.[0-9]{1,2})?" value="{php echo get_cdr($order['sendfee']);}" placeholder="送货费用"/>
+			</div>
+			<div class="weui-cell__ft">元</div>
+		</div>
+		<div class="weui-cell">
+			<div class="weui-cell__hd"><label for="" class="weui-label">优惠(减)：</label></div>
+			<div class="weui-cell__bd">
+				<input class="weui-input" type="tel" pattern="[0-9]+(.[0-9]{1,2})?" name="youhje" value="{php echo get_cdr($order['youhje']);}" id="youhje" placeholder="给买方优惠的金额" />
+			</div>
+			<div class="weui-cell__ft">元</div>
+		</div>  
+		<div class="weui-cell">
+			<div class="weui-cell__hd"><label class="weui-label">应收金额：</label></div>
+			<div class="weui-cell__bd">
+				<input class="weui-input" type="text" name="price" id="price" placeholder="订单总金额" pattern="[0-9]+(.[0-9]{1,2})?" value="{php echo get_cdr($order['price']);}" readonly="true"/>
+			</div>
+			<div class="weui-cell__ft">元</div>
+		</div>
+	</div>
+	<div class="weui-btn-area">
+		<input type="submit" name="submit" value="提交改价" class="weui-btn weui-btn_primary"/>
+	</div>
+	<input type="hidden" name="id" value="{$order['id']}" />
+	<input type="hidden" name="token" value="{$_W['token']}" />
+</form>
+</div>
+<div id="prodetial" class='weui-popup__container'>
+	<div class="weui-popup__modal">
+		<div class="weui-btn_primary weui-header close-popup" onclick='javascript:clpro();'>
+			<div class="weui-header-left"><a class="zmui-icon zmui-icon-slider-left f-white" ></a></div>
+			<h1 class="weui-header-title">商品详情</h1>
+			<div class="weui-header-right"><a class="zmui-icon zmui-icon-close2 f20 f-white"></a></div>
+		</div>
+		<div class="page" id="alladd" style="background-color: #fff">
+			正在加载商品数据...
+		</div>
+	</div>
+</div>
+{template '_footer'}
+
+<script>
+	$(function() {
+		$(".zmui-count-input,.weui-input").change(function(){qh();});   
+	});
+	function qh(){ 
+		var sum=0; 
+		$(".zmui-count-input.total").each(function(){ 
+			var id = $(this).data("id");
+			var total = parseInt('0'+$(this).val(),10);
+			var price = parseFloat('0'+$('#pr' + id).val(),10).toFixed(2);
+			var zj = total*price;
+			$(this).val(total);
+			$('#pr' + id).val(price);
+			$('#zj' + id).html(zj);
+			sum+=zj;
+		});
+		$('#goodsprice').val(sum);
+		var sendfee = parseFloat('0'+$('#sendfee').val(),10).toFixed(2);
+		$('#sendfee').val(sendfee);
+		var youhje = parseFloat('0'+$('#youhje').val(),10).toFixed(2);
+		$('#youhje').val(youhje);
+		$('#price').val(sum-youhje+sendfee*1);
+	}
+	qh();
+</script>
+<script type='text/javascript' src="{$_W['siteroot']}addons/zmcn_erp/zmui/js/swiper.min.js" charset='utf-8'></script>
+<script>
+    function getpro(id) {
+		$.showLoading();$('#alladd').html('正在加载商品数据......');
+		$.get('index.php?i={$_W['uniacid']}&c=entry&do=detail&pp=1&m=zmcn_goods', {id : id}, function(s){
+			if(s.length<100) {
+				$.hideLoading();$.toast("加载失败", "text");
+			}else{
+				$("#prodetial").popup();
+				$.hideLoading();$('#alladd').html(s);
+			}
+		}, 'html');
+	}
+    function clpro() {
+		$('#alladd').html('正在加载商品数据......');$.hideLoading();
+	}
+	function qhtb(a) {
+		$(".abcd").addClass('hidden');
+		$("#cb" + a).removeClass('hidden');
+		$(".tab-blue").removeClass('tab-blue');
+		$("#bb" + a).addClass('tab-blue');
+	}
+</script>
+
+
+
+

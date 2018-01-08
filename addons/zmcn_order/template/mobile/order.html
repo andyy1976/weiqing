@@ -1,0 +1,80 @@
+{template '_header'}
+
+<div class="page bg-zmpag">
+	<div class="weui-btn_primary weui-header">
+		<div class="weui-header-left"><a class="zmui-icon zmui-icon-slider-left f-white" onclick='javascript:history.go(-1);'></a></div>
+		<h1 class="weui-header-title">订单</h1>
+		<div class="weui-header-right"><a class="zmui-icon zmui-icon-more f-white open-popup" data-target="#half"></a></div>
+	</div>
+
+	<nav class="nav_integral">
+		<ul class="box clearfix">
+			<li><a href="{php echo $this->createMobileUrl('myinorder', array('tb' => 1,'openid' => $openid,'fid' => $_GPC['fid']))}"><b>{$sd1}</b><br><label>{$_W['zm_o_st'][1]}</label></a></li>
+			<li><a href="{php echo $this->createMobileUrl('myoutorder', array('tb' => 2,'openid' => $openid,'fid' => $_GPC['fid']))}"><b>{$sd2}</b><br><label>{$_W['zm_o_st'][2]}</label></a></li>
+			<li><a href="{php echo $this->createMobileUrl('myoutorder', array('tb' => 3,'openid' => $openid,'fid' => $_GPC['fid']))}"><b>{$sd3}</b><br><label>{$_W['zm_o_st'][3]}</label></a></li>
+			<!--li><a href="{php echo $this->createMobileUrl('myoutorder', array('openid' => $openid,'fid' => $_GPC['fid']))}"><b>{$outodm}</b><br><label>本月发货</label></a></li--->
+			<li><a href="{php echo $this->createMobileUrl('myoutorder', array('openid' => $openid,'fid' => $_GPC['fid']))}"><b>{$outodd}</b><br><label>今天发货</label></a></li>
+		</ul>
+	</nav>
+	<div class="weui-panel weui-panel_access">
+		<div class="weui-panel__bd">
+			<a href="{php echo url('entry',array('do' => 'myprice','m' => 'zmcn_cer','tm' => TIMESTAMP,'mb'=>'2'));}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-jiangjia f-red"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">价格查看</h4>
+					<p class="weui-media-box__desc">在这里能看到我的订货价格，和我下级的订货价格，一切价格透明杜绝乱价。</p>
+				</div>
+			</a>
+			<a href="{php echo $this->createMobileUrl('cart', array('tm' => TIMESTAMP))}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-cart-kong f-orange"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">下单进货</h4>
+					<p class="weui-media-box__desc">我要向上级代理商或厂家订货。</p>
+				</div>
+			</a>
+			<a href="{php echo $this->createMobileUrl('myinorder')}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-order f-yellow"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">进货订单</h4>
+					<p class="weui-media-box__desc">实时查看进货订单的进度，物流情况，以及确认订单到货。</p>
+				</div>
+			</a>
+			<a href="{php echo $this->createMobileUrl('myoutorder', array('tm' => TIMESTAMP))}&wxref=mp.weixin.qq.com#wechat_redirect" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-chuku f-green"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">发货订单</h4>
+					<p class="weui-media-box__desc">实时查看下级代理发来的订单，并进行扫码发货，和查看货物的签收情况。</p>
+				</div>
+			</a>
+			<a href="{php echo $this->createMobileUrl('cart', array('op' => 'zj','tm' => TIMESTAMP))}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-chuku f-blue"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">自建订单发货</h4>
+					<p class="weui-media-box__desc">用在一些特定情况下的发货，如代理是电话订单，或是补录单，或是买方还不是代理</p>
+				</div>
+			</a>
+			{if !empty($abc)}
+			<a href="{php echo $this->createMobileUrl('cart', array('submit' => 'sqxd','tm' => TIMESTAMP))}&wxref=mp.weixin.qq.com#wechat_redirect" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-saoyisao f-indigo"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">扫码建单发货</h4>
+					<p class="weui-media-box__desc">扫外箱上的物流码或防伪标上的物流码，实现快速建单发货</p>
+				</div>
+			</a>
+			{/if}
+		</div>
+	</div>
+</div>
+{template '_footer'}

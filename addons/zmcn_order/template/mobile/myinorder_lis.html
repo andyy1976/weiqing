@@ -1,0 +1,43 @@
+{if $_W['setting']['remote']['type']}{php $imgxz='thumb';}{else}{php $imgxz='sthumb';}{/if}
+{loop $list $od}
+	<div class="weui-panel weui-panel_access">
+		<div class="weui-panel__bd">
+			<a href="javascript:getorder({$od['id']});" class="weui-cell">
+				<div class="weui-cell__bd"><p class="f-black">订单号：{$od['orderno']}</p></div>
+				<div class="weui-cell__ft"><label class="ui-label-s">{$_W['zm_o_st'][$od['status']]}</label></div>
+			</a>
+			{loop $od['ogoods'] $og}
+			<a href="javascript:getpro({$og['id']});" class="weui-media-box weui-media-box_appmsg zmui_media44">
+				<div class="weui-media-box__hd">
+					<img class="weui-media-box__thumb" src="../addons/zmcn_order/n.gif" data-original="{php echo tomedia($og[$imgxz]);}">
+				</div>
+				<div class="weui-media-box__bd">
+					<h5 class="weui-media-box__title">{$og['goodsname']}</h5>
+					<p class="weui-media-box__desc">{$og['optionname']}</p>
+				</div>
+				<div class="row-remark"><p>{$og['price']}元</p><p>{$og['total']}  {$og['unit']}</p></div>
+			</a>
+			{/loop}
+			<div class="weui-cell">
+				<div class="weui-cell__bd"><p>共{$od['com']}件货</p></div>
+				<div class="weui-cell__ft f-black">订单金额：{$od['price']}元</div>
+			</div>
+            <div class="weui-form-preview__ft">
+			{if $od['status']=='1'}
+				<a href="{php echo $this->createMobileUrl('orderedit', array('op' => 'fk','id' => $od['id']))}" class="weui-form-preview__btn weui-form-preview__btn_primary">确认付款</a> <a href="javascript:quxiao({$od['id']});" class="weui-form-preview__btn weui-form-preview__btn_default">取消订单</a>
+			{elseif $od['status']>=2 && $od['status']<=6}
+				{if $od['yorder']}
+				<a class="weui-form-preview__btn weui-form-preview__btn_primary">代发订单，你没有确认收货权限</a>
+				{else}
+				<a href="javascript:shpuh({$od['id']});" class="weui-form-preview__btn weui-form-preview__btn_primary">确认收货</a>
+				{if $settings['sys']['wlkey']}
+				<a href="javascript:getexp('{$od['expid']}','{$od['expsn']}');" class="weui-form-preview__btn weui-form-preview__btn_default">查看物流</a>
+				{/if}
+				{/if}
+			{elseif $od['status']=='0'}
+				<a href="javascript:del({$od['id']});" class="weui-form-preview__btn weui-form-preview__btn_primary">删除订单</a>
+			{/if}
+            </div>
+		</div>
+	</div>
+{/loop}

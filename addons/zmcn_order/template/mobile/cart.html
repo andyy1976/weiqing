@@ -1,0 +1,202 @@
+{template '_header'}
+<style type="text/css">
+.count .unit, .count .add, .count .count-input, .count .reduce{float:right;margin-right:-1px;position:relative;z-index:0;}
+.count .add, .count .reduce{height:23px;width:23px;border:1px solid #aaa;background:#f0f0f0;text-align:center;line-height:23px;color:#444;}
+.count .unit{height:23px;width:23px;text-align:center;line-height:23px;}
+.count .add:hover, .count .reduce:hover, .count .count-input:hover{color:#f50;z-index:3;border-color:#f60;cursor:pointer;}
+.count .count-input{width:50px;height:23px;line-height:15px;border:1px solid #aaa;color:#343434;text-align:center;background-color:#fff;z-index:0;padding-left: 0px;padding-right: 0px;border-radius: 0 !important;-webkit-appearance : none !important; -webkit-border-radius:0px !important;}
+.count .check{width:20px;height:20px;border:1px solid #aaa;}
+
+.weui-picker-container{z-index:1000;}
+.pro-detial{height: auto;margin: 15px 10px 10px 10px;background-color: #fff;font-size:14px;}
+.pro-detial span{color: #7d7d7d;line-height: 51px;float: left;display: inline-block;*display: inline;*zoom:1;}
+.pro-detial a{width: 100%;height: 100%;position: absolute;top: 0;left: 0;display: inline-block;}
+.pro-detial .pro-intro{width: 98%;height: auto;margin: 0 auto;position: relative;top: 0;left: 0;}
+.pro-detial .pro-intro span{}
+.pro-detial .pro-intro img{display: block;max-width: 100%;height: auto;width: auto\9;vertical-align:top;}
+.weui-tab_bd .weui-tab_bd_item.weui-tab_bd_item_active {display: block;}
+.swiper-container {width: 100%;}
+.swiper-container img {display: block;width: 100%;}
+.price{font-size: 20px;color: #ce0000;}
+.hidden {overflow: hidden !important;display:none;}
+.swiper-wrapper .swiper-slide{height:auto !important;}
+</style>
+<div class="page">
+	<div style="position:fixed; z-index:1; top:0; width:100%; background-color:#ccc;}">
+		<div class="weui-btn_primary weui-header">
+			<div class="weui-header-left"><a class="icon icon-109 f-white" onclick='javascript:history.go(-1);'></a></div>
+			<h1 class="weui-header-title">{if $_GPC['op']=='zj'}发货建单{else}订货下单{/if}</h1>
+			<div class="weui-header-right f24">
+			{if $_GPC['op']=='zj'}
+			<a class="icon icon-86 f24 f-white" href="{php echo $this->createMobileUrl('cart', array('submit' => 'sqxd','openid' => $openid,'fid' => $_GPC['fid']))}"></a><sup><span class="weui-badge" id="allno">0</span></sup>
+			{else}
+			<span class="icon icon-24 f24 f-white"></span><sup><span class="weui-badge" id="allno">0</span></sup>
+			{/if}
+			</div>
+		</div>
+		<!---div class="weui-tab weui-tab_blue" style="height:44px;">
+			<div class="weui-navbar" style="height:44px;">
+					<div class="weui-navbar__item"> </div>
+			</div>
+		</div--->
+	</div>
+	<div class="weui-panel__bd" style="height:48px;"></div>
+	<form action="" method="post" class="form-horizontal form" id="setting-form">
+	<div class="weui-panel weui-panel_access"><div class="weui-panel__bd" id="list">
+		{if $_GPC['op']=='zj'} {php $zxz='abcdefg';} {/if}
+		{if $_W['setting']['remote']['type']}{php $imgxz='thumb';}{else}{php $imgxz='sthumb';}{/if}
+		{loop $goodss $goods}
+			{php $goods['prices'] = iunserializer($goods['prices']);}
+			{php $npric = $pric=='productprice' ? $goods['productprice'] : $goods['prices'][$pric] ;}
+			{php $cou = empty($carts[$goods['id']]['id']) ? '0' : $carts[$goods['id']]['total'] ;}
+			{php $ick = empty($carts[$goods['id']]['isck']) ? '' : " checked='checked' " ;}
+			{php $minp = (int)$goods['prices'][$zxz];}
+			<div  class="weui-media-box weui-media-box_appmsg zmui_media_box_ss">
+				<a class="weui-media-box__hd_mm zmcn-mark-box" href="javascript:getpro({$goods['id']});">
+					{if empty($goods['sthumb'])}
+						<i class="icon icon-54"></i>
+					{else}
+						<img class="weui-media-box__thumb" src="../addons/zmcn_order/n.gif" data-original="{php echo tomedia($goods[$imgxz]);}" alt=''>
+					{/if}
+						{if $goods['isnew']}
+						<span class="zmcn-mark-rts bg-red">NEW</span>
+						{elseif $goods['ishot']}
+						<span class="zmcn-mark-rts bg-red">HOT</span>
+						{elseif $goods['isrecommend']}
+						<span class="zmcn-mark-rts bg-red">推荐</span>
+						{/if}
+				</a>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">{if $goods['name']}{$goods['name']}{else}{$goods['title']}{/if}</h4>
+					<p class="weui-media-box__desc">{$goods['spec']} / {$goods['unit']}<br>原价：{php echo get_cdr($goods['originalprice']);}元；代理价：{php echo get_cdr($npric);}元</p>
+					<p class="count">
+						<input class="check-one check" type="checkbox" id="ck{$goods['id']}" name="isck[]" value="{$goods['id']}" onclick='zchecked({$goods['id']})' {$ick} style="vertical-align:middle"/>
+							<label for="ck{$goods['id']}" style="vertical-align:middle"> 选择</label>
+						</input>
+						<span class="add" onclick='addone({$goods['id']})'>＋</span>
+						<input class="count-input" type="tel" id="co{$goods['id']}" name="count[{$goods['id']}]" value="{$cou}" data-min="{$minp}" />
+						<span class="reduce" onclick='reduceone({$goods['id']})'>－</span>
+					</p>
+				</div>
+			</div>
+		{/loop}
+	</div></div>
+	<br>
+	<div class="weui-row weui-no-gutter">
+		<div class="weui-col-50"><input type="submit" name="submit" value="保存选择" class="weui-btn weui-btn_plain-primary" style="width:92%;"/></div>
+		<div class="weui-col-50"><input type="submit" name="submit" value="{if $_GPC['op']=='zj'}进入建单{else}进入下单{/if}" class="weui-btn weui-btn_primary" style="width:92%;"/></div>
+	</div>
+<input type="hidden" name="token" value="{$_W['token']}" />
+	</form>
+</div>
+<div id="prodetial" class='weui-popup-container'>
+	<div class="weui-popup-modal">
+		<div class="weui-btn_primary weui-header close-popup" onclick='javascript:clpro();'>
+			<div class="weui-header-left"><a class="icon icon-109 f-white" ></a></div>
+			<h1 class="weui-header-title">商品详情</h1>
+			<div class="weui-header-right"><a class="icon icon-95 f24 f-white"></a></div>
+		</div>
+		<div class="page" id="alladd" style="background-color: #fff">
+			正在加载商品数据...
+		</div>
+	</div>
+</div>
+{template '_footer'}
+<script type="text/javascript" src="{$_W['siteroot']}addons/zmcn_order/template/mobile/zmuijs/jquery.lazyload.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+$(function() {
+	$(".weui-media-box__thumb").lazyload({effect: "fadeIn",threshold : 50});  
+});
+</script>
+<script>
+	$(function() {
+		$(".count-input").change(function(){ 
+			var total = parseInt('0'+$(this).val(),10);
+			var id = $(this).attr("id");
+			id = id.replace('co', 'ck');
+			if(total == 0){
+				$("#" + id).attr("checked", false);
+				$(this).val(0);
+			}else{
+				var minp = parseInt('0'+$(this).data('min'),10);
+				var dvs=Math.max(minp,total,1);
+				$(this).val(dvs);
+				$("#" + id).prop("checked", true);
+			}
+			qh();
+		});   
+	});
+    function addone(id) {
+		var minp = parseInt("0" + $("#co" + id).data('min'),10);
+		var total = parseInt("0" + $("#co" + id).val(),10);
+		if(total==0){
+			total = Math.max(minp,total,1);
+		}else{
+			total++;
+		}
+		$("#co" + id).val(total);
+		$("#ck" + id).prop("checked", true);
+		qh();
+    }
+    function reduceone(id) {
+		var minp = parseInt("0" + $("#co" + id).data('min'),10);
+		var total = parseInt("0" + $("#co" + id).val(),10);
+		total--;
+		if(total<=0){
+			$("#co" + id).val(0);
+			$("#ck" + id).prop("checked", false);
+		}else if (total < minp) {
+			$.toptip('操作失败，不能少于' + minp, 'error');return;
+        }else{
+			$("#ck" + id).prop("checked", true);
+			$("#co" + id).val(total);
+		}
+		qh();
+    }
+    function zchecked(id) {
+		if ($("#ck" + id).is(":checked")) {
+			var minp = parseInt("0" + $("#co" + id).data('min'),10);
+			var total = parseInt("0" + $("#co" + id).val(),10);
+			total = Math.max(minp,total,1);
+			$("#co" + id).val(total);
+		} else {
+			$("#co" + id).val(0);
+		}
+		qh();
+    }
+	qh();
+	function qh(){ 
+		var sum=0; 
+		$(".count-input").each(function(){ 
+			sum+=parseInt('0'+$(this).val(),10);
+		});
+		$("#allno").html(sum);
+	}
+</script>
+<script type='text/javascript' src='{MODULE_URL}template/mobile/zmuijs/swiper.min.js' charset='utf-8'></script>
+<script>
+    function getpro(id) {
+		$.showLoading();$('#alladd').html('正在加载商品数据......');
+		$.get('index.php?i={$_W['uniacid']}&c=entry&do=detail&pp=1&m=zmcn_goods', {id : id}, function(s){
+			if(s.length<100) {
+				$.hideLoading();$.toast("加载失败", "text");
+			}else{
+				$("#prodetial").popup();
+				$.hideLoading();$('#alladd').html(s);
+			}
+		}, 'html');
+	}
+    function clpro() {
+		$('#alladd').html('正在加载商品数据......');$.hideLoading();
+	}
+	function qhtb(a) {
+		$(".abcd").addClass('hidden');
+		$("#cb" + a).removeClass('hidden');
+		$(".tab-blue").removeClass('tab-blue');
+		$("#bb" + a).addClass('tab-blue');
+	}
+</script>
+
+
+
+

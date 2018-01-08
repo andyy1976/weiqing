@@ -1,0 +1,427 @@
+{template '_header'}
+<style>
+.tleft .weui-media-box__title{font-size:13px !important;}
+.tleft .weui-media-box__desc{font-size:12px !important;font-weight:400;}
+</style>
+<div class="page bg-zmpag">
+	<div class="weui-btn_primary weui-header">
+		<div class="weui-header-left"><a class="zmui-icon zmui-icon-slider-left f-white" onclick='javascript:history.go(-1);'></a></div>
+		<h1 class="weui-header-title">完成建单</h1>
+		<div class="weui-header-right"><a class="zmui-icon zmui-icon-more f-white open-popup" data-target="#half"></a></div>
+	</div>
+	<form action="index.php?act=ckdd&i={$_W['uniacid']}&c=entry&tm{TIMESTAMP}=3&do=cart&m=zmcn_order" method="post" class="form-horizontal form" id="setting-form">
+	<div class="weui-panel">
+		<div class="weui-panel__hd">订货方和收货方</div>
+		<div class="weui-panel__bd">
+			<div class="weui-cell weui-cell_select weui-cell_select-after">
+				<div class="weui-cell__hd" style=" width:60px;"><label class="weui-label">订货方：</label></div>
+				<div class="weui-cell__bd">
+					<select class="weui-select" name="order[agentid]" onchange="getqag(this.value)">
+						<option value="0" >非代理客户</option>
+						{loop $dagent $dag}
+						<option value="{$dag['id']}">{$dag['name']}{$dag['phone']}</option>
+						{/loop}
+					</select>
+				</div>
+			</div>
+			<input type="hidden" name="addressid" id="add0" value="{$row['id']}" />
+			<div class="weui-media-box weui-media-box_text">
+				<h4 class="weui-media-box__title f14">收货方：<font id="add1">{$row['username']} {$row['mobile']}</font></h4>
+				<p class="weui-media-box__desc" id="add2">{$row['province']} {$row['city']} {$row['district']} {$row['address']} </p>
+				<ul class="weui-media-box__info" style="line-height:20px;" >
+					<li class="weui-media-box__info__meta"><a href="javascript:geteditadd();" class="open-popup" data-target="#bjadd"><i class="zmui-icon zmui-icon-edit2"></i> 编辑</a></li>
+					<li class="weui-media-box__info__meta weui-media-box__info__meta_extra"><a href="javascript:getalladd();" class="open-popup" data-target="#xzadd"><i class="zmui-icon zmui-icon-huanyipi"></i> 更换</a></li>
+					<li class="weui-media-box__info__meta weui-media-box__info__meta_extra"><a href="javascript:;" class="open-popup" data-target="#bjadd"><i class="zmui-icon zmui-icon-gengduo2"></i> 新加</a></li>
+					{if $_W['account']['level'] == ACCOUNT_SERVICE_VERIFY}
+					<li class="weui-media-box__info__meta weui-media-box__info__meta_extra"><a href="javascript:getwxadd();" class="open-popup" data-target="#bjadd"><i class="zmui-icon zmui-icon-daoru"></i> 导入</a></li>
+					{/if}
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="weui-panel">
+		<div class="weui-panel__hd">订单详情</div>
+		<div class="weui-panel__bd" style="padding-right:5px;padding-left:5px">
+			<table class="ui-table ui-border">
+				<thead><tr><th style="width:60%;">商品</th><th style="width:20%;">数量</th><th style="width:20%;">单价</th></tr></thead>
+				<tbody id="dindanxq">
+					{loop $dind $good}
+						<tr class="f14"><td class="tleft nll"><h5 class="weui-media-box__title">{$good['name']}<h5>{if !empty($good['optionname'])}<p class="weui-media-box__desc">{$good['optionname']}</p>{/if}</td><td>{$good['sl']}</td><td class="tright">{$good['price']}</td></tr>
+					{/loop}
+					<tr class="f14"><td colspan="3" class="tright">货款(不含配送费)：￥<b id='zje'>{$zhongj}</b>元</td></tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<input type="hidden" name="ddd" id="ddd" value="{$dss}" />
+		<input type="hidden" name="fwms" value="{$fwme}" />
+	<div class="weui-panel">
+		<div class="weui-panel__hd">付款方式和送货方式</div>
+		<div class="weui-panel__bd">
+{if $express['zt']=='88'}
+			<div class="weui-cell weui-cell_select weui-cell_select-after zmui-selectr">
+				<div class="weui-cell__hd"><label class="weui-label">送货方式：</label></div>
+				<div class="weui-cell__bd"> 
+					<select class="weui-select" name="order[sendtype]">
+						<option value="0" >现买</option>
+						<option value="1" >发货</option>
+						<option value="2" >自提</option>
+					</select>
+				</div>
+			</div>
+			<div class="weui-cell weui-cell_select weui-cell_select-after zmui-selectr">
+				<div class="weui-cell__hd"><label class="weui-label">发货物流：</label></div>
+				<div class="weui-cell__bd"> 
+					<select class="weui-select" name="order[expid]">
+						<option value="my">自己填写</option>
+					{loop $_W['setting']['zmcn:kuaidi'] $key=>$value}
+						<option value="{$key}" >{$value}</option>
+					{/loop}
+					</select>
+				</div>
+				<div class="weui-cell__ft" style="width:150px;">
+					<input type="text" class="weui-input"  name="mykd" id="mykd" placeholder="在这里填写" value="">
+				</div>
+			</div>
+{elseif $express['zt']=='0'}
+			<div class="weui-cell weui-cell_select weui-cell_select-after zmui-selectr"  style="min-height:40px;">
+				<div class="weui-cell__hd"><label class="weui-label">送货方式：</label></div>
+				<div class="weui-cell__bd" id="expdiv"> 
+					<select class="weui-select" name="order[expid]" onchange="expchange(this.value)">
+					{loop $express['express'] $key=>$value}
+						{if $express['deftprice']=='A'}
+							{php $express['deftprice']=$value['expprice'];}
+							<option value="{$key}" id="op{$key}" data-price="{$value['expprice']}" selected='selected'>{$value['expna']}：￥{$value['expprice']}元</option>
+						{else}
+							<option value="{$key}" id="op{$key}" data-price="{$value['expprice']}">{$value['expna']}：￥{$value['expprice']}元</option>
+						{/if}
+					{/loop}
+					</select>
+				</div>
+			</div>
+{elseif $express['zt']=='1'}
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">送货方式：</label></div>
+				<div class="weui-cell__bd">您的地区不在配送范围内</div>
+			</div>
+{/if}
+			<div class="weui-cell weui-cell_vcode">
+				<div class="weui-cell__hd"><label class="weui-label">物流单号：</label></div>
+				<div class="weui-cell__bd"> 
+					<input type="text" class="weui-input"  name="order[expsn]" id="expsn" placeholder="请输入单号或扫码录入" value="">
+				</div>
+				<div class="weui-cell__ft">
+					<a class="weui-vcode-btn zmui-icon zmui-icon-saoyisao f30" href="javascript:scanQrcode();" style="padding:0px;width:40px;line-height:40px;"></a>
+				</div>
+			</div>
+			<div class="weui-cell weui-cell_access">
+				<div class="weui-cell__hd"><label class="weui-label">配送费用：</label></div>
+				<div class="weui-cell__bd"> 
+					<input type="text" class="weui-input"  name="order[sendprice]" id="expprice" value="{php echo (int)$express['deftprice'];}">
+				</div>
+				<div class="weui-cell__ft">元</div>
+			</div>
+			<div class="weui-cell weui-cell_access">
+				<div class="weui-cell__hd"><label class="weui-label">合计金额：</label></div>
+				<div class="weui-cell__bd tright"></div>
+				<div class="weui-cell__ft f-red">￥<b id="hjje">{php echo $zhongj+(int)$express['deftprice'];}</b>元</div>
+			</div>
+			<div class="weui-cell weui-cell_select weui-cell_select-after zmui-selectr">
+				<div class="weui-cell__hd"><label class="weui-label">付款方式：</label></div>
+				<div class="weui-cell__bd"> 
+					<select class="weui-select" name="order[paytype]">
+						<option value="1" >转账</option>
+						<option value="0" >现金</option>
+						<option value="2" >代收款</option>
+					</select>
+				</div>
+			</div>
+			<div class="weui-cell weui-cell_select weui-cell_select-after zmui-selectr ">
+				<div class="weui-cell__hd"><label class="weui-label">订单状态：</label></div>{php $tp8=array(3,4,7,1,2);}
+				<div class="weui-cell__bd"> 
+					<select class="weui-select" name="order[status]">
+					{loop $tp8 $i}
+						<option value="{$i}" >{$_W['zm_o_st'][$i]}</option>
+					{/loop}
+					</select>
+				</div>
+			</div>
+			<div class="weui-cell weui-cell_switch">
+				<div class="weui-cell__hd">自动打单：</div>
+				<div class="weui-cell__bd "> 
+						建单后自动打印订单
+				</div>
+				<div class="weui-cell__ft">
+					<input class="weui-switch" type="checkbox" name="isdy" id="isdy">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="weui-panel">
+        <div class="weui-panel__hd">订单说明</div>
+		<div class="weui-panel__bd">
+			<div class="weui-cell">
+				<div class="weui-cell__bd">
+					<textarea class="weui-textarea" id="weui-textarea" placeholder="请输入留言！" rows="3" name="order[remark]"></textarea>
+					<div class="weui-textarea_counter"><span id='textarea_num'>剩余50字</span></div>
+				</div>
+			</div>  
+		</div>
+	</div>
+	<input type="hidden" name="order[goodsprice]" id="goodsprice" value="{$zhongj}" />
+	<input type="hidden" name="token" value="{$_W['token']}" />
+	<div class="weui-btn-area paybt">
+		{if $express['zt']=='1'}
+			<input type='button' name='button' value='不在配送范围内' class='weui-btn weui-btn_default' />
+		{else}
+			<input type="submit" name="submit" value="提交建单" class="weui-btn weui-btn_primary"/>
+		{/if}
+	</div>
+	</form>
+</div>
+<div id="bjadd" class='weui-popup__container popup-bottom'>
+	<div class="weui-popup__overlay weui-popup-overlay"></div>
+	<div class="weui-popup__modal">
+		<div class="toolbar">
+			<div class="toolbar-inner">
+				<a href="javascript:;" class="picker-button close-popup">关闭</a>
+				<h1 class="title">编辑地址</h1>
+			</div>
+		</div>
+		<div class="weui-panel__bd" style="height:46px;"></div>
+		<input type="hidden" name="addid" id="addid" value="0" />
+		<div class="weui-cells">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">收货人：</label></div>
+				<div class="weui-cell__bd"> 
+					<input type="text" class="weui-input"  name="realname" id="realname" placeholder="请输入联系人姓名" value="">
+				</div>
+			</div>
+            <div class="weui-cell">
+                <div class="weui-cell__hd"><label class="weui-label">电话：</label></div>
+                <div class="weui-cell__bd">
+                    <input class="weui-input" type="tel" name="mobile" id="mobile" pattern="[0-9]*" value="" placeholder="请输入手机号码"/>
+                </div>
+            </div>
+            <div class="weui-cell">
+                <div class="weui-cell__hd"><label for="" class="weui-label">省市县:</label></div>
+                <div class="weui-cell__bd">
+                    <input class="weui-input" type="text"  name="ssx" value="" id="ssx" placeholder="请选择省市县" />
+                </div>
+            </div>  
+            <div class="weui-cell">
+                <div class="weui-cell__hd"><label class="weui-label">地址：</label></div>
+                <div class="weui-cell__bd">
+                    <input class="weui-input" type="text" name="address" id="address" placeholder="请输入发货地址" value="" />
+                </div>
+            </div>
+			<div class="weui-cell weui-cell_switch">
+				<div class="weui-cell__hd">是否默认：</div>
+                <div class="weui-cell__bd"></div>
+				<div class="weui-cell__ft">
+					<input class="weui-switch" type="checkbox" name="ismr" id="ismr" checked="checked">
+				</div>
+			</div>
+		</div>
+		
+	<div class="weui-btn-area">
+		<a href="javascript:getbaochunadd();" class="weui-btn weui-btn_warn close-popup" style="width:92%;">提交保存</a>
+	</div>
+		<br>
+	</div>
+</div>
+<div id="xzadd" class='weui-popup__container'>
+	<div class="weui-popup__modal">
+		<div class="toolbar">
+			<div class="toolbar-inner">
+				<a href="javascript:;" class="picker-button close-popup">关闭</a>
+				<h1 class="title">选择地址</h1>
+			</div>
+		</div>
+		<div class="weui-panel__bd" style="height:46px;"></div>
+		<div class="weui-cells" id="alladd">
+			正在加载地址库...
+		</div>
+		<br><br>
+	</div>
+</div>
+<script type="text/javascript">
+    function geteditadd() {
+		$.toptip('正在处理数据...', 'warning');
+        var id = $("#add0").val();
+		$.get('{php echo $this->createMobileUrl('address', array('op' => 'getadd'))}', {'id' : id}, function(s){
+			if (s.message) {
+				$('#realname').val(s.message.username);
+				$('#mobile').val(s.message.mobile);
+				$('#address').val(s.message.address);
+				$('#ssx').val(s.message.ssx);
+				$('#addid').val(s.message.id);
+				$.toptip('操作成功', 'success');
+			}
+		}, 'json');
+	}
+    function getbaochunadd() {
+		$.showLoading();
+        var id = $("#addid").val();
+        var na = $("#realname").val();
+        var sj = $("#mobile").val();
+        var ss = $.trim($("#ssx").val());
+        var ad = $("#address").val();
+		if($("#ismr").is(':checked')){var mr = 1;}else{var mr = 0;}
+		$.post('{php echo $this->createMobileUrl('address', array('op' => 'baocadd'))}', {'id' : id,'na' : na,'sj' : sj,'ss' : ss,'ad' : ad,'mr' : mr}, function(s){
+			if (s.message.zt==0) {
+				$('#add0').val(s.message.id);
+				$('#add1').html(na + ' ' + sj);
+				$('#add2').html(ss + ' ' + ad);
+				//$.toptip(s.message.ts, 'success');
+				$.hideLoading();$.toast("提交成功", function() {console.log('close');});
+				var ssx=ss.split(" "); 
+				areachange(ssx[0],ssx[1]);
+			}else{
+				//$.toptip(s.message.ts, 'error');
+				$.hideLoading();$.toast("操作失败", "cancel", function(toast) {console.log(toast);});
+			}
+		}, 'json');
+	}
+    function chaadd(id) {
+		$('#add0').val(id);
+		var add1 = $('#add1a' + id).html();
+		var add2 = $.trim($('#add2a' + id).html());
+		$('#add1').html(add1);
+		$('#add2').html(add2);
+        console.log("close popup");
+		$.toast("操作成功", function() {console.log('close');});
+		var ssx=add2.split(" "); 
+		areachange(ssx[0],ssx[1]);
+	}
+    function getalladd() {
+		$.get('{php echo $this->createMobileUrl('address', array('op' => 'alladd','z' => TIMESTAMP))}', function(s){
+			if (s) {$('#alladd').html(s);}
+		}, 'html');	
+	}
+    function getwxadd() {
+		wx.ready(function () {
+			wx.openAddress({
+				success : function(result) {
+					//此处获取到地址信息，可做自己的业务操作
+					$('#realname').val(result.userName);
+					$('#mobile').val(result.telNumber);
+					$('#ssx').val(result.provinceName + ' ' + result.cityName + ' ' + result.countryName);
+					$('#address').val(result.detailInfo);
+				}
+			});
+		});
+	}
+	function scanQrcode(){
+		wx.scanQRCode({
+			needResult: 1, 
+			scanType: ["barCode"],
+			success: function (res) {
+				var strs=res.resultStr.split(",");
+				$('#expsn').val(strs[1]);
+			}
+		});
+	}
+    function getqag(id) {
+		$.showLoading();
+        var ddd = $("#ddd").val();
+		$.get('{php echo $this->createMobileUrl('address', array('op' => 'qag'))}', {'id' : id,'ddd' : ddd}, function(s){
+			if (s.message) {
+				if (s.message.zt==0) {
+					$('#add0').val('H'.id);
+					$('#add1').html(s.message.add1);
+					$('#add2').html(s.message.add2);
+					$('#dindanxq').html(s.message.cp);
+					$('#goodsprice').val(s.message.goodsprice);
+					$.hideLoading();$.toast("操作成功", function(){console.log('close');});
+					var ssx=s.message.add2.split(" "); 
+					areachange(ssx[0],ssx[1]);
+				}else{
+					$.hideLoading();$.alert(s.message.ts, "操作失败！");
+				}
+			}
+		}, 'json');
+	}
+	function areachange(province,city){
+	{if $express['zt']=='88'}expchange('abcd');return;{/if}
+		var weight = '{$weight}';
+		var fagent = '{$agent['id']}';
+		$.showLoading();
+		$.post('{php echo $this->createMobileUrl('address', array('op' => 'areachange','z' => TIMESTAMP))}', {'weight' : weight ,'fagent' : fagent ,'province' : province ,'city' : city},function(s){
+			if (s.message) {
+				if(s.message.zt=='1'){
+					$('.paybt').html("<input type='button' name='button' value='不在配送范围内' class='weui-btn weui-btn_default' />");
+					$('#expdiv').html("您的地区不在配送范围内");
+				}else{
+					$('.paybt').html("<input type='submit' name='submit' value='提交建单' class='weui-btn weui-btn_primary' />");
+					$('#expdiv').html(s.message.html);
+					expchange(s.message.deftexpid);
+				}
+				$.hideLoading();$.toast("操作成功", function() {console.log('close');});
+			}
+		}, 'json');
+	}
+	function expchange(expid){
+		var goodsprice = parseFloat('0' + $('#goodsprice').val());
+		if(expid=='abcd'){
+			var expprice = parseFloat('0' + $('#expprice').val());
+		}else{
+			var expprice = parseFloat('0' + $('#op'+expid).data('price'));
+		}
+		$('#expprice').val(expprice);
+		$('#hjje').html(goodsprice + expprice);
+	}
+</script>
+{template '_footer'}
+<script>
+    function addone(id) {
+        var total = $("#co" + id).val();
+		if(isNaN(total) || total==''){
+			$("#co" + id).val(1);return;
+		} 
+        var total = parseInt(total);
+        total++;
+        $("#co" + id).val(total);
+    }
+    function reduceone(id) {
+        var total = $("#co" + id).val();
+		if(isNaN(total) || total==''){
+			$("#co" + id).val(1);return;
+		} 
+        var total = parseInt(total);
+        if (total - 1 < 0) {
+            return;
+        }
+        total--;
+        $("#co" + id).val(total);
+    }
+</script>
+<script>
+	$("form").submit(function(){
+	  $(":submit",this).attr("disabled","disabled");  
+	});
+$(function(){
+	$("#weui-textarea").on("input paste" , function(){
+		var num_left=50-$(this).val().length;
+		if(num_left<0){
+			$("#textarea_num").text("超过"+(-num_left)+"字");
+			$("#textarea_num").css("color","#E44443");
+		}else{
+			$("#textarea_num").text("剩余"+(num_left)+"字");
+			$("#textarea_num").css("color","#999999");
+		}
+	});
+	$("#expprice").change(function(){
+		var sendprice = parseInt('0'+$(this).val(),10);
+		$('#expprice').val(sendprice);
+		var goodsprice = parseFloat('0' + $('#goodsprice').val());
+		$('#hjje').html(goodsprice + sendprice);
+	});
+	$("form").submit(function(){
+	  $(":submit",this).attr("disabled","disabled");  
+	});
+})  
+</script>
+
+<script src="{$_W['siteroot']}addons/zmcn_erp/zmui/js/zm_citypicker.min.js?t=20170418"></script>
+<script>$("#ssx").cityPicker({title: "选择您所在地区"});</script>

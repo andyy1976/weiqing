@@ -1,0 +1,267 @@
+{template 'common/header'}
+<style type="text/css">
+.zmcn_ui_ipd{border:0px;width:100%;text-align:center;height:100%;}
+.input-group-addon{padding-left: 5px;padding-right: 5px;}
+</style>
+<ul class="nav nav-tabs">
+	<li {if $_GPC['op'] == 'in'}class="active"{/if}><a href="{php echo $this->createWebUrl('stock', array('op'=>'in'));}">商品入库</a></li>
+	<li {if $_GPC['op']=='' || $_GPC['op']=='display' }class="active"{/if}><a href="{php echo $this->createWebUrl('stock', array('op'=>'display'));}">库存查询</a></li>
+	<li {if $_GPC['op']=='ls' }class="active"{/if}><a href="#">流水记录</a></li>
+</ul>
+<form action="" method="post" name="ddform" id="ddform" onkeydown="if(event.keyCode==13)return false;">
+    <div class="panel panel-default">
+		<div class="panel-heading" style="text-align:center;padding: 0px 0px 0px 0px;">
+			<div class="row" style="padding: 10px 0px 0px 0px;">
+				<div class="col-sm-2">
+				</div>
+				<div class="col-sm-2"></div><div class="col-sm-4"><h2 style="line-height: 0px;">商品出入库</h2></div><div class="col-sm-2"></div>
+				<input type="hidden" name="order[agentid]" id="fid" value="0"/><input type="hidden" name="acc" id="acc" value="add"/>
+				<div class="col-sm-2">
+				</div>
+			</div>
+			<div class="row" style="padding: 10px 15px 15px 15px;">
+				<div class="input-group">
+					<span class="input-group-addon">出入库类型</span>
+					<select class="form-control input-medium" name="iotp"  id="iotp" onchange="$('#iotpd').val(this.value)" >
+						<option value="1" >商品入库</option>
+						<option value="0" >其它出库</option>
+						<option value="2" >盘点校正</option>
+						<option value="3" >退货入库</option>
+					</select>
+					<span class="input-group-addon">出入库日期</span>
+					{php echo tpl_form_field_date('iotm');}
+					<span class="input-group-addon">摘要</span>
+					<input type="text" name="iorem" id="iorem" placeholder="填写业单号或是出入库理由" class="form-control" value=""/>
+				</div>
+			</div>
+			
+		</div>
+		
+		
+		
+		<div class="panel-body table-responsive" style="height:40px; overflow-y:scroll;width:100%;padding: 0px 10px 10px 10px;">
+			<table class="table table-hover scrolltable" style="width:100%;background:#ffffff;height:42px;overflow-y: scroll;">
+				<thead class="navbar-inner" style="height:42px;overflow-y: scroll;border-bottom:1px solid #eee;width:calc(100% - 1em);">
+					<tr>
+						<th style="text-align:center; width:8%;font-size:14px;">NO</th>
+						<th style="text-align:center; width:30%;font-size:14px;">产品名称</th>
+						<th style="text-align:center; width:14%;font-size:14px;">规格型号</th>
+						<th style="text-align:center; width:8%;font-size:14px;">类型</th>
+						<th style="text-align:center; width:15%;font-size:14px;">入库数量</th>
+						<th style="text-align:center; width:15%;font-size:14px;">出库数量</th>
+						<th style="text-align:center; width:10%;font-size:14px;">状态</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+		<div class="panel-body table-responsive" style="height:400px; overflow-y:scroll;width:100%;padding: 0px 10px 10px 10px;top:-40px;">
+			<table class="table table-hover scrolltable" style="width:100%;top:-40px">
+				<thead>
+					<tr style="height:1px;padding-bottom:0px;padding-top:0px;border-bottom-style: none;">
+						<th style="text-align:center; width:8%;font-size:14px;padding-bottom:0px;padding-top:0px;border-bottom-style: none;"></th>
+						<th style="text-align:center; width:30%;font-size:14px;padding-bottom:0px;padding-top:0px;border-bottom-style: none;"></th>
+						<th style="text-align:center; width:14%;font-size:14px;padding-bottom:0px;padding-top:0px;border-bottom-style: none;"></th>
+						<th style="text-align:center; width:8%;font-size:14px;padding-bottom:0px;padding-top:0px;border-bottom-style: none;"></th>
+						<th style="text-align:center; width:15%;font-size:14px;padding-bottom:0px;padding-top:0px;border-bottom-style: none;"></th>
+						<th style="text-align:center; width:15%;font-size:14px;padding-bottom:0px;padding-top:0px;border-bottom-style: none;"></th>
+						<th style="text-align:center; width:10%;font-size:14px;padding-bottom:0px;padding-top:0px;border-bottom-style: none;"></th>
+					</tr>
+				</thead>
+				<tbody id="zmtims" style="font-size:14px;">
+				</tbody>
+				<footer id="dinwei">
+				</footer>	
+			</table>
+			<a name="pos">
+		</div>
+		<div class="panel-footer">
+		<table style="width:100%;"><tr><td style="width:40%;">
+			<div class="input-group">
+				<span class="input-group-addon">条码</span>
+				<input type="text" id="decodeText" name="decodeText" size="13"  class="form-control" value="" placeholder="条码枪" onkeydown="if(event.keyCode==13){dinwei(this.value);}" />
+				<span class="input-group-addon">商品</span>
+					<select class="form-control" name="goid" id="goid" onchange="xuanz()">
+					<option value="0" >请选择录入商品</option>
+					{loop $goodss $i}
+						<option value="{$i['id']}" id="tmc{$i['tmcode']}" data-zmcncb="{$i['costprice']}" data-isop="{$i['isspec']}" >{$i['name']}</option>
+					{/loop}
+					</select>
+					<span class="input-group-addon"></span>
+					<div id='optionxx'>
+						<input type='hidden' name='optionname' id='optionname' data-optionid='0' value=''/>
+					</div>
+			</div></td><td style="width:60%;">
+			<div class="input-group" >
+				<span class="input-group-addon">成本</span>
+				<input type="text" name="gocb" id="gocb" class="form-control" value="0" size="4" placeholder="" readOnly="true"/>
+				<span class="input-group-addon">类型</span>
+				<select class="form-control input-medium" name="iotpd"  id="iotpd">
+					<option value="1" >入库</option>
+					<option value="0" >出库</option>
+				</select>
+				<span class="input-group-addon">数量</span>
+				<input type="text" name="total" id="total" class="form-control" value="1" size="4" placeholder="" onkeydown="if(event.keyCode==13){addstock();}"/>
+				<span class="input-group-addon">金额</span>
+				<input type="text" name="je" id="je" class="form-control" value="0" placeholder="" size="4" readOnly="true"/>
+				<span class="input-group-addon" onclick="addstock();" style="cursor:pointer">提交</span>
+			</div></td></tr></table>
+			<div class="row" style="padding: 10px 0px 0px 0px;">
+				<div class="input-group">
+					<span class="input-group-addon" style="padding-right:0px;border-right-style: none;">累加成本</span>
+					<span class="input-group-addon" id="hjcb" style="padding-left:0px;padding-right:0px;border-left-style: none;border-right-style: none;">0</span>
+					<span class="input-group-addon" style="padding-left:0px;border-left-style: none;">元</span>
+					<span class="input-group-addon" style="padding-right:0px;border-right-style: none;">实际</span>
+					<select class="form-control input-medium" name="patp" id="patp" style="padding-left:0px;padding-right:0px;border-left-style: none;border-right-style: none;background-color:#eee;">
+						<option value="0" >付款</option>
+						<option value="1" >收款</option>
+					</select>
+					<span class="input-group-addon" style="padding:0px;border-left-style: none;"></span>
+					<input type="text" name="sho" id="sho" placeholder="" size="4" class="form-control" value="0"/>
+					<span class="input-group-addon">元</span>
+					<span class="input-group-addon">方式</span>
+					<select class="form-control input-medium" name="fk" id="fk">
+						<option value="1" >转账</option>
+						<option value="0" >现金</option>
+					</select>
+					<span class="input-group-addon">账户</span>
+					<select class="form-control input-medium" name="fkid" id="fkid">
+					{loop $accounts $item}
+						<option value="{$item['id']}" >{$item['title']}</option>
+					{/loop}
+					</select>
+					<span class="input-group-addon" onclick="addpay();" style="cursor:pointer">提交记账</span>
+					<span class="input-group-addon" onclick="qinglin(1);" style="cursor:pointer">归零</span>
+				</div>
+			</div>
+		</div>
+	</div>
+<input type="hidden" name="gidoo" id="gidoo" value=","/>
+</form>
+
+<audio id="music" src="" autoplay="autoplay" >你的浏览器不支持audio标签。</audio>
+<script type="text/javascript">
+var asss="{MODULE_URL}template/alpha.mp3";
+var errs="{MODULE_URL}template/bark.mp3";
+var post="{php echo $this->createWebUrl('fahuo', array('op'=>'fh','ttt'=>TIMESTAMP));}";
+require(['bootstrap'],function($){$('[data-toggle="tooltip"]').tooltip();});
+</script>
+<script type="text/javascript">
+	$(function(){
+		$("#total").keyup(function() {
+			suje();
+		});
+	})
+    function suje() {
+		var total = $('#total').val();
+		var price = $('#gocb').val();
+		if(isNaN(total) || total==''){
+			$("#total").val('1'); total = 1;
+		}
+		if(isNaN(price) || price==''){
+			$("#gocb").val('0'); price = 0;
+		}
+		$("#je").val(total * price);
+		return true;
+	}
+    function dinwei(tm) {
+		var good=$("#tmc" + tm);
+		var goid=good.val();
+		var gocb=good.data('zmcncb');
+		$("#goid").val(goid);
+		$("#gocb").val(gocb);
+		$('#decodeText').val('');
+		$('#total').select();
+		suje();
+	}
+    function xuanz() {
+		var good=$("#goid").find("option:selected");
+		var goid=good.val();
+		var gocb=good.data('zmcncb');
+		var isop=good.data('isop');
+		$("#optionxx").html("<input type='hidden' name='optionname' id='optionname' data-optionid='0' value=''/>");
+		if(isop==1){
+			$.post('{php echo $this->createWebUrl('stock', array('op'=>'op','ttt'=>TIMESTAMP));}', {'goid' : goid}, function(s){
+				if(s.length>10){
+					$("#optionxx").html("<select class='form-control' name='optionname' id='optionname' data-optionid='ok'>"+s+"</select>");
+				}
+			}, 'html');
+		}
+		$("#gocb").val(gocb);
+		$('#decodeText').val('');
+		$('#total').select();
+		suje();
+	}
+    function qinglin(i) {
+		if(i){if(!confirm('归零就是货物只做出入库，不做财务款项的记录，确定归零吗?')) return false;}
+		$('#hjcb').html('0');
+		$('#zmtims').html('');
+		ii= 1;
+		return true;
+	}
+	var ii= 1;var ss= 1;
+    function addstock() {
+		if(ss==1){ss=0;}else{return false;}
+		var good=$("#goid").find("option:selected");
+		var goid= good.val();
+		var gocb=good.data('zmcncb');
+		var gona=good.text();
+		var gopid=$("#optionname").data("optionid");
+		if(gopid=='ok'){var gopid=$("#optionname>option:selected").data("optionid");}
+		var iotm= $(".datetimepicker").val();
+		var iorem= $("#iorem").val();
+		var total= $("#total").val();
+		var iotp= $("#iotpd").val();
+		var iot= $("#iotp").val();
+		$.post('{php echo $this->createWebUrl('stock', array('op'=>'io','ttt'=>TIMESTAMP));}', {'goid' : goid ,'iotm' : iotm,'iorem' : iorem,'total' : total,'iotp' : iotp,'iot' : iot,'gopid' : gopid}, function(s){
+			if (s.message.zt==0) {
+				var x=document.getElementById('zmtims').insertRow(-1);
+				x.align="center";
+				x.insertCell(0).innerHTML=ii;
+				x.insertCell(1).innerHTML=gona;
+				x.insertCell(2).innerHTML='';
+				if(iotp==1){
+				x.insertCell(3).innerHTML='入库';
+				x.insertCell(4).innerHTML=total;
+				x.insertCell(5).innerHTML='';
+				}else{
+				x.insertCell(3).innerHTML='出库';
+				x.insertCell(4).innerHTML='';
+				x.insertCell(5).innerHTML=total;
+				}
+				x.insertCell(6).innerHTML=s.message.ts;
+				$("#music").attr('src',asss);
+				ii ++
+				var je= $("#je").val();
+				var xje= $("#hjcb").html() * 1 + je * 1;
+				$("#hjcb").html(xje);
+				if(ii>10){window.location.hash = 'pos';}
+			}else{
+				alert(s.message.ts); 
+			}
+		}, 'json');
+		$('#decodeText').focus();ss= 1;
+	}
+	
+    function addpay() {
+		var yuanj= $("#hjcb").html();
+		if(yuanj=='' || yuanj <=0 ){alert('没有应该收应付款');return false;}
+		if(ss==1){ss=0;}else{return false;}
+		var sho= $("#sho").val();
+		var iotm= $(".datetimepicker").val();
+		var iorem= $("#iorem").val();
+		var iotp= $("#patp").val();
+		var fkid= $("#fkid").val();
+		var fk= $("#fk").val();
+		var iot= $("#iotp").val();
+		$.post('{php echo $this->createWebUrl('stock', array('op'=>'jz','ttt'=>TIMESTAMP));}', {'fkid' : fkid ,'tm' : iotm,'iorem' : iorem,'sho' : sho,'iotp' : iotp,'fk' : fk,'iot' : iot}, function(s){
+			if (s.message.zt==0) {
+				$("#music").attr('src',asss);alert(s.message.ts);
+				qinglin(0);
+			}else{
+				$("#music").attr('src',errs);alert(s.message.ts);
+			}
+		}, 'json');
+		$('#decodeText').focus();ss= 1;
+	}
+</script>
+{template 'common/footer'}

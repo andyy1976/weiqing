@@ -1,0 +1,36 @@
+{template '_header'}
+<?php
+function jialian($lin,$t){
+	global $_W;
+	$a = "i=". $_W['uniacid'] ."&";
+	$b = "i=". $_W['uniacid'] ."&t=". $t ."&";
+	return str_replace($a,$b, $lin ."&"); 
+}
+?>
+<div class="page bg-zmpag">
+	<div class="weui-btn_primary weui-header">
+		<div class="weui-header-left"><a class="zmui-icon zmui-icon-slider-left f-white" onclick='javascript:history.go(-1);'></a></div>
+		<h1 class="weui-header-title">公司文档</h1>
+		<div class="weui-header-right"><a class="zmui-icon zmui-icon-more f-white open-popup" data-target="#half"></a></div>
+	</div>
+	<div class="weui-panel weui-panel_access">
+		<div class="weui-panel__bd">
+		{loop $_W['zmcn']['navs0'] $nav}
+			<a href="{php echo jialian($nav['url'],$nav['multiid'])}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					{if $nav['icon']}
+                        <img class="weui-media-box__thumb" src="{php echo tomedia($nav['icon']);}" alt="">
+					{else}
+						<i class="weui-media-box__thumb {$nav['css']['icon']['icon']}" style="color: {$nav['css']['icon']['color']};"></i>
+					{/if}
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">{$nav['name']}</h4>
+					<p class="weui-media-box__desc">{$nav['description']}</p>
+				</div>
+			</a>
+		{/loop}
+		</div>
+	</div>
+</div>
+{template '_footer'}

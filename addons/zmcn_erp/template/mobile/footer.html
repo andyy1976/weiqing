@@ -1,0 +1,101 @@
+{if !empty($_W['page']['footer'])}	
+<br>
+<div class="weui-footer">
+			<p class="weui-footer__text">{$_W['page']['footer']}</p>
+</div><br><br><br>
+{else}
+<br>
+<div class="weui-footer">
+    <p class="weui-footer__text">Copyright &copy; 2008-{php echo date('Y')} {$_W['uniaccount']['name']}</p>
+</div><br><br><br>	
+{/if}	
+<div class="weui-tabbar tab-bottom">
+	{data func="site_navs" section="3" item="row"}
+		{php $isnavs3=1;}
+		<a href="{php echo jialian($row['url'],$multiid)}" class="weui-tabbar__item" >
+			{if !empty($row['icon'])}
+			<p class="weui-tabbar__label"><img src="{php echo tomedia($row['icon']);}" style='height:20px;width:20px;'/><br>{$row['name']}</p>
+			{else}
+			<p class="weui-tabbar__label"><span class="fa {$row['css']['icon']['icon']}" style="{$row['css']['icon']['style']};"></span><br>{$row['name']}</p>
+			{/if}
+		</a>
+	{/data}
+	{if empty($isnavs3)}
+		<a href="index.php?i={$_W['uniacid']}&t{TIMESTAMP}g=t&c=entry&do=index&id=1&m=zmcn_order" class="weui-tabbar__item" >
+			<p class="weui-tabbar__label"><span class="zmui-icon zmui-icon-avatar2"></span><br>我的</p>
+		</a>
+		<a href="index.php?i={$_W['uniacid']}&t{TIMESTAMP}g=t&c=entry&do=index&id=2&m=zmcn_order"  class="weui-tabbar__item" >
+			<p class="weui-tabbar__label"><span class="zmui-icon zmui-icon-order"></span><br>订单</p>
+		</a>
+		<a href="index.php?i={$_W['uniacid']}&t{TIMESTAMP}g=t&c=entry&do=index&id=0&m=zmcn_order" class="weui-tabbar__item">
+			<p class="weui-tabbar__label"><span class="zmui-icon zmui-icon-home"></span><br>首页</p>
+		</a>
+		<a href="index.php?i={$_W['uniacid']}&t{TIMESTAMP}g=t&c=entry&do=index&id=3&m=zmcn_order" class="weui-tabbar__item">
+			<p class="weui-tabbar__label"><span class="zmui-icon zmui-icon-usergroup2"></span><br>代理</p>
+		</a>
+		<a href="index.php?i={$_W['uniacid']}&t{TIMESTAMP}g=t&c=entry&do=index&id=4&m=zmcn_order" class="weui-tabbar__item">
+			<p class="weui-tabbar__label"><span class="zmui-icon zmui-icon-xianshiqi"></span><br>企业</p>
+		</a>
+	{/if}
+</div>
+<div id="half" class='weui-popup__container popup-bottom'>
+	<div class="weui-popup__overlay weui-popup-overlay"></div>
+	<div class="weui-popup__modal">
+		<div class="toolbar">
+			<div class="toolbar-inner">
+				<a href="javascript:;" class="picker-button close-popup">关闭</a>
+				<h1 class="title">系统菜单</h1>
+			</div>
+		</div>
+		<div class="modal-content">
+			<div class="weui-grids">
+				{data func="site_navs" section="4" item="row"}
+						{php $isnavs4=1;}
+					  <a href="{php echo jialian($row['url'],$multiid)}" class="weui-grid">
+						{if !empty($row['icon'])}
+						<p class="weui-grid__label" style='line-height:18px;'><img src="{php echo tomedia($row['icon']);}" style='height:36px;width:36px;'/><br>{$row['name']}</p>
+						{else}
+						<p class="weui-grid__label"><span class="fa {$row['css']['icon']['icon']} f36" style="{$row['css']['icon']['style']};"></span><br>{$row['name']}</p>
+						{/if}
+					  </a>
+				{/data}
+				{if empty($isnavs4)}
+					<a href="{php echo url('entry',array('do' => 'myteam','m' => 'zmcn_cer'));}" class="weui-grid">
+						<p class="weui-grid__label" style="position: relative;">
+						  <span class="zmui-icon zmui-icon-usergroup2 f36 f-zi"></span><br>我的团队
+						</p>
+					</a>
+					<a href="{php echo url('entry',array('do' => 'cart','m' => 'zmcn_order'));}" class="weui-grid">
+						<p class="weui-grid__label">
+						  <span class="zmui-icon zmui-icon-cart-kong f36 f-zi"></span><br>我要进货
+						</p>
+					</a>
+					<a href="{php echo url('entry',array('do' => 'myoutorder','m' => 'zmcn_order'));}" class="weui-grid">
+						<p class="weui-grid__label">
+						  <span class="zmui-icon zmui-icon-chuku f36 f-red"></span><br>我要发货
+						</p>
+					</a>
+					<a href="{php echo url('entry',array('do' => 'cart','m' => 'zmcn_order','op' => 'zj'));}" class="weui-grid">
+						<p class="weui-grid__label">
+						  <span class="zmui-icon zmui-icon-add2 f36 f-orange"></span><br>我要开单
+						</p>
+					</a>
+					<a href="{php echo url('entry',array('do' => 'myprice','m' => 'zmcn_cer'));}" class="weui-grid">
+						<p class="weui-grid__label">
+						  <span class="zmui-icon zmui-icon-jiangjia f36 f-orange"></span><br>我的价格
+						</p>
+					</a>
+					<a href="{$settings['sys']['help']}" class="weui-grid">
+						<p class="weui-grid__label">
+						  <span class="zmui-icon zmui-icon-help f36 f-indigo"></span><br>系统帮助
+						</p>
+					</a>
+				{/if}
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+<script src="{$_W['siteroot']}addons/zmcn_erp/zmui/js/jquery.min.js"></script>
+<script src="{$_W['siteroot']}addons/zmcn_erp/zmui/js/jquery-weui.min.js"></script>
+</html>

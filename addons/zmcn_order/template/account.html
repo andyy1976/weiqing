@@ -1,0 +1,85 @@
+{template 'common/header'}
+<ul class="nav nav-tabs">
+
+	<li class="active"><a href="{php echo $this->createWebUrl('classset', array('ty'=>'2'));}">收支账户管理</a></li>
+</ul>
+{php $cc=array('现金','银行','担保','线上-微信支付','线上-支付宝');}
+<form action="" method="post" class="form-horizontal form" id="form">
+<div class="main">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				账户管理
+			</div>
+			<div class="panel-body">
+						<table class="table table-hover" style="width:100%;">
+							<thead class="navbar-inner"  style="width:100%;">
+								<tr>
+									<th class="row-hover span3" style="width:10%;">类型<i></i></th>
+									<th class="row-hover span3" style="width:20%;">账号名称<i></i></th>
+									<th class="row-hover span3" style="width:10%;">状态<i></i></th>
+									<th class="row-hover span3" style="width:15%;">金额(元)<i></i></th>
+									<th class="row-hover span3" style="width:30%;">备注<i></i></th>
+									<th style="text-align:right;" style="width:15%;">操作</th>
+								</tr>
+							</thead>
+							<tbody id="status-items">
+								{loop $clas $cla}
+								<tr><input type="hidden" name="caid[]" value="{$cla['id']}" />
+									<td>
+										<select class="form-control input-medium" name="cla[{$cla['id']}][type]">
+										{loop $cc $c=>$i}
+											<option value="{$c}" {if $c == $cla['type']}selected{/if}>{$i}</option>
+										{/loop}
+										</select>
+									</td>
+									<td><input name="cla[{$cla['id']}][title]" type="text" value="{$cla['title']}" class="form-control"></td>
+									<td>
+										<select class="form-control input-medium" name="cla[{$cla['id']}][zt]">
+											<option value="0" {if empty($cla['zt'])}selected{/if}>停用</option>
+											<option value="1" {if $cla['zt']=='1'}selected{/if}>启用</option>
+										</select>
+									</td>
+									<td>{$cla['money']}</td>
+									<td><input name="cla[{$cla['id']}][remark]" type="text" value="{$cla['remark']}" class="form-control"></td>
+									<td style="text-align:right;">
+										<a href="{php echo $this->createWebUrl('pay', array('op'=>'jl', 'id'=>$cla['id']));}" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="" data-original-title="收支日记"><i class="fa fa-list-alt"></i></a>
+									{if $cla['money'] > 0}
+										<a href="javascript:confirm('该账号有收支记录不能删除，如果不想用就设为停用');" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="" data-original-title="不能删除"><i class="fa fa-times"></i></a>
+									{else}
+										<a onclick="if(!confirm('删除后将不可恢复,确定删除吗?')) return false;" href="{php echo $this->createWebUrl('pay', array('op'=>'delete', 'id'=>$cla['id']));}" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="" data-original-title="删除"><i class="fa fa-times"></i></a>
+									{/if}
+										</td>
+								</tr>									
+								{/loop}
+							</tbody>
+							<tr>
+								<td colspan="6">
+									<a href="javascript:;" onclick="addStatusItem()"><i class="icon-plus-sign-alt"></i> 添加新账户</a>
+								</td>
+							</tr>
+						</table>
+					</div>
+		</div>
+</div>
+<input name="submit" type="submit" value="提交" class="btn btn-primary" />
+<input type="hidden" name="token" value="{$_W['token']}" />
+</form>
+<script type="text/javascript">
+<!--
+	function addStatusItem() {
+		var html = '' +
+				'<tr>' +
+					'<td><select class="form-control input-medium" name="ncla[type][]"><option value="1">银行</option><option value="0">现金</option><option value="2">担保</option><option value="3">线上-微信支付</option><option value="4">线上-支付宝</option></select></td>' +
+					'<td><input name="ncla[title][]" type="text" class="form-control" placeholder=""/></td>' +
+					'<td><select class="form-control input-medium" name="ncla[zt][]"><option value="1">启用</option><option value="0">停用</option></select></td>' +
+					'<td><input name="ncla[money][]" type="text" class="form-control" placeholder="期初金额"/></td><td><input name="ncla[remark][]" type="text" value="" class="form-control" placeholder=""></td>' +
+					'<td style="text-align:right;"><a href="javascript:;" onclick="$(this).parent().parent().remove();" class="btn btn-small" title="删除此条目"><i class="glyphicon glyphicon-remove-circle"></i> 删除</a></td>' +
+				'</tr>';
+		$('#status-items').append(html);
+	}
+//-->
+</script>
+
+
+
+{template 'common/footer'}

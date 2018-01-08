@@ -1,0 +1,42 @@
+<div id="modal-module-menus2"  class="modal fade" tabindex="-1">
+	<div class="modal-dialog" style='width: 920px;'>
+		<div class="modal-content">
+			<input type="hidden" id="search-type" name="search-type" value="123" />
+			<div class="modal-header"><button aria-hidden="true" data-dismiss="modal" class="close two" type="button">×</button><h3>请选择绑定对像</h3></div>
+			<div class="modal-body" >
+				<div class="row">
+					<div class="input-group">
+						<input type="text" class="form-control" name="keyword" value="" id="search-kwd" placeholder="请输入名称（支持模糊查找）" onkeydown="if(event.keyCode==13){search_members('search-type','search-kwd');return false;}" />
+						<span class='input-group-btn'><button type="button" class="btn btn-default" onclick="search_members('search-type','search-kwd');">搜索</button></span>
+					</div>
+				</div>
+				<div id="module-menus" style="padding-top:5px;"></div>
+			</div>
+			<div class="modal-footer"><a href="#" class="btn btn-default" data-dismiss="modal" aria-hidden="true" id="c2">关闭</a></div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	function search_members(s,i) {
+	 	if( $.trim($('#'+i).val())==''){
+			Tip.focus('#'+i,'请输入关键词');
+			return;
+		}
+	 	if( $.trim($('#'+s).val())==''){
+			$("#module-menus").html("没有查找的目标....");
+			return;
+		}
+		$("#module-menus").html("正在搜索....")
+		$.get('{php echo $this->createWebUrl('fsquery')}', {
+			keyword: $.trim($('#'+i).val()),type: $.trim($('#'+s).val())
+		}, function(dat){
+			$('#module-menus').html(dat);
+		});
+	}
+	function select_member(o,i) {
+		$("#"+i).val(o.b);
+		$("#"+i+"na").val(o.c);
+		$("#"+i+"av").attr('src', util.tomedia(o.a));
+		$(".two").click();
+	}
+</script>

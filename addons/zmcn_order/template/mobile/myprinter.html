@@ -1,0 +1,208 @@
+{template '_header'}
+<div class="page bg-zmpag"> 
+	<div class="weui-btn_primary weui-header"> 
+		<div class="weui-header-left"><a class="zmui-icon zmui-icon-slider-left f-white" onclick='javascript:history.go(-1);'></a></div>
+		<h1 class="weui-header-title">打印机设置</h1>
+		<div class="weui-header-right"><a class="zmui-icon zmui-icon-more f-white open-popup" data-target="#half"></a></div> 
+	</div>
+	<form action="" method="post" class="form-horizontal form" id="setting-form">
+        <div class="weui-cells__title">设备资料</div>		
+		<div class="weui-cells weui-cells_form">
+			<div class="weui-cell weui-cell_select weui-cell_select-after">
+				<div class="weui-cell__hd"><label class="weui-label">打印机设置：</label></div>
+				<div class="weui-cell__bd"> 
+					<select class="weui-select" name="prin[prinserver]" onchange="getdata(this.value)">
+						<option value="no" id="sb_no" data-soho="ABC">{if empty($prin['prinserver'])}请选择打印机厂商{else}不改动打印机参数{/if}</option>
+						<option value="feie" id="sb_feie" data-soho="A1237">飞鹅定制款</option>
+						<option value="365" id="sb_365" data-soho="A127">365定制款</option>
+						<!---option value="fein" id="sb_fein" data-soho="A1257">飞印定制</option--->
+					</select>
+				</div>
+			</div>
+			<div class="weui-cell hide" id="sb1">
+				<div class="weui-cell__hd"><label class="weui-label">设备编码：</label></div>
+				<div class="weui-cell__bd"> 
+                    <input class="weui-input" type="tel" name="sb[sn]" pattern="[0-9]*" value="{$prin['prinset']['sn']}" placeholder="SM码|机器码|IMEI码"/>
+				</div>
+				<div class="weui-cell__ft">
+					<a class="zmui-icon zmui-icon-help f22 noqq" href="javascript:gethelp(1);"></a>
+				</div>
+			</div>
+			<div class="weui-cell hide"  id="sb2">
+				<div class="weui-cell__hd"><label class="weui-label">设备密钥：</label></div>
+				<div class="weui-cell__bd"> 
+                    <input class="weui-input" type="text" name="sb[key]" value="{$prin['prinset']['key']}" placeholder="打印机KEY"/>
+				</div>
+				<div class="weui-cell__ft">
+					<a class="zmui-icon zmui-icon-help f22 noqq" href="javascript:gethelp(2);"></a>
+				</div>
+			</div>
+			<div class="weui-cell hide"  id="sb3">
+				<div class="weui-cell__hd"><label class="weui-label">服务器IP：</label></div>
+				<div class="weui-cell__bd"> 
+                    <input class="weui-input" type="text" name="sb[ip]" value="{$prin['prinset']['ip']}" placeholder="服务器IP或是域名"/>
+				</div>
+				<div class="weui-cell__ft">
+					<a class="zmui-icon zmui-icon-help f22 noqq" href="javascript:gethelp(3);"></a>
+				</div>
+			</div>
+			<div class="weui-cell hide"  id="sb4">
+				<div class="weui-cell__hd"><label class="weui-label">通信端口：</label></div>
+				<div class="weui-cell__bd"> 
+                    <input class="weui-input" type="tel" name="sb[dk]" pattern="[0-9]*" value="80" placeholder="默认80"/>
+				</div>
+				<div class="weui-cell__ft">
+					<a class="zmui-icon zmui-icon-help f22 noqq" href="javascript:gethelp(4);"></a>
+				</div>
+			</div>
+			<div class="weui-cell hide"  id="sb5">
+				<div class="weui-cell__hd"><label class="weui-label">用户ID：</label></div>
+				<div class="weui-cell__bd"> 
+                    <input class="weui-input" type="text" name="sb[uid]"  value="{$prin['prinset']['uid']}" placeholder="商户ID或用户名"/>
+				</div>
+				<div class="weui-cell__ft">
+					<a class="zmui-icon zmui-icon-help f22 noqq" href="javascript:gethelp(5);"></a>
+				</div>
+			</div>
+			<div class="weui-cell hide"  id="sb6">
+				<div class="weui-cell__hd"><label class="weui-label">通信密钥：</label></div>
+				<div class="weui-cell__bd"> 
+                    <input class="weui-input" type="text" name="sb[apikey]" value="{$prin['prinset']['apikey']}" placeholder="APIKEY"/>
+				</div>
+				<div class="weui-cell__ft">
+					<a class="zmui-icon zmui-icon-help f22 noqq" href="javascript:gethelp(6);"></a>
+				</div>
+			</div>
+			<div class="weui-cell weui-cell_select weui-cell_select-after hide" id="sb7">
+				<div class="weui-cell__hd"><label class="weui-label">打印宽度：</label></div>
+				<div class="weui-cell__bd" > 
+					<select class="weui-select" name="sb[kd]">
+						<option value="58" {if empty($prin['prinset']['kd']) || $prin['prinset']['kd']=='58'}selected{/if}>58MM机型</option>
+						<option value="80" {if $prin['prinset']['kd']=='80'}selected{/if}>80MM机型</option>
+					</select>
+				</div>
+			</div>
+		</div>
+        <div class="weui-cells__title">打印策略</div>
+		<div class="weui-cells weui-cells_form">
+			<div class="weui-cell weui-cell_switch">
+				<div class="weui-cell__hd"><label class="weui-label">是否启用：</label></div>
+				<div class="weui-cell__bd"></div>
+				<div class="weui-cell__ft">
+					<input class="weui-switch" type="checkbox" name="prin[zt]"  value="1" {if $prin['zt']} checked="checked"{/if}>
+				</div>
+			</div>
+			<div class="weui-cell weui-cell_select weui-cell_select-after">
+				<div class="weui-cell__hd"><label class="weui-label">打印方式：</label></div>
+				<div class="weui-cell__bd"> 
+					<select class="weui-select" name="prin[laiy]">
+						<option value="0" {if empty($prin['laiy'])}selected{/if}>付款后手动打印</option>
+						<option value="1" {if $prin['laiy']=='1'}selected{/if}>付款后自动打印</option>
+						<option value="2" {if $prin['laiy']=='2'}selected{/if}>下单即自动打印</option>
+						<option value="3" {if $prin['laiy']=='3'}selected{/if}>确认到款即自动打印</option>
+					</select>
+				</div>
+			</div>
+			<div class="weui-cell weui-cell_select weui-cell_select-after">
+				<div class="weui-cell__hd"><label class="weui-label">打印联数：</label></div>
+				<div class="weui-cell__bd"> 
+					<select class="weui-select" name="css[sl]">
+						<option value="1" {if $prin['princss']['sl']=='1'}selected{/if}>打印一联</option>
+						<option value="2" {if $prin['princss']['sl']=='2'}selected{/if}>打印二联</option>
+						<option value="3" {if $prin['princss']['sl']=='3'}selected{/if}>打印三联</option>
+					</select>
+				</div>
+			</div>
+		</div>
+        <div class="weui-cells__title">打单样式</div>
+		<div class="weui-cells weui-cells_form">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">订单标题：</label></div>
+				<div class="weui-cell__bd"> 
+                    <input class="weui-input" type="text" name="css[title]" value="{$prin['princss']['title']}" placeholder="默认：送货单"/>
+				</div>
+			</div>
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">副标题：</label></div>
+				<div class="weui-cell__bd"> 
+                    <input class="weui-input" type="text" name="css[stitle]" value="{$prin['princss']['stitle']}" placeholder="自定文字，可不填"/>
+				</div>
+			</div>
+			<div class="weui-cell weui-cell_switch">
+				<div class="weui-cell__hd"><label class="weui-label">打印订货方：</label></div>
+				<div class="weui-cell__bd"></div>
+				<div class="weui-cell__ft">
+					<input class="weui-switch" type="checkbox" name="css[dhf]" value="1"{if $prin['princss']['dhf']} checked="checked"{/if}>
+				</div>
+			</div>
+			<div class="weui-cell weui-cell_switch">
+				<div class="weui-cell__hd"><label class="weui-label">打印收货方：</label></div>
+				<div class="weui-cell__bd"></div>
+				<div class="weui-cell__ft">
+					<input class="weui-switch" type="checkbox" name="css[shr]" value="1"{if $prin['princss']['shr']} checked="checked"{/if}>
+				</div>
+			</div>
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">定单底部：</label></div>
+				<div class="weui-cell__bd"> 
+                    <input class="weui-input" type="text" name="css[footer]" value="{$prin['princss']['footer']}" placeholder="自定文字，可不填"/>
+				</div>
+			</div>
+			<div class="weui-cell weui-cell_select weui-cell_select-after">
+				<div class="weui-cell__hd"><label class="weui-label">打印二维码：</label></div>
+				<div class="weui-cell__bd"> 
+					<select class="weui-select" name="css[qr]">
+						<option value="0" {if empty($prin['princss']['qr'])}selected{/if}>不打印</option>
+						<option value="1" {if $prin['princss']['qr']=='1'}selected{/if}>打印订单二维码</option>
+						<option value="2" {if $prin['princss']['qr']=='2'}selected{/if}>打印代理商二维码</option>
+					</select>
+				</div>
+			</div>
+			<div class="weui-cell weui-cell_switch">
+				<div class="weui-cell__hd"><label class="weui-label">订单流程：</label></div>
+				<div class="weui-cell__bd"></div>
+				<div class="weui-cell__ft">
+					<input class="weui-switch" type="checkbox" name="css[lc]" value="1"{if $prin['princss']['lc']} checked="checked"{/if}>
+				</div>
+			</div>
+			<div class="weui-cell weui-cell_switch">
+				<div class="weui-cell__hd"><label class="weui-label">订单条码：</label></div>
+				<div class="weui-cell__bd"></div>
+				<div class="weui-cell__ft">
+					<input class="weui-switch" type="checkbox" name="css[tm]" value="1"{if $prin['princss']['tm']} checked="checked"{/if}>
+				</div>
+			</div>
+		</div>
+		<div class="weui-btn-area">
+			<input type="hidden" name="id" value="{$prin['id']}" />
+			<input type="hidden" name="token" value="{$_W['token']}" />
+			<input name="submit" type="submit" class="weui-btn weui-btn_primary"   value="提 交 保 存" />
+		</div>
+	</form>
+</div>
+{template '_footer'}
+<script>
+    function gethelp(id){
+		var ts = new Array();
+		ts[1]='打印机底部标签信息中获取。';
+		ts[2]='如果你的打印机是飞鹅打印机, 需要到"飞鹅云官网"注册账号并添加打印机获取；如果你的打印机是易联云打印机, 可在打印机底部标签信息中获取。';
+		ts[3]='飞鹅打印机不同批次的打印机服务器会不同，我们会有内置通用地址，但如果系统不能打印，请向设备提供商索取IP地址填在这里就行。';
+		ts[4]='默认是80端口，如果设备商提供的端口不是80的请在这里填上。';
+		ts[5]='如果你的打印机是飞印打印机, 需要到"飞印中心"注册账号并添加打印机获取；如果请到"易联云"管理中心系统集成里默取。';
+		ts[6]='请到"易联云"管理中心系统集成里默取。';
+		ts[1]='打印机底部标签信息中获取。';
+		ts[2]='如果你的打印机是飞鹅打印机, 需要到"飞鹅云官网"注册账号并添加打印机获取；';
+		ts[3]='飞鹅打印机不同批次的打印机服务器会不同，我们会有内置通用地址，但如果系统不能打印，请向设备提供商索取IP地址填在这里就行。';
+		ts[4]='默认是80端口，如果设备商提供的端口不是80的请在这里填上。';
+		$.alert(ts[id], "操作说明");
+	}
+    function getdata(id){var myid=$("#sb_"+id).data('soho');for(i=1;i<8;i++){if(myid.indexOf(i)>0){$("#sb"+i).removeClass("hide");}else{$("#sb"+i).addClass("hide");}}}
+</script>
+
+
+
+
+
+
+
+

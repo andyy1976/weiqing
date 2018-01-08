@@ -1,0 +1,178 @@
+{template 'common/header'}
+<ul class="nav nav-tabs">
+	<li {if $_GPC['op'] == 'display'}class="active"{/if}><a href="{php echo $this->createWebUrl('print', array('op'=>'display'));}">打印机列表</a></li>
+	<li {if $_GPC['op'] == 'ud'}class="active"{/if}><a href="{php echo $this->createWebUrl('print', array('op'=>'ud'));}">编辑打印机</a></li>
+</ul>
+<form action="" method="post" class="form-horizontal form" id="form" onkeydown="if(event.keyCode==13)return false;">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				{if empty($id)}添加{else}编辑{/if}打印机
+			</div>
+			<div class="panel-body">
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">所属经销商</label>
+					<div class="col-xs-12 col-sm-4">
+					
+						{php $fuser=$this->zm_fuserinfo($prin['agentid'])}
+						<div class='input-group'>
+							<span class="input-group-addon" style="padding: 0 3px 0 10px;"><img id="fidav" src="{php echo tomedia($fuser['avatar']);}" width="30" onerror="this.src='resource/images/noavatar_middle.gif'"/></span>
+							<input type="text" name="fidna" maxlength="300" value="{$fuser['name']}" id="fidna" placeholder="总部" class="form-control" readonly />
+						</div>
+					</div>
+					<label class="col-xs-12 col-sm-1 col-md-1 col-lg-1 control-label">名称</label>
+					<div class="col-xs-12 col-sm-5">
+						<input type="text" name="prin[title]" class="form-control" placeholder="用于区分打印机" value="{$prin['title']}" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">打印策略</label>
+					<div class="col-xs-12 col-sm-10">
+						<div class='input-group'>
+							<span class="input-group-addon">是否启用：</span>
+							<select class="form-control input-medium" name="prin[zt]">
+								<option value="0" {if empty($prin['zt'])}selected{/if}>不启用</option>
+								<option value="1" {if $prin['zt']=='1'}selected{/if}>启用</option>
+							</select>
+							<span class="input-group-addon">打印方式：</span>
+							<select class="form-control input-medium" name="prin[laiy]">
+								<option value="0" {if empty($prin['laiy'])}selected{/if}>付款后手动打印</option>
+								<option value="1" {if $prin['laiy']=='1'}selected{/if}>付款后自动打印</option>
+								<option value="2" {if $prin['laiy']=='2'}selected{/if}>下单即自动打印</option>
+								<option value="3" {if $prin['laiy']=='3'}selected{/if}>确认到款即自动打印</option>
+							</select>
+							<span class="input-group-addon">打印联数：</span>
+							<select class="form-control input-medium" name="css[sl]">
+								<option value="1" {if $prin['princss']['sl']=='1'}selected{/if}>打印一联</option>
+								<option value="2" {if $prin['princss']['sl']=='2'}selected{/if}>打印二联</option>
+								<option value="3" {if $prin['princss']['sl']=='3'}selected{/if}>打印三联</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">打印机参数</label>
+					<div class="col-xs-12 col-sm-4">
+						<div class='input-group form-group'>
+							<span class="input-group-addon">设备厂商：</span>
+							<select class="form-control input-medium" name="prin[prinserver]" onchange="getdata(this.value)">
+								<option value="no" id="sb_no" data-soho="ABC">{if empty($prin['prinserver'])}请选择打印机厂商{else}不改动打印机参数{/if}</option>
+								<option value="feie" id="sb_feie" data-soho="A1237">飞鹅定制款</option>
+								<option value="365" id="sb_365" data-soho="A127">365定制款</option>
+							</select>
+							<span class="input-group-addon"><a class="fa fa-question-circle" href="javascript:gethelp(0);"></a></span>	
+						</div>
+						<div class='input-group form-group hide' id="sb1">
+							<span class="input-group-addon">设备编码：</span>
+							<input type="text" class="form-control"  name="sb[sn]" placeholder="SM码|机器码|IMEI码" value="{$prin['prinset']['sn']}">
+							<span class="input-group-addon"><a class="fa fa-question-circle" href="javascript:gethelp(1);"></a></span>	
+						</div>
+						<div class='input-group form-group hide' id="sb2">
+							<span class="input-group-addon">设备密钥：</span>
+							<input type="text" class="form-control"  name="sb[key]" placeholder="打印机KEY" value="{$prin['prinset']['key']}">
+							<span class="input-group-addon"><a class="fa fa-question-circle" href="javascript:gethelp(2);"></a></span>	
+						</div>
+						<div class='input-group form-group hide' id="sb3">
+							<span class="input-group-addon">服务器IP：</span>
+							<input type="text" class="form-control"  name="sb[ip]" placeholder="服务器IP或是域名" value="{$prin['prinset']['ip']}">
+							<span class="input-group-addon"><a class="fa fa-question-circle" href="javascript:gethelp(3);"></a></span>	
+						</div>
+						<div class='input-group form-group hide' id="sb4">
+							<span class="input-group-addon">通信端口：</span>
+							<input type="text" class="form-control"  name="sb[dk]" placeholder="默认80" value="{$prin['prinset']['dk']}">
+							<span class="input-group-addon"><a class="fa fa-question-circle" href="javascript:gethelp(4);"></a></span>	
+						</div>
+						<div class='input-group form-group hide' id="sb5">
+							<span class="input-group-addon">用户ID：</span>
+							<input type="text" class="form-control"  name="sb[uid]" placeholder="商户ID或用户名" value="{$prin['prinset']['uid']}">
+							<span class="input-group-addon"><a class="fa fa-question-circle" href="javascript:gethelp(5);"></a></span>	
+						</div>
+						<div class='input-group form-group hide' id="sb6">
+							<span class="input-group-addon">通信密钥：</span>
+							<input type="text" class="form-control"  name="sb[apikey]" placeholder="APIKEY" value="{$prin['prinset']['apikey']}">
+							<span class="input-group-addon"><a class="fa fa-question-circle" href="javascript:gethelp(6);"></a></span>	
+						</div>
+						<div class='input-group form-group hide' id="sb7">
+							<span class="input-group-addon">打印宽度：</span>
+							<select class="form-control input-medium" name="sb[kd]">
+								<option value="58" {if empty($prin['prinset']['kd']) || $prin['prinset']['kd']=='58'}selected{/if}>58MM机型</option>
+								<option value="80" {if $prin['prinset']['kd']=='80'}selected{/if}>80MM机型</option>
+							</select>
+							<span class="input-group-addon"><a class="fa fa-question-circle" href="javascript:gethelp(7);"></a></span>	
+						</div>
+					</div>
+					<label class="col-xs-12 col-sm-1 col-md-1 col-lg-1 control-label">样式</label>
+					<div class="col-xs-12 col-sm-5">
+						<div class='input-group form-group'>
+							<span class="input-group-addon">订单标题：</span>
+							<input type="text" class="form-control"  name="css[title]" value="{$prin['princss']['title']}" placeholder="默认：送货单"/>
+						</div>
+						<div class='input-group form-group'>
+							<span class="input-group-addon">副标题：</span>
+							<input type="text" class="form-control" name="css[stitle]" value="{$prin['princss']['stitle']}" placeholder="自定文字，可不填"/>
+						</div>
+						<div class='input-group form-group'>
+							<span class="input-group-addon">订货方</span>
+							<select class="form-control input-medium" name="css[dhf]">
+								<option value="0" {if empty($prin['princss']['dhf'])}selected{/if}>不打印</option>
+								<option value="1" {if $prin['princss']['dhf']=='1'}selected{/if}>打印</option>
+							</select>
+							<span class="input-group-addon">收货方</span>
+							<select class="form-control input-medium" name="css[shr]">
+								<option value="0" {if empty($prin['princss']['shr'])}selected{/if}>不打印</option>
+								<option value="1" {if $prin['princss']['shr']=='1'}selected{/if}>打印</option>
+							</select>
+						</div>
+						<div class='input-group form-group'>
+							<span class="input-group-addon">定单底部：</span>
+							<input type="text" class="form-control" name="css[footer]" value="{$prin['princss']['footer']}" placeholder="自定文字，可不填"/>
+						</div>
+						<div class='input-group form-group'>
+							<span class="input-group-addon">二维码</span>
+							<select class="form-control input-medium" name="css[qr]">
+								<option value="0" {if empty($prin['princss']['qr'])}selected{/if}>不打印</option>
+								<option value="1" {if $prin['princss']['qr']=='1'}selected{/if}>订单码</option>
+								<option value="2" {if $prin['princss']['qr']=='2'}selected{/if}>代理商</option>
+							</select>
+							<span class="input-group-addon">流程</span>
+							<select class="form-control input-medium" name="css[lc]">
+								<option value="0" {if empty($prin['princss']['lc'])}selected{/if}>不打印</option>
+								<option value="1" {if $prin['princss']['lc']=='1'}selected{/if}>打印</option>
+							</select>
+							<span class="input-group-addon">条码</span>
+							<select class="form-control input-medium" name="css[tm]">
+								<option value="0" {if empty($prin['princss']['tm'])}selected{/if}>不打印</option>
+								<option value="1" {if $prin['princss']['tm']=='1'}selected{/if}>打印</option>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+<input type="hidden" name="id" value="{$prin['id']}" />
+<input type="hidden" name="token" value="{$_W['token']}" />
+<button type="submit" class="btn btn-primary span3" name="submit" value="提交">提交</button>
+</form>
+
+
+
+
+<script>
+    function gethelp(id){
+		var ts = new Array();
+		ts[0]='请选择厂商';
+		ts[1]='打印机底部标签信息中获取。';
+		ts[2]='如果你的打印机是飞鹅打印机, 需要到"飞鹅云官网"注册账号并添加打印机获取；如果你的打印机是易联云打印机, 可在打印机底部标签信息中获取。';
+		ts[3]='飞鹅打印机不同批次的打印机服务器会不同，我们会有内置通用地址，但如果系统不能打印，请向设备提供商索取IP地址填在这里就行。';
+		ts[4]='默认是80端口，如果设备商提供的端口不是80的请在这里填上。';
+		ts[5]='如果你的打印机是飞印打印机, 需要到"飞印中心"注册账号并添加打印机获取；如果请到"易联云"管理中心系统集成里默取。';
+		ts[6]='请到"易联云"管理中心系统集成里默取。';
+		ts[7]='一定要选对，不然影响打印排版';
+		ts[1]='打印机底部标签信息中获取。';
+		ts[2]='如果你的打印机是飞鹅打印机, 需要到"飞鹅云官网"注册账号并添加打印机获取；';
+		ts[3]='飞鹅打印机不同批次的打印机服务器会不同，我们会有内置通用地址，但如果系统不能打印，请向设备提供商索取IP地址填在这里就行。';
+		ts[4]='默认是80端口，如果设备商提供的端口不是80的请在这里填上。';
+		alert(ts[id]);
+	}
+    function getdata(id){var myid=$("#sb_"+id).data('soho');for(i=1;i<8;i++){if(myid.indexOf(i)>0){$("#sb"+i).removeClass("hide");}else{$("#sb"+i).addClass("hide");}}}
+</script>
+{template 'common/footer'}

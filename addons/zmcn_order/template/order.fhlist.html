@@ -1,0 +1,268 @@
+{template 'common/header'}
+<link rel="stylesheet" href="{MODULE_URL}template/zmcnuicss/zmcnui.css?a={TIMESTAMP}"/>
+<style type="text/css">
+@charset "utf-8";
+.timeline {width: 100%;height: auto;margin: 10px auto;padding-bottom: 0rem;text-align: center;font-size: 0;}
+.timeline li {position: relative;display: inline-block;*display: inline;zoom: 1;width: auto;font-size: 0.5rem;padding: 0rem 1rem 1.4rem 1rem;}
+.timeline li .time:before {content: '';display: block;position: absolute;width: 10px;height: 10px;bottom: 0;margin-bottom: -4px;left: 50%;margin-left: -5px;background: #D7BB67;-moz-border-radius: 100%;-webkit-border-radius: 100%;border-radius: 100%;background-size: 10px 10px;}
+.timeline li .time:after {content: '';display: block;position: absolute;width: 100%;height: 2px;background: #D7BB67;left: 0;bottom: 0;margin-left: -2px;}
+
+.text-left{padding-left: 2px;}
+.ui-table {width: 100%;border-collapse: collapse;    background-color: #fff;text-align: center; table-layout: fixed;border: 1px solid #e0e0e0;}
+</style>
+<ul class="nav nav-tabs">
+	<li {if $_GPC['op'] == 'ud'}class="active"{/if}><a href="{php echo $this->createWebUrl('fahuo', array('op'=>'ud'));}">发货工作台</a></li>
+	<li {if $_GPC['op']==''}class="active"{/if}><a href="{php echo $this->createWebUrl('fahuo', array('op'=>'display'));}">发货订单</a></li>
+	<li class="pull-right active"><a href="{php echo $this->createWebUrl('fahuo', array('op'=>'display','submit'=>'2'));}">导出列表</a></li>
+	<li class="pull-right active"><a href="{php echo $this->createWebUrl('fahuo', array('op'=>'display','submit'=>'3'));}">导出分商品列表</a></li>
+</ul>
+{php $fk8=array('现金','转账','代收款','在线支付','预存款支付');}
+{php $sh8=array('现买','发货','自提');}
+{php $zt8=array('label-default','label-primary','label-info','label-success','label-warning','label-info','label-success','label-danger','label-default');}
+<div class="panel panel-default">
+	<div class="panel-heading">订单列表</div>
+	<div class="table-responsive panel-body">
+			<table class="table table-hover">
+				<thead class="navbar-inner">
+					<tr>
+						<th style="text-align:center; width:150px;">订单号<br>订货商</th>
+						<th style="text-align:center; width:100px;">收货方</th>
+						<th style="text-align:center; width:100px;">付款方式<br>送货方式</th>
+						<th style="text-align:center; width:100px;">发货地区</th>
+						<th style="text-align:center; width:100px;">订单金额</th>
+						<th style="text-align:center; width:100px;">下单日期<br>付款日期</th>
+						<th style="text-align:center; width:100px;">状态</th>
+						<th style="text-align:center; width:130px;">操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					{loop $list $item}
+					<tr style="text-align:center;">
+						<td class="text-left">{$item['orderno']}<br>{$item['dagent']['name']} {$item['dagent']['phone']}</td>
+						<td>{$item['consignee']}<br>{$item['tel']}</td>
+						<td>{$fk8[$item['paytype']]}<br>{$sh8[$item['sendtype']]} {$item['expcom']}</td>
+						<td>{$item['province']}<br>{$item['city']}</td>
+						<td>{$item['goodsprice']}<br>{$item['price']}</td>
+						<td>{php echo date("Y-m-d", $item['addtime'])}
+						{if $item['paytime']>'10000000'}
+						<br>{php echo date("Y-m-d", $item['paytime'])}
+						{/if}
+						</td>
+						<td class="text-left">
+						<span class="label {$zt8[$item['status']]}">{$_W['zm_o_st'][$item['status']]}</span>
+						</td>
+						<td class="text-left">
+							<a rel="tooltip" href="javascript:xq({$item['id']});" title="查看订单详情" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="查看订单详情" data-zmcnpt="{$item['pinstatus']}" id="xqa{$item['id']}"><i class="fa fa-pencil"></i></a>
+							<a rel="tooltip" href="javascript:fh({$item['id']});" title="订单发货" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="订单发货" data-zmcnhf="{$item['sendtype']}" data-zmcneid="{$item['expid']}" data-zmcnesn="{$item['expsn']}" id="fha{$item['id']}"><i class="fa fa-send"></i></a>
+							<a rel="tooltip" {if !empty($item['pinstatus'])} onclick="if(!confirm('这个订单已经打印过 {$item['pinstatus']} 次，是否还要再打印?')) return false;" {/if} href="javascript:prin({$item['id']});" title="打印" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" id="dya{$item['id']}" title="打印"><i class="fa fa-print" id="dyi{$item['id']}"></i></a>
+						</td>
+					</tr>
+					{/loop}
+					{if empty($list)}
+					<tr>
+						<td colspan="6">尚未有订单</td>
+					</tr>
+					{/if}
+				</tbody>
+			</table>
+			{$pager}
+	</div>
+</div>
+<input type="hidden" name="gyid" id="gyid" value="0" />
+<input type="hidden" name="mrlr" id="mrlr" value="saoma" />
+<div class="modal fade" id="myModal2" tabindex="-2" role="dialog" aria-labelledby="myModalLabel2" aria-hidden="true" >
+	<div class="modal-dialog" style='width:750px;'>
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close two" data-dismiss="modal" aria-hidden="true" >&times;</button>
+				<h4 class="modal-title" id="myModalLabel2">扫码发货</h4>
+			</div>
+			<div class="modal-body">
+				<div class='input-group form-group'>
+					<span class="input-group-addon">发货方式</span>
+					<select class="form-control input-medium" name="fhfs" id="fhfs">
+						<option value="1" >发货</option>
+						<option value="0" >现买</option>
+						<option value="2" >自提</option>
+					</select>
+					<span class="input-group-addon">发货日期</span>
+					<input type="date" min="2013-09-23" max="2050-09-23" class="form-control" name="fhtm" id="fhtm" value="{php echo date('Y-m-d', TIMESTAMP)}"> 
+				</div>
+				<div class='input-group form-group'>
+					<span class="input-group-addon" id="tmykd" onclick="lrlr('mykd')" style="cursor:pointer">发货物流</span>
+					<select class="form-control input-medium" name="expid" id="expid">
+						<option value="my">自己填写</option>
+						{loop $_W['setting']['zmcn:kuaidi'] $key=>$value}
+						<option value="{$key}">{$value}</option>
+						{/loop}
+					</select>
+					<span class="input-group-addon">:</span>
+					<input type="text" name="mykd" id="mykd" placeholder="在这里填写" class="form-control" value="" size="4" onclick="lrlr('mykd')" />
+					<span class="input-group-addon" id="texpsn" onclick="lrlr('expsn')" style="cursor:pointer">单号</span>
+					<input type="text" name="expsn" id="expsn" placeholder="请输入单号或扫码录入" class="form-control" value="" onclick="lrlr('expsn')" />
+				</div>
+				<div class='input-group form-group'>
+					<span class="input-group-addon lrlr" id="tsaoma" onclick="lrlr('saoma')" style="cursor:pointer">扫码识别</span>
+					<input type="text" name="saoma" id="saoma" placeholder="扫码录入或手动录入物流码" class="form-control" value="" onclick="lrlr('saoma')"  onkeydown="if(event.keyCode==13){getpro1(this.value);}" />
+					<span class="input-group-addon" onclick="scanQrcode(0)" style="cursor:pointer">提交</span>
+					<span class="input-group-addon">提示：</span>
+					<span class="input-group-addon" id="wltis"></span>
+				</div>
+				<div class="form-group clearfix">	
+					<div class="col-md-6" style="padding-left: 0px;">
+						<table class="ui-table ui-border">
+							<thead><tr><th style="width:60%;">商品</th><th style="width:20%;">订货量</th><th style="width:20%;">校验量</th></tr></thead>
+							<tbody id="goodmx">
+
+							</tbody>
+						</table>
+					</div>
+					<div class="col-md-6" style="padding-right: 0px;">
+						<textarea class="form-control" name="tiaomu" placeholder="" rows="10" id="tiaomu" readonly="readonly"></textarea>
+						<div class="weui-textarea-counter">已扫<span id="tiao">0</span>条</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<a href="javascript:$('.two').click();xq($('#gyid').val());" class="btn btn-default">详情</a>
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" onclick="fahouok()">提交更改</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="dindxq"  class="modal fade" tabindex="-1">
+	<div class="modal-dialog" id="modalDialog" style='width:800px;'>
+		<div class="modal-content">
+			<div class="modal-header"><button aria-hidden="true" data-dismiss="modal" class="close two" type="button">×</button><h3>订单详情</h3></div>
+			<div class="modal-body" ><div id="dindxqdw" style="padding-top:5px;"></div></div>
+			<div class="modal-footer">
+			<a href="javascript:prin($('#gyid').val());" class="btn btn-default">打印</a>
+			<a href="javascript:$('.two').click();fukuan($('#gyid').val());" class="btn btn-default">到款</a>
+			<a href="javascript:$('.two').click();fh($('#gyid').val());" class="btn btn-default">发货</a>
+			<a href="#" class="btn btn-default" data-dismiss="modal" aria-hidden="true" id="c2">关闭</a>
+			</div>
+		</div>
+	</div>
+</div>
+<audio id="music" src="" autoplay="autoplay" >你的浏览器不支持audio标签。</audio>
+<script src="{$_W['siteroot']}addons/zmcn_order/template/zmcnuijs/zmcnuijs.js?a={TIMESTAMP}"></script>
+<script>
+	var asss="{MODULE_URL}template/alpha.mp3";
+	var errs="{MODULE_URL}template/bark.mp3";
+	var fwm1="{php echo strtoupper($codeset['m'][1])}";
+	var fwm8="{$len}";
+    function xq(id) {
+		$("#gyid").val(id);
+		$('#dindxq').modal();
+		$("#dindxqdw").html('正在加载数据....');
+		$.post('{php echo $this->createWebUrl('order', array('op'=>'xq'));}', {'id' : id }, function(s){
+			$("#dindxqdw").html(s);
+		});
+	}
+    function prin(id) {
+		//if(id == -1){id = $("#gyid").val();}
+		$("#dyi"+id).attr("class", "fa fa-spinner");
+		$.post('{php echo $this->createWebUrl('order', array('op'=>'dy'));}', {'id' : id}, function(s){
+			if (s.message.zt==0) {
+				alert(s.message.ts);
+				$("#dya"+id).remove();
+			}else{
+				alert(s.message.ts);
+				$("#dyi"+id).attr("class", "fa fa-print"); 
+			}
+		}, 'json');
+	}
+</script>
+<script type="text/javascript">
+    function fh(id) {
+		$("#gyid").val(id);
+		var fk= $("#fha"+id).data('zmcnhf');$("#fhfs").val(fk);
+		var je= $("#fha"+id).data('zmcneid');$("#expid").val(je);
+		var tm= $("#fha"+id).data('zmcnesn');$("#expsn").val(tm);
+		$('#myModal2').modal();$("#goodmx").html('');$("#wltis").html('正在拉取订单商品....');$("#tiaomu").val('');lrlr('saoma');
+		$.get('{php echo $this->createWebUrl('fahuo', array('op'=>'lb'));}', {id : id }, function(s){$("#goodmx").html(s);$("#wltis").html('订单商品获取成功....');},'html');
+	}
+    function fahouok() {
+		$("#wltis").html('正在加载数据....');
+		 var id= $("#gyid").val();
+		 var fs= $("#fhfs").val();
+		 var tm= $("#fhtm").val();
+		 var eid=$("#expid").val();
+		 var my= $("#mykd").val();
+		 var esn=$("#expsn").val();
+		 var sm=$("#tiaomu").val();
+		$.post('{php echo $this->createWebUrl('fahuo', array('op'=>'fh'));}', {'id' : id ,'fs' : fs ,'tm' : tm ,'eid' : eid ,'my' : my ,'esn' : esn,'sm' : sm}, function(s){
+			if (s.message.zt==0) {
+				$("#wltis").html(s.message.ts);
+				alert(s.message.ts);
+				$("#fha"+id).remove();
+				$(".two").click();
+			}else{
+				$("#wltis").html(s.message.ts);
+				alert(s.message.ts); 
+			}
+		}, 'json');
+	}
+	$(document).keydown(function(event) {
+		var lrid= $("#mrlr").val();
+		if(lrid=="saoma"){
+			$('#' + lrid).focus();
+		}else{
+			$('#' + lrid).focus();
+		}
+	});
+	function lrlr(nid){
+		$("#mrlr").val(nid);
+		$(".lrlr").removeClass('lrlr');
+		$("#t" + nid).addClass('lrlr');
+	}
+	function scanQrcode(tp){
+		var co3 = $("#saoma").val();
+		if(tp==3){
+			//getpro2(co3);
+		}else{
+			co3 = co3.replace(fwm1, "").substr(0,fwm8);
+			getpro1(co3);
+		}
+		$('#saoma').select();
+	}
+	function getpro1(co3){
+		var textarea = $("#tiaomu");
+		var allco = textarea.val();
+		if(allco.indexOf(co3 + "\n") >= 0){
+			$("#music").attr('src',errs);
+		}else{
+			$.get('{php echo $this->createWebUrl('tiaoma', array('ttt'=>TIMESTAMP));}', {'co' : co3}, function(s){
+				if (s.message.zt=='0') {
+					if ($("#y" + s.message.id + "_0").length > 0 ) {
+						var sl = $("#j" + s.message.id + "_0").html() * 1 + s.message.total * 1;
+						$("#j" + s.message.id+ "_0").html(sl);
+						var ysl = $("#y" + s.message.id + "_0").html() * 1;
+						if(ysl==sl){
+							$("#tr" + s.message.id + "_0").attr("class", "ok");
+						}else if(ysl<sl){
+							$("#tr" + s.message.id + "_0").attr("class", "okok");
+						}
+						var sl = $("#zxyl").html() * 1 + s.message.total * 1;
+						$("#zxyl").html(sl);
+						$("#music").attr('src',asss);
+					}else{
+						$("#music").attr('src',errs);
+					}
+					textarea.val(allco + co3 + "\n");
+					textarea.scrollTop(textarea[0].scrollHeight - textarea.height());
+					var tiaos = $("#tiao").html() * 1 + 1;
+					$("#tiao").html(tiaos);
+					$("#saoma").val('');$('#saoma').select();
+					
+				}else{
+					$("#music").attr('src',errs);
+					alert(s.message.ts);
+				}
+			}, 'json');
+		}
+		$('#saoma').select();
+	}
+</script>
+{template 'common/footer'}

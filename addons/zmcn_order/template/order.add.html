@@ -1,0 +1,403 @@
+{template 'common/header'}
+<style type="text/css">
+.zmcn_ui_ipd{border:0px;width:100%;text-align:center;height:100%;}
+.input-group-addon{padding-left: 5px;padding-right: 5px;}
+.tpl-district-container .col-xs-12{padding-left: 0px;padding-right: 0px;}
+</style>
+<ul class="nav nav-tabs">
+	<li {if $_GPC['op'] == 'ud'}class="active"{/if}><a href="{php echo $this->createWebUrl('order', array('op'=>'ud'));}">新建订单</a></li>
+	<li {if $_GPC['op']=='' || $_GPC['clid']=='888'}class="active"{/if}><a href="{php echo $this->createWebUrl('order', array('op'=>'display','clid'=>'888'));}">全部订单</a></li>
+	{php $tp8=array(1,2,3,4,7,0);}
+	{loop $tp8 $i}	
+	<li {if $_GPC['clid'] == $i && $_GPC['op']=='display'}class="active"{/if}><a href="{php echo $this->createWebUrl('order', array('op'=>'display','clid'=>$i));}">{$_W['zm_o_st'][$i]}</a></li>			
+	{/loop}
+</ul>
+		<form action="" method="post" name="ddform" id="ddform" onkeydown="if(event.keyCode==13)return false;">
+    <div class="panel panel-default">
+
+		<div class="panel-heading" style="text-align:center;padding: 0px 0px 0px 0px;">
+
+			<div class="row" style="padding: 10px 0px 0px 0px;">
+				<div class="col-sm-3">
+					<div class="input-group" style="cursor:pointer">
+						<span class="input-group-addon" onclick="popwin = $('#modal-module-menus2').modal();">代理商</span>
+						<input type="text" name="text001" id="fidna" class="form-control" size="15" value="" placeholder="点击选择" onclick="popwin = $('#modal-module-menus2').modal();" readOnly="true" style="cursor:pointer"/>
+					</div>
+				</div>
+				<div class="col-sm-2"></div><div class="col-sm-2"><h2 style="line-height: 0px;">送货单</h2></div><div class="col-sm-2"></div>
+				<input type="hidden" name="order[agentid]" id="fid" value="0"/><input type="hidden" name="acc" id="acc" value="add"/>
+				<div class="col-sm-3">
+					<div class="input-group">
+						<span class="input-group-addon">日期</span>
+					<input type="date" min="2010-01-01" max="2030-12-31" class="form-control form_date_start date" name="time[ordertime]" size="5" value="{php echo date('Y-m-d', TIMESTAMP)}"> 
+					</div>
+				</div>
+			</div>
+			<div class="row" style="padding: 10px 15px 0px 15px;">
+		<table style="width:100%;"><tr><td style="width:40%;">
+			<div class="input-group">
+				<span class="input-group-addon">收货人</span>
+				<input type="text" name="order[consignee]" id="order_consignee" class="form-control" size="15" value="" placeholder=""/>
+				<span class="input-group-addon">电话</span>
+				<input type="text" name="order[tel]" id="order_tel" class="form-control" size="15" value="" placeholder=""/>
+				<span class="input-group-addon">地址　</span>
+			</div></td><td style="width:30%;padding-left: 12px;padding-right: 15px;" class="dddz">
+			{php echo tpl_form_field_district('order', array('province' => '','city' => '','district' => ''));}
+			</td><td style="width:30%;">
+				<input type="text" name="order[address]" id="order_address" class="form-control" size="15" value="" placeholder=""/>
+			</td></tr></table>	
+			</div>
+			<div class="row" style="padding: 10px 15px 0px 15px;">
+				<table style="width:100%;"><tr><td style="width:55%;">
+				<div class="input-group">
+					<span class="input-group-addon" style="padding-right:0px;border-right-style: none;">合计:</span>
+					<span class="input-group-addon" id="hjje" style="padding-left:0px;border-left-style: none;">0元</span>
+					<span class="input-group-addon" style="padding-right:0px;border-right-style: none;">运费:</span>
+					<input type="text" name="order[sendfee]" id="order_sendfee" class="form-control" placeholder="" value="0" size="1" style="padding-left:0px;padding-right:0px;border-left-style: none;border-right-style: none;background-color:#eee;" />
+					<span class="input-group-addon" style="padding-left:0px;border-left-style: none;">元</span>
+					<span class="input-group-addon" style="padding-right:0px;border-right-style: none;">优惠:</span>
+					<input type="text" name="order[youhje]" id="order_youhje" class="form-control" placeholder="" value="0" size="1" style="padding-left:0px;padding-right:0px;border-left-style: none;border-right-style: none;background-color:#eee;" />
+					<span class="input-group-addon" style="padding-left:0px;border-left-style: none;">元</span>
+					<span class="input-group-addon" style="padding-right:0px;border-right-style: none;">应收:</span>
+					<span class="input-group-addon" id='yings' style="padding-left:0px;border-left-style: none;">0元</span>
+					<span class="input-group-addon" style="padding-right:0px;border-right-style: none;">实收:</span>
+					<input type="text" name="order[price]" id="order_price" class="form-control" placeholder="" value="0" size="4" style="padding-left:0px;padding-right:0px;border-left-style: none;border-right-style: none;background-color:#eee;" />
+					<span class="input-group-addon" style="padding-left:0px;border-left-style: none;">元</span>
+				</div>
+				</td><td style="width:45%;">	
+				<div class="input-group">	
+					<span class="input-group-addon">方式</span>
+					<select class="form-control input-medium" name="order[paytype]" id="order_paytype">
+						<option value="1" >转账</option>
+						<option value="0" >现金</option>
+						<option value="2" >代收款</option>
+					</select>
+					<span class="input-group-addon">账户</span>
+					<select class="form-control input-medium" name="fkid" id="pay_fkid">
+					{loop $accounts $item}
+						<option value="{$item['id']}" >{$item['title']}</option>
+					{/loop}
+					</select>
+					<span class="input-group-addon">日期</span>
+					<input type="date" min="2010-01-01" max="2030-12-31" class="form-control" size="2" name="time[paytime]" value="{php echo date('Y-m-d', TIMESTAMP)}" style="padding-top:-10px">
+				</div>
+				</td></tr></table>
+			</div>
+			
+			<div class="row" style="padding: 10px 15px 0px 15px;">
+				<div class="input-group">
+					<span class="input-group-addon">状态</span> {if $settings['sys']['dfwc']} {php $tp8=array(3,4,7,1,2);} {else} {php $tp8=array(3,4,1,2);} {/if}
+					<select class="form-control input-medium" name="order[status]" id="order_status">
+					{loop $tp8 $i}
+						<option value="{$i}" >{$_W['zm_o_st'][$i]}</option>
+					{/loop}
+					</select>
+					<span class="input-group-addon">送货</span>
+					<select class="form-control input-medium" name="order[sendtype]">
+						<option value="1" >发货</option>
+						<option value="0" >现买</option>
+						<option value="2" >自提</option>
+					</select>
+					<span class="input-group-addon">日期</span>
+					<input type="date" min="2010-01-01" max="2030-12-31" class="form-control" name="time[exptime]" style="padding-bottom:10px" size="5" value="{php echo date('Y-m-d', TIMESTAMP)}"> 
+					<span class="input-group-addon">物流</span>
+					<select class="form-control input-medium" name="order[expid]" id="order_expid">
+						<option value="my">自己填写</option>
+						{loop $_W['setting']['zmcn:kuaidi'] $key=>$value}
+						<option value="{$key}">{$value}</option>
+						{/loop}
+					</select>
+					<span class="input-group-addon">:</span>
+					<input type="text" name="mykd" placeholder="在这里填写" class="form-control" value="" size="5" />
+					<span class="input-group-addon">运单号</span>
+					<input type="text" name="order[expsn]" id="order_expsn" placeholder="请输入单号或扫码录入" class="form-control" placeholder="" size="5" value=""  />
+				</div>
+			</div>
+			<div class="row" style="padding: 10px 15px 10px 15px;">
+				<div class="input-group">
+					<span class="input-group-addon">订单备注</span>
+					<input type="text" name="order[remark]"  placeholder="" class="form-control" value=""/>
+					<span class="input-group-addon">付款摘要</span>
+					<input type="text" name="bz" class="form-control" placeholder="" value="" />
+				</div>
+			</div>
+		</div>
+		<div class="panel-body table-responsive" id="2" style="height:250px;width:100%;padding: 0px 0px 0px 15px;">
+			<table class="table table-hover table-bordered scrolltable" style="height:250px;">
+				<thead style="display:block;overflow-y: scroll;border-bottom:1px solid #eee;">
+					<tr>
+						<th style="text-align:center;width:5%; font-size:14px;">NO</th>
+						<th style="text-align:center;width:30%; font-size:14px;">商品名称</th>
+						<th style="text-align:center;width:20%; font-size:14px;">规格型号</th>
+						<th style="text-align:center;width:10%; font-size:14px;">单价</th>
+						<th style="text-align:center;width:10%; font-size:14px;">数量</th>
+						<th style="text-align:center;width:15%; font-size:14px;">金额</th>
+						<th style="text-align:center;width:10%; font-size:14px;">操作</th>
+					</tr>
+				</thead>
+				<tbody id="zmtims" style="font-size:14px;display:block;max-height:212px;overflow-y: scroll;">		
+				</tbody>
+				<tfoot id="dinwei" style="display:block;overflow-y: scroll;border-bottom:1px solid #eee;">
+					<a name="pos">
+				</tfoot>	
+			</table>
+		</div>
+		
+		<div class="panel-footer">
+		<table style="width:100%;"><tr><td style="width:30%;">
+			<div class="input-group">
+				<span class="input-group-addon">条码</span>
+				<input type="text" id="decodeText" name="decodeText" size="13"  class="form-control" value="" placeholder="条码枪" onkeydown="if(event.keyCode==13){getgoods('TM',this.value);}" />
+				<span class="input-group-addon">商品</span>
+					<select class="form-control" name="goid" id="goid" onchange="getgoods(this.value,'')">
+					<option value="0" >请选择录入商品</option>
+					{loop $goodss $i}
+						<option value="{$i['id']}" id="tm{$i['tmcode']}">{$i['name']}</option>
+					{/loop}
+					</select>
+			</div></td><td style="width:70%;">
+
+			<div class="input-group" ><input type="hidden" name="gidid" id="gidid" value="0"/><input type="hidden" name="gidna" id="gidna" value=""/>
+				<span class="input-group-addon">型号</span>
+				<div id='optionxx'>
+				<input type='text' name='optionname' id='optionname' data-optionid='0' class='form-control' size='15' value='' placeholder=''/>
+				</div>
+				<span class="input-group-addon">单价</span>
+				<input type="text" name="price" id="price" class="form-control" value="0" size="4" placeholder="" readOnly="true"/>
+				<span class="input-group-addon">数量</span>
+				<input type="text" name="total" id="total" class="form-control" value="1" size="4" placeholder="" onkeydown="if(event.keyCode==13){addStatusItem(0);}"/>
+				<span class="input-group-addon">金额</span>
+				<input type="text" name="je" id="je" class="form-control" value="0" placeholder="" size="4" readOnly="true"/>
+				<span class="input-group-addon" onclick="addStatusItem(0);" style="cursor:pointer">添加</span>
+			</div></td></tr></table>
+		</div>
+	</div>
+<input type="hidden" name="gidoo" id="gidoo" value=","/>
+</form>
+<button type="submit" class="btn btn-primary span3" name="submit" value="提交" onclick="document.forms['ddform'].submit();">提交</button>
+<div id="modal-module-menus2"  class="modal fade" tabindex="-1">
+	<div class="modal-dialog" style='width: 880px;'>
+		<div class="modal-content">
+			<input type="hidden" id="search-type" name="search-type" value="fid" />
+			<div class="modal-header"><button aria-hidden="true" data-dismiss="modal" class="close two" type="button">×</button><h3>请选择代理商</h3></div>
+			<div class="modal-body" >
+				<div class="row">
+					<div class="input-group">
+						<input type="text" class="form-control" name="keyword" value="" id="search-kwd" placeholder="请输入名称（支持模糊查找）" onkeydown="if(event.keyCode==13){search_members('search-type','search-kwd');return false;}" />
+						<span class='input-group-btn'><button type="button" class="btn btn-default" onclick="search_members('search-type','search-kwd');">搜索</button></span>
+					</div>
+				</div>
+				<div id="module-menus" style="padding-top:5px;"></div>
+			</div>
+			<div class="modal-footer"><a href="#" class="btn btn-default" data-dismiss="modal" aria-hidden="true" id="c2">关闭</a></div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	function search_members(s,i) {
+	 	if( $.trim($('#'+i).val())==''){
+			Tip.focus('#'+i,'请输入关键词');
+			return;
+		}
+	 	if( $.trim($('#'+s).val())==''){
+			$("#module-menus").html("没有查找的目标....");
+			return;
+		}
+		$("#module-menus").html("正在搜索....")
+		$.get('./index.php?c=site&a=entry&do=fsquery&m=zmcn_cer', {
+			keyword: $.trim($('#'+i).val()),type: $.trim($('#'+s).val())
+		}, function(dat){
+			$('#module-menus').html(dat);
+		});
+	}
+	function select_member(o,i) {
+		$("#"+i).val(o.b);
+		$("#"+i+"na").val(o.c);
+		$.post('{php echo $this->createWebUrl('order', array('op'=>'ag'));}', {'uid' : o.b }, function(s){
+			if (s.message.zt==0) {
+				$("#order_consignee").val(s.message.name);
+				$("#order_tel").val(s.message.phone);
+				$("#order_address").val(s.message.address);	
+				require(["district"], function(dis){
+					$(".tpl-district-container").each(function(){
+						var elms = {};
+						elms.province = $(this).find(".tpl-province")[0];
+						elms.city = $(this).find(".tpl-city")[0];
+						elms.district = $(this).find(".tpl-district")[0];
+						var vals = {};
+						vals.province = s.message.province;
+						vals.city = s.message.city;
+						vals.district = s.message.district;
+						dis.render(elms, vals, {withTitle: true});
+					});
+				});	
+				$(".two").click();
+			}else{
+				alert(s.message.ts); 
+			}
+		}, 'json');
+		$(".two").click();
+	}
+	$(document).ready(function(){bgdx();})
+	$(window).resize(function(){bgdx();});
+    function bgdx() {
+		var _width=$('#2').width() - 40;
+		$('#2 th:first-child').width(_width*0.05);
+		$('#2 td:first-child').width(_width*0.05);
+		$('#2 th:nth-child(2)').width(_width*0.3);
+		$('#2 td:nth-child(2)').width(_width*0.3);
+		$('#2 th:nth-child(3)').width(_width*0.2);
+		$('#2 td:nth-child(3)').width(_width*0.2);
+		$('#2 th:nth-child(4)').width(_width*0.1);
+		$('#2 td:nth-child(4)').width(_width*0.1);
+		$('#2 th:nth-child(5)').width(_width*0.1);
+		$('#2 td:nth-child(5)').width(_width*0.1);
+		$('#2 th:nth-child(6)').width(_width*0.15);
+		$('#2 td:nth-child(6)').width(_width*0.15);
+		$('#2 th:nth-child(7)').width(_width*0.1);
+		$('#2 td:nth-child(7)').width(_width*0.1);
+	}
+	$(function(){
+		$("#total").keyup(function() {
+			var total = $('#total').val();
+			var price = $('#price').val();
+			if(isNaN(total) || total==''){
+				$("#total").val('1'); total = 1;
+			}
+			if(isNaN(price) || price==''){
+				$("#price").val('0'); price = 0;
+			}
+			$("#je").val(total * price);
+			return true;
+		});
+		$("#order_sendfee").keyup(function() {
+			jszj();
+		});
+		$("#order_youhje").keyup(function() {
+			jszj();
+		});
+		$(".zmjt").keyup(function() {
+			jszj();
+		});
+	})
+    function jszj() {
+		var bm_num=0;  
+		var gids = document.getElementsByName("isck[]");
+		var gopids = document.getElementsByName("gopid[]");
+		var xj=0;
+		for(i=0;i<gids.length;i++){ 
+			xj= $("#gpr" + gids[i].value +"_"+gopids[i].value).val() * $("#count" + gids[i].value +"_"+gopids[i].value).val();
+			$("#gje" + gids[i].value +"_"+gopids[i].value).val(xj);
+			bm_num += xj;
+		}
+		$("#hjje").html(bm_num +'元');
+		bm_num += $("#order_sendfee").val() * 1;
+		bm_num -= $("#order_youhje").val() * 1;
+		$("#yings").html(bm_num +'元');
+		$("#order_price").val(bm_num);
+	}
+    function gsld(d) {
+		var aa=d.value;
+		if(isNaN(aa) || aa==''){
+			d.value=1;
+		}
+		jszj();
+	}
+</script>
+ <script type="text/javascript">
+ 	require(['bootstrap'],function($){
+		$('[data-toggle="tooltip"]').tooltip();
+	});
+</script>
+<script>
+	///id,prices,spec,name,title,productprice 
+    function getgoods(gid,gtm) {
+		var uid= $("#fid").val();
+		var lgn = document.getElementById("decodeText");
+			lgn.select();
+		$.post('{php echo $this->createWebUrl('order', array('op'=>'go','ttt'=>TIMESTAMP));}', {'uid' : uid ,'gid' : gid,'gtm' : gtm}, function(s){
+			if (s.message.zt==0) {
+				$("#gidid").val(s.message.id);
+				$("#gidna").val(s.message.name);
+				if(s.message.isspec==0||s.message.options.length<10){
+					$("#optionxx").html("<input type='text' name='optionname' id='optionname' data-optionid='0' class='form-control' size='15' value='"+s.message.spec+"' />");
+				}else{
+					$("#optionxx").html("<select class='form-control' name='optionname' id='optionname' data-optionid='ok'>"+s.message.options+"</select>");
+				}
+				$("#price").val(s.message.prices);
+				$("#goid").val(s.message.id);
+				var total = $("#total").val();
+				if(isNaN(total) || total==''){
+					$("#total").val('1');$("#je").val(s.message.prices);
+				}else{
+					$("#je").val(s.message.prices * total);
+				}
+				if(gid=='TM'){addStatusItem(1);}
+			}else{
+				alert(s.message.ts); 
+			}
+		}, 'json');
+		if(gid != 'TM'){
+			var lgn = document.getElementById("total");
+			lgn.select();
+		}
+	}
+	
+	var ii=1;
+	function addStatusItem(t) {
+		var gid=$("#gidid").val();
+		var gopid=$("#optionname").data("optionid");
+		if(gopid=='ok'){var gopid=$("#optionname>option:selected").data("optionid");}
+		var gids = document.getElementsByName("isck[]");
+		var gopids = document.getElementsByName("gopid[]");
+		var xj=0;
+		if(t==0){
+			var gto=$("#total").val();
+		}else{
+			var gto=t;
+		}
+		for(i=0;i<gids.length;i++){ 
+			if(gids[i].value == gid && gopids[i].value == gopid){xj=1;}
+		}
+		if(xj==1){
+			if(t==0){if(!confirm('改商品已经在本订单里，是否还要增加下单数量?')) return false;}
+			var gtoy=$("#count" + gid + "_" + gopid).val();
+			$("#count" + gid + "_" + gopid).val(gto * 1 + gtoy * 1);
+		}else{
+			var gna=$("#gidna").val();
+			var gop=$("#optionname").val();
+			var gpr=$("#price").val();
+			var gje=$("#je").val();
+			var x=document.getElementById('zmtims').insertRow(-1);
+			x.align="center";
+			x.insertCell(0).innerHTML='<a name="pos' +gid+ '_' +gopid+ '"><input type="hidden" name="isck[]" value="'+gid+'"/><input type="hidden" name="gopid[]" value="'+gopid+'"/>'+ii;
+			x.insertCell(1).innerHTML='<input type="text" name="gna['+gid+'_' +gopid+ ']" id="gna'+gid+'_' +gopid+ '" value="'+gna+'" class="zmcn_ui_ipd" readOnly="true"/>';
+			x.insertCell(2).innerHTML='<input type="text" name="gop['+gid+'_' +gopid+ ']" id="gop'+gid+'_' +gopid+ '" value="'+gop+'" class="zmcn_ui_ipd"/>';
+			x.insertCell(3).innerHTML='<input type="text" name="gpr['+gid+'_' +gopid+ ']" id="gpr'+gid+'_' +gopid+ '" value="'+gpr+'" class="zmcn_ui_ipd zmjt" onkeyup="jszj();" onpropertychange="jszj();" oninput="jszj();"/>';;
+			x.insertCell(4).innerHTML='<input type="text" name="count['+gid+'_' +gopid+ ']" id="count'+gid+'_' +gopid+ '" value="'+gto+'" class="zmcn_ui_ipd zmjt" onkeyup="gsld(this);" onpropertychange="gsld(this);" oninput="gsld(this);"/>';
+			x.insertCell(5).innerHTML='<input type="text" name="gje['+gid+'_' +gopid+ ']" id="gje'+gid+'_' +gopid+ '" value="'+gje+'" class="zmcn_ui_ipd zmjt" readOnly="true"/>';
+			x.insertCell(6).innerHTML='<a href="javascript:;" onclick="$(this).parent().parent().remove();jszj();" title="删除此条目">删除</a>';
+			ii ++
+			bgdx();
+		}
+		jszj();
+		var lgn = document.getElementById("gop" + gid + "_" + gopid);
+		lgn.focus();
+		if(t==1){
+			var lgn = document.getElementById("decodeText");
+			lgn.value='';
+			lgn.focus();
+		}
+	}
+</script>
+
+
+
+
+
+
+
+
+
+{template 'common/footer'}

@@ -1,0 +1,83 @@
+<div style='max-height:500px;overflow:auto;min-width:700px;'>
+
+
+	{php $tp8=array(1,2,3,4,7);$tp7=array('ordertime','paytime','cktime','exptime','oktime');}
+
+
+
+	<ul class="timeline">
+	{loop $tp8 $e=>$i}	
+		<li><h4 class="time{if $order['status']==$i} text-danger{/if}">{if $order[$tp7[$e]]}{php echo date('Y-m-d', $order[$tp7[$e]])}{/if}<br/>{$_W['zm_o_st'][$i]}</h4></li>			
+	{/loop}
+
+
+	</ul>
+
+
+		{if $_W['setting']['remote']['type']}{php $imgxz='thumb';}{else}{php $imgxz='sthumb';}{/if}
+	<table class="table table-hover" style="min-width:700px;">
+		<tbody>
+			<tr>
+				<th style="width:80px;">图片</th>
+				<th>产品名称</th>
+				<th style="width:80px;">单价</th>
+				<th style="width:80px;">数量</th>
+			</tr>
+			{loop $order['ogoods'] $row}   <!----id,total,price,goodsname,optionname,optionid,sthumb,unit------>  
+			<tr>
+				<td><img src='{php echo tomedia($row[$imgxz])}' style='width:70px;height:70px;padding1px;border:1px solid #ccc' onerror="this.src='{php echo tomedia($goods['thumb']);}'"/></td>
+				<td style="text-align:left;white-space:normal;">{$row['goodsname']} {$row['optionname']}</td>
+				<td>{$row['price']}</td>
+				<td>{$row['total']}</td>
+			</tr>
+			{/loop}
+			{if count($order['ogoods'])<=0}
+			<tr> 
+				<td colspan='4' align='center'>疑难订单：没有订单商品</td>
+			</tr>
+			{/if}
+			
+		{if $order['remark']}
+			<tr>
+				<td align='right'>订单说明</td>
+				<td colspan='3' style="text-align:left;white-space:normal;">{$order['remark']}</td>
+			</tr>
+		{/if}
+		{if !empty($order['fagentid'])}
+			<tr>
+				<td align='right'>发货方</td>
+				<td colspan='3' style="text-align:left;white-space:normal;">{$order['fhf']['name']} {$order['fhf']['phone']}</td>
+			</tr>
+		{/if}
+		{if !empty($order['agentid'])}
+			<tr>
+				<td align='right'>订货方</td>
+				<td colspan='3' style="text-align:left;white-space:normal;">{$order['dhf']['name']} {$order['dhf']['phone']}</td>
+			</tr>
+		{/if}
+			<tr>
+				<td align='right'>收货方</td>
+				<td colspan='3' style="text-align:left;white-space:normal;">{$order['consignee']} {$order['tel']}<br>{$order['province']} {$order['city']} {$order['district']} {$order['address']}</td>
+			</tr>
+			<tr>{php $fk8=array('现金','转账','代收款','在线支付','预存款支付');}
+				<td align='right'>付款方式</td>
+				<td colspan='3' style="text-align:left;white-space:normal;">{$fk8[$order['paytype']]}</td>
+			</tr>
+			<tr>{php $sh8=array('现买','发货','自提');}
+				<td align='right'>送货方式</td>
+				<td colspan='3' style="text-align:left;white-space:normal;">{$sh8[$order['sendtype']]}</td>
+			</tr>
+			<tr>
+				<td align='right'>发货物流</td>
+				<td colspan='3' style="text-align:left;white-space:normal;">{$order['expcom']}:{$order['expsn']}</td>
+			</tr>
+			{if $order['payimg']}
+			<tr>
+				<td align='right'>付款凭证</td>
+				<td colspan='3'><img src="{php echo tomedia($order['payimg']);}" style='width:100%;' /></td>
+			</tr>
+			{/if}
+			
+		</tbody>
+	</table>
+</div>

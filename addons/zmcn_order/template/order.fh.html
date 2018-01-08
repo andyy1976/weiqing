@@ -1,0 +1,110 @@
+{template 'common/header'}
+<style type="text/css">
+.zmcn_ui_ipd{border:0px;width:100%;text-align:center;height:100%;}
+</style>
+<ul class="nav nav-tabs">
+	<li {if $_GPC['op'] == 'ud'}class="active"{/if}><a href="{php echo $this->createWebUrl('fahuo', array('op'=>'ud'));}">发货工作台</a></li>
+	<li {if $_GPC['op']==''}class="active"{/if}><a href="{php echo $this->createWebUrl('fahuo', array('op'=>'display'));}">发货订单</a></li>
+</ul>
+
+
+<form action="" method="post" name="ddform" id="ddform" onkeydown="if(event.keyCode==13)return false;">
+    <div class="panel panel-default">
+
+		<div class="panel-heading" style="text-align:center;padding: 0px 0px 0px 0px;">
+
+			<div class="row" style="padding: 10px 0px 0px 0px;">
+				<div class="col-sm-2">
+				</div>
+				<div class="col-sm-2"></div><div class="col-sm-4"><h2 style="line-height: 0px;">发货工作台</h2></div><div class="col-sm-2"></div>
+	
+				<input type="hidden" name="order[agentid]" id="fid" value="0"/><input type="hidden" name="acc" id="acc" value="add"/>
+				<div class="col-sm-2">
+
+				</div>
+			</div>
+
+			<div class="row" style="padding: 15px 15px 10px 15px;">
+				<div class="input-group">
+					<span class="input-group-addon">送货方式</span>
+					<select class="form-control input-medium" name="stp"  id="stp">
+						<option value="1" >发货</option>
+						<option value="0" >现买</option>
+						<option value="2" >自提</option>
+					</select>
+					<span class="input-group-addon">发货日期</span>
+					<input type="date" min="2013-09-23" max="2050-09-23" class="form-control" name="etm" id="etm" style="padding-bottom:10px" size="5" value="{php echo date('Y-m-d', TIMESTAMP)}"> 
+					<span class="input-group-addon">物流公司</span>
+					<select class="form-control input-medium" name="exid" id="exid">
+						<option value="my">自己填写</option>
+						{loop $_W['setting']['zmcn:kuaidi'] $key=>$value}
+						<option value="{$key}">{$value}</option>
+						{/loop}
+					</select>
+					<span class="input-group-addon">:</span>
+					<input type="text" name="mykd" id="mykd" placeholder="在这里填写" class="form-control" value="" size="5" />
+				</div><input type="hidden" name="orderid" id="orderid"  value=""/><input type="hidden" name="expsn" id="expsn"  value=""/>
+			</div>
+		</div>
+		<div class="panel-body table-responsive" style="height:40px; overflow-y:scroll;width:100%;padding: 0px 10px 10px 10px;">
+			<table class="table table-hover scrolltable" style="width:100%;background:#ffffff;height:42px;overflow-y: scroll;">
+				<thead class="navbar-inner" style="height:42px;overflow-y: scroll;border-bottom:1px solid #eee;">
+					<tr>
+						<th style="text-align:center; width:10%;font-size:14px;">NO</th>
+						<th style="text-align:center; width:30%;font-size:14px;">订单号</th>
+						<th style="text-align:center; width:15%;font-size:14px;">收货人</th>
+						<th style="text-align:center; width:15%;font-size:14px;">物流公司</th>
+						<th style="text-align:center; width:20%;font-size:14px;">运单号</th>
+						<th style="text-align:center; width:10%;font-size:14px;">状态</th>
+						<th style="text-align:center; width:22px;font-size:14px;"></th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+		<div class="panel-body table-responsive" style="height:400px; overflow-y:scroll;width:100%;padding: 0px 10px 10px 10px;">
+			<table class="table table-hover scrolltable" style="width:100%;">
+				<thead>
+					<tr style="height:1px;padding-bottom:0px;padding-top:0px;border-bottom-style: none;">
+						<th style="text-align:center; width:10%;font-size:14px;padding-bottom:0px;padding-top:0px;border-bottom-style: none;"></th>
+						<th style="text-align:center; width:30%;font-size:14px;padding-bottom:0px;padding-top:0px;border-bottom-style: none;"></th>
+						<th style="text-align:center; width:15%;font-size:14px;padding-bottom:0px;padding-top:0px;border-bottom-style: none;"></th>
+						<th style="text-align:center; width:15%;font-size:14px;padding-bottom:0px;padding-top:0px;border-bottom-style: none;"></th>
+						<th style="text-align:center; width:20%;font-size:14px;padding-bottom:0px;padding-top:0px;border-bottom-style: none;"></th>
+						<th style="text-align:center; width:10%;font-size:14px;padding-bottom:0px;padding-top:0px;border-bottom-style: none;"></th>
+					</tr>
+				</thead>
+				<tbody id="zmtims" style="font-size:14px;">
+				</tbody>
+				<footer id="dinwei">
+				</footer>	
+			</table>
+			<a name="pos">
+		</div>
+		<div class="panel-footer">
+		<table style="width:100%;"><tr><td style="width:40%;">
+			<div class="input-group">
+				<span class="input-group-addon">扫码框</span>
+				<input type="text" id="decodeText" name="decodeText" size="13"  class="form-control" value="" placeholder="条码枪或键盘录入" onkeydown="if(event.keyCode==13){getgoods(this.value);}if(event.keyCode==27){clen();}" />
+				<span class="input-group-addon" style="cursor:pointer" onclick="getgoods($('#decodeText').val());"><i class="fa fa-exchange"></i></span>
+				<span class="input-group-addon" style="cursor:pointer" onclick="clen();"><i class="fa fa-refresh"></i></span>
+				<span class="input-group-addon" style="cursor:pointer" style="width:40px;" id="jtset" onclick="sett();"><i class="fa fa-keyboard-o"></i></span>
+				<span class="input-group-addon" style="cursor:pointer" onclick="qink()"><i class="fa fa-recycle"></i></span>
+			</div></td><td style="width:60%;">
+			<div class="input-group" >
+				<span class="input-group-addon">提示</span>
+				<input type="text" name="tis" id="tis" class="form-control" value="" placeholder="“回车键”为提交；“Esc”键为复位；“F9”键为设置开关；“Del”键为清空列表" readOnly="true"/>
+			</div></td></tr></table>
+		</div>
+	</div>
+<input type="hidden" name="gidoo" id="gidoo" value=","/>
+</form>
+
+<audio id="music" src="" autoplay="autoplay" >你的浏览器不支持audio标签。</audio>
+<script type="text/javascript">
+var asss="{MODULE_URL}template/alpha.mp3";
+var errs="{MODULE_URL}template/bark.mp3";
+var post="{php echo $this->createWebUrl('fahuo', array('op'=>'fh','ttt'=>TIMESTAMP));}";
+require(['bootstrap'],function($){$('[data-toggle="tooltip"]').tooltip();});
+</script>
+<script src="{MODULE_URL}template/mobile/zmuijs/www.zmcn.com.jdkk.js"></script>
+{template 'common/footer'}

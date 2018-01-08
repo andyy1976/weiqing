@@ -1,0 +1,189 @@
+{template 'common/header'}
+<style>
+.col-md-4 .input-group .form-control {width: 100% !important;}
+.col-md-3 .input-group .form-control {width: 100% !important;}
+.col-sm-4 .row.row-fix .col-xs-8 {width: 95% !important;}
+</style>
+<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data" id="setting-form">
+<div class="main">
+		<div class="panel panel-default">
+			<div class="panel-heading">系统设置</div>
+			<div class="panel-body">
+				<div class="form-group clearfix">
+					<label class="control-label col-md-2">帮助说明链接</label>
+					<div class="col-md-4">
+						{php echo tpl_form_field_link('data[sys][help]', $settings['sys']['help']);}
+						<div class="help-block">可以在微文章或是专题页面设置一个规则说明</div>
+					</div>
+					<label class="control-label col-md-2">积分商城链接</label>
+					<div class="col-md-1" style="padding-right:0px;">
+						<select class="form-control input-medium" name="data[sys][isdh]">
+							<option value="0" {if '0'==(int)$settings['sys']['isdh']}selected{/if}>关</option>
+							<option value="1" {if '1'==$settings['sys']['isdh']}selected{/if}>开</option>
+						</select>
+					</div>
+					<div class="col-md-3" style="padding-left:0px;">
+						{php echo tpl_form_field_link('data[sys][dhurl]', $settings['sys']['dhurl']);}
+						<div class="help-block">默认是系统的积分商城，也可以外接其它积分商城</div>
+					</div>
+				</div>
+				<div class="form-group clearfix">
+					<label class="control-label col-md-2">企业微站</label>
+					<div class="col-md-4">
+						<select class="form-control input-medium" name="data[sys][siteid]">
+							<option value="0" {if 0==(int)$settings['sys']['siteid']}selected{/if}>不设置</option>
+						{loop $sites $cla}
+							<option value="{$cla['id']}" {if $cla['id']==(int)$settings['sys']['siteid']}selected{/if}>{$cla['title']}</option>
+						{/loop}
+						</select>
+					</div>
+					<label class="control-label col-md-2">公司虚拟ID</label>
+					<div class="col-md-4">
+						<input type="text" name="data[gs][ywid]" value="{$settings['gs']['ywid']}" placeholder="" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group clearfix">
+					<label class="control-label col-md-2">订货方案</label>
+					<div class="col-md-4">
+						<select class="form-control input-medium" name="data[sys][dhfa]">
+							<option value="0" {if '0'==(int)$settings['sys']['dhfa']}selected{/if}>全部代理只能向总部定货</option>
+							<option value="1" {if '1'==$settings['sys']['dhfa']}selected{/if}>按等级设置，有上级找上级没上级找总部（宽松）</option>
+							<option value="2" {if '2'==$settings['sys']['dhfa']}selected{/if}>按等级设置，上级在授权内找上级上级不在授权内找总部（严格）</option>
+							<option value="3" {if '3'==$settings['sys']['dhfa']}selected{/if}>按等级设置，上级不在授权内找上上级，上上级不在授权内找总部（两级关联）</option>
+							<option value="4" {if '4'==$settings['sys']['dhfa']}selected{/if}>按等级设置，上级不在授权内找上上级，上上级不在授权内找上上上级，再不合格找总部（三级关联）</option>
+						</select>
+						<div class="help-block">多级关联，必须是中间人数据不被删除</div>
+					</div>
+					<label class="control-label col-md-2">运费方案</label>
+					<div class="col-md-4">
+						<select class="form-control input-medium" name="data[sys][wlfa]">
+							<option value="0" {if '0'==(int)$settings['sys']['wlfa']}selected{/if}>不计算运费</option>
+							<option value="1" {if '1'==$settings['sys']['wlfa']}selected{/if}>只总部发货的订单启用计算运费功能</option>
+							<option value="2" {if '2'==$settings['sys']['wlfa']}selected{/if}>全部订单按总部运费模板计算</option>
+							<!----option value="3" {if '3'==$settings['sys']['wlfa']}selected{/if}>代理商按各自运费模板计算</option---->
+						</select>
+					</div>
+				</div>
+				<!---div class="form-group clearfix">
+					<label class="control-label col-md-2">单方完成订单</label>
+					<div class="col-md-4">
+						<select class="form-control input-medium" name="data[sys][dfwc]">
+							<option value="0" {if '0'==(int)$settings['sys']['dfwc']}selected{/if}>不允许单方完成订单</option>
+							<option value="1" {if '1'==$settings['sys']['dfwc']}selected{/if}>可以单方完成订单</option>
+						</select>
+					</div>
+				</div---->
+				
+				
+				
+				
+				<div class="form-group clearfix">
+					<label class="control-label col-md-2">物流接口KEY</label>
+					<div class="col-md-4">
+						<input type="text" name="data[sys][wlkey]" value="{$settings['sys']['wlkey']}" placeholder="注意头尾不要有空格" class="form-control"/>
+						<div class="help-block">请到 <a href="https://www.kuaidi100.com/openapi/applyapi.shtml" target="_blank">快递查询API申请地址</a> 申请</div>
+					</div>
+					<label class="control-label col-md-2">企业版customer</label>
+					<div class="col-md-4">
+						<input type="text" name="data[sys][wlcustomer]" value="{$settings['sys']['wlcustomer']}" placeholder="注意头尾不要有空格" class="form-control"/>
+						<div class="help-block">不是企业版的请一定要留空</div>
+					</div>
+				</div>
+				<div class="form-group clearfix">
+					<label class="control-label col-md-2">公众号二维码</label>
+					<div class="col-md-4">
+						<input type="text" name="data[gs][gsqr]" value="{$settings['gs']['gsqr']}" placeholder="请用二维码读码软件度后填在这里" class="form-control"/>
+						<div class="help-block">用在打印订单时的订单二维码</div>
+					</div>
+					<label class="control-label col-md-2">公司订货电话</label>
+					<div class="col-md-4">
+						<input type="text" name="data[gs][kftel]" value="{$settings['gs']['kftel']}" placeholder="公司对外的业务电话" class="form-control"/>
+					</div>
+				</div>
+				
+				<div class="form-group clearfix">
+					<label class="control-label col-md-2">代理中心页头背景色</label>
+					<div class="col-sm-4">
+						{php echo tpl_form_field_color('data[css][coloryt]', $settings['css']['coloryt']);}
+					</div>
+				  <label class="control-label col-md-2">管理员设置</label>
+				  <div class="col-md-4">
+					<input type="hidden" id="tongzi" name="data[sys][openid]" value="{$settings['sys']['openid']}" />
+						{php $fans=mc_fansinfo($settings['sys']['openid']);}
+						<div class='input-group'>
+							<span class="input-group-addon" style="padding: 0 3px 0 10px;"><img id="tongziav" src="{$fans['tag']['avatar']}" width="30" onerror="this.src='resource/images/noavatar_middle.gif'"/></span>
+							<input type="text" name="tongzina" maxlength="300" value="{$fans['tag']['nickname']}" id="tongzina" placeholder="请选择：粉丝绑定" class="form-control" readonly />
+							<div class='input-group-btn'>
+								<button class="btn btn-default" type="button" onclick="document.getElementById('search-type').value='tongzi';popwin = $('#modal-module-menus2').modal();">选择</button>
+							</div>
+						</div>
+				  </div> 
+				</div>
+				<div class="form-group clearfix">
+					<label class="control-label col-md-2">代理中心页头背景图</label>
+					<div class="col-sm-4">
+						{php echo tpl_form_field_image('data[css][banneryt]', $settings['css']['banneryt'], '')}
+					</div>
+					<label class="control-label col-md-2">开启余额支付</label>
+					<div class="col-md-4">
+						<select class="form-control input-medium" name="data[sys][isye]">
+							<option value="0" {if '0'==(int)$settings['sys']['isye']}selected{/if}>关</option>
+							{if $settings['sys']['okye']=='1'}<option value="1" {if '1'==$settings['sys']['isye']}selected{/if}>开</option>{/if}
+						</select>
+						<div class="help-block">会员的余额有可能会受到其它应用的影响，如需开启，请联系运营商！{if $_W['role'] == "founder"}<br>会员的余额有可能受到其它未知应用的影响如“刷积分”等，开启前请确认一下环境的安全性，一但开启后果自负！！<input type="checkbox" name="data[sys][okye]" value="1" {if $settings['sys']['okye']=='1'}checked="checked"{/if}/> 我同意，并确认要开启！{else} <input type="hidden" name="data[sys][okye]" value="{$settings['sys']['okye']}" />{/if}</div>
+					</div>
+				</div>
+				<div class="form-group clearfix">
+				  <label class="control-label col-md-2">首页幻灯片1</label>
+				  <div class="col-md-4">
+						{php echo tpl_form_field_image('data[css][indeximg][1]', $settings['css']['indeximg']['1']);}
+				  </div>
+				  <label class="control-label col-md-2">首页幻灯片2</label>
+				  <div class="col-md-4">
+						{php echo tpl_form_field_image('data[css][indeximg][2]', $settings['css']['indeximg']['2']);}
+				  </div>
+				</div>
+				<div class="form-group clearfix">
+				  <label class="control-label col-md-2">首页幻灯片3</label>
+				  <div class="col-md-4">
+						{php echo tpl_form_field_image('data[css][indeximg][3]', $settings['css']['indeximg']['3']);}
+				  </div>
+				  <label class="control-label col-md-2">首页幻灯片4</label>
+				  <div class="col-md-4">
+						{php echo tpl_form_field_image('data[css][indeximg][4]', $settings['css']['indeximg']['4']);}
+				  </div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label">微信支付证书</label>
+					<div class="col-sm-3">
+						<button type="button" class="btn btn-default" onClick="$('#rootca').click()">{if $settings['red']['rootca']}已经上传{else}请上传{/if}rootca.pem</button>
+						<input type="file" name="rootca" id="rootca"  style="display:none;">
+						<div class="help-block">rootca.pem</div>
+					</div>
+					<div class="col-sm-3">
+						<button type="button" class="btn btn-default" onClick="$('#apiclient_cert').click()">{if $settings['red']['apicert']}已经上传{else}请上传{/if}apiclient_cert.pem</button>
+						<input type="file" name="apiclient_cert" value="{$settings['apiclient_cert']}" id="apiclient_cert" style="display:none;">
+						<div class="help-block">apiclient_cert.pem</div>
+					</div>
+					<div class="col-sm-4">
+						<button type="button" class="btn btn-default" onClick="$('#apiclient_key').click()">{if $settings['red']['apikey']}已经上传{else}请上传{/if}apiclient_key.pem</button>
+						<input type="file" name="apiclient_key" id="apiclient_key" style="display:none;">
+						<div class="help-block">apiclient_key.pem</div>
+					</div>
+				</div>
+			</div>
+		</div>
+</div>
+<input name="submit" type="submit" value="提交" class="btn btn-primary" />
+<input type="hidden" name="token" value="{$_W['token']}" />
+</form>
+
+
+ <script type="text/javascript">
+ 	require(['bootstrap'],function($){
+		$('[data-toggle="popover"]').popover()
+	});
+</script>
+{template 'fsqueryac'}
+{template 'common/footer'}

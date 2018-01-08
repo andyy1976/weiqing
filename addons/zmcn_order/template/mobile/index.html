@@ -1,0 +1,548 @@
+{template '_header'}
+<?php
+if (empty($agent['avatar'])){$agent['avatar']=$fans['tag']['avatar'];}
+if (empty($agent['name'])){$agent['name']=$fans['tag']['nickname'];}
+function jialian($lin,$t){
+	global $_W;
+	$a = "i=". $_W['uniacid'] ."&";
+	$b = "i=". $_W['uniacid'] ."&t=". $t ."&";
+	return str_replace($a,$b, $lin ."&"); 
+}
+?>
+ <style> 
+.mycer_img{width: 100%;height: 100%;}
+</style>
+<div class="weui-tab">
+	<div class="weui-tab__bd">
+		<div id="myall" class="weui-tab__bd-item {$page[1][0]} bg-zmpag">
+    <div class="hd weui-btn_primary" style="background:{$settings['css']['coloryt']};{if !empty($settings['css']['banneryt'])}background:url({php echo tomedia($settings['css']['banneryt']);}) no-repeat center center; background-size:100% auto; -moz-background-size:100% auto; -webkit-background-size:100% auto;{/if}padding:10px;">
+		<div class="weui-row weui-no-gutter">
+			<div class="weui-col-40 tcenter">
+				<img src="{php echo tomedia($agent['avatar']);}" class="weui-avatar-logo img-circle" width='70' height='70'/>
+			</div>
+			<div class="weui-col-60">
+				<h3 class="f-white" >{php echo cutstr($agent['name'],15,true);}</h3>
+				<h4 class="f-white" >{$agentlevel['title']}</h4>
+			</div>
+		</div>
+		<a class="setbtn" href="#"><i class="zmui-icon zmui-icon-help open-popup" data-target="#half"></i></a>
+    </div>
+	<nav class="nav_integral">
+		<ul class="box clearfix">
+			<li><a href="{php echo $this->createMobileUrl('myinorder', array('openid' => $openid,'fid' => $_GPC['fid']))}"><b>{$inod}</b><br><label>进货订单</label></a></li>
+			<li><a href="{php echo $this->createMobileUrl('myoutorder', array('openid' => $openid,'fid' => $_GPC['fid']))}"><b>{$outod}</b><br><label>发货订单</label></a></li>
+			<li><a href="{php echo url('entry',array('do' => 'myteam','m' => 'zmcn_cer','openid' => $openid,'fid' => $_GPC['fid'],'mb'=>'2'));}"><b>{$myteam}</b><br><label>我的团队</label></a></li>
+			{if $settings['sys']['isye']}
+			<li><a href="{php echo url('mc/bond/credits', array('credittype' => 'credit2','type'=>'record','period'=>'1'), true)}"><b>{$member['credit2']}</b><br><label>我的余额</label></a></li>
+			{else}
+			<li><a href="{php echo url('mc/bond/credits', array('credittype' => 'credit1','type'=>'record','period'=>'1'), true)}"><b>{$member['credit1']}</b><br><label>我的积分</label></a></li>
+			{/if}
+		</ul>
+	</nav>
+	<div class="weui-panel">
+		<div class="weui-panel__bd">
+			{if $agent['is_agent']}
+			<a href="{php echo url('entry',array('do' => 'myedit','m' => 'zmcn_cer','tm' => TIMESTAMP,'mb'=>'2'));}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-avatar2 f-red"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">我的资料</h4>
+					<p class="weui-media-box__desc">在这里修改我的用户资料</p>
+				</div>
+			</a>
+			{elseif $agent['is_staff']}
+			<a href="{php echo url('entry',array('do' => 'myedit','m' => 'zmcn_oa','tm' => TIMESTAMP,'mb'=>'2'));}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-avatar2 f-red"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">我的资料</h4>
+					<p class="weui-media-box__desc">在这里修改我的用户资料</p>
+				</div>
+			</a>
+			{/if}
+			{if ($agent['1staff']['set']['cer_qr'] || $agent['is_agent']) && $agent['is_office']==0 }
+			<a href="javascript:$('#index_popup_add').html('<img class=mycer_img src=index.php?i={$_W['uniacid']}&c=entry&do=mycer&m=zmcn_cer&id={$agent['id']}/>');$('.index_popup_title').html('我的证书');$.hideLoading();" class="weui-media-box weui-media-box_appmsg zmui-media56  open-popup" data-target="#index_popup">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-practice f-orange"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">我的证书</h4>
+					<p class="weui-media-box__desc">在这里查看我下载我的证书，可用于转发或打印。</p>
+				</div>
+			</a>
+			{/if}
+			{if $agent['1staff']['set']['cer_mystaffcz_da'] || $agent['is_staff']=='0'}
+			<a href="{php echo url('entry',array('do' => 'mystaff','m' => 'zmcn_cer','tm' => TIMESTAMP,'mb'=>'2'));}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-root f-zi"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">我的职员</h4>
+					<p class="weui-media-box__desc">在这里对职员账号授权管理，以及职员档案管理。</p>
+				</div>
+			</a>
+			{/if}
+			{if $agent['is_staff']=='0'}
+			<a href="{php echo $this->createMobileUrl('sql', array('tm' => TIMESTAMP))}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-tongji f-blue"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">数据报表</h4>
+					<p class="weui-media-box__desc">出入库报表一应俱全。</p>
+				</div>
+			</a>
+			<a href="{php echo $this->createMobileUrl('yongjing', array('tm' => TIMESTAMP))}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-yongjing f-green"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">我的提成</h4>
+					<p class="weui-media-box__desc">我应收的提成和应付的提成。</p>
+				</div>
+			</a>
+			<a href="{php echo $this->createMobileUrl('myprinter', array('tm' => TIMESTAMP))}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-dayinji f-indigo"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">打印机管理</h4>
+					<p class="weui-media-box__desc">在这里可以接你订单打印机，并可以设置打印格式和打印策略，实现自动办公。</p>
+				</div>
+			</a>
+			{/if}
+			{if $settings['sys']['isdh'] && $agent['is_office']==0}
+			<a href="{$settings['sys']['dhurl']}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-jifen f-blue"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">积分兑换</h4>
+					<p class="weui-media-box__desc">你的客户扫你的证书二维码时，你能获得一定的积分，可来这里兑换。</p>
+				</div>
+			</a>
+			{/if}
+		</div>
+	</div>
+		</div>
+		<div id="order" class="weui-tab__bd-item {$page[2][0]} bg-zmpag">
+	<div class="weui-btn_primary weui-header">
+		<div class="weui-header-left"><a class="zmui-icon zmui-icon-slider-left f-white" onclick='javascript:history.go(-1);'></a></div>
+		<h1 class="weui-header-title">订单</h1>
+		<div class="weui-header-right"><a class="zmui-icon zmui-icon-more f-white open-popup" data-target="#half"></a></div>
+	</div>
+
+	<nav class="nav_integral">
+		<ul class="box clearfix">
+			<li><a href="{php echo $this->createMobileUrl('myinorder', array('tb' => 1,'openid' => $openid,'fid' => $_GPC['fid']))}"><b>{$sd1}</b><br><label>{$_W['zm_o_st'][1]}</label></a></li>
+			<li><a href="{php echo $this->createMobileUrl('myoutorder', array('tb' => 2,'openid' => $openid,'fid' => $_GPC['fid']))}"><b>{$sd2}</b><br><label>{$_W['zm_o_st'][2]}</label></a></li>
+			<li><a href="{php echo $this->createMobileUrl('myoutorder', array('tb' => 3,'openid' => $openid,'fid' => $_GPC['fid']))}"><b>{$sd3}</b><br><label>{$_W['zm_o_st'][3]}</label></a></li>
+			<!--li><a href="{php echo $this->createMobileUrl('myoutorder', array('openid' => $openid,'fid' => $_GPC['fid']))}"><b>{$outodm}</b><br><label>本月发货</label></a></li--->
+			<li><a href="{php echo $this->createMobileUrl('myoutorder', array('openid' => $openid,'fid' => $_GPC['fid']))}"><b>{$outodd}</b><br><label>今天发货</label></a></li>
+		</ul>
+	</nav>
+	<div class="weui-panel weui-panel_access">
+		<div class="weui-panel__bd">
+			<a href="{php echo url('entry',array('do' => 'myprice','m' => 'zmcn_cer','tm' => TIMESTAMP,'mb'=>'2'));}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-jiangjia f-red"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">价格查看</h4>
+					<p class="weui-media-box__desc">在这里能看到我的订货价格，和我下级的订货价格，一切价格透明杜绝乱价。</p>
+				</div>
+			</a>
+			{if ($agent['1staff']['set']['order_cart_xiadan'] || $agent['is_agent']) && $agent['is_office']==0 }
+			<a href="{php echo $this->createMobileUrl('cart', array('tm' => TIMESTAMP))}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-cart-kong f-orange"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">下单进货</h4>
+					<p class="weui-media-box__desc">我要向上级代理商或厂家订货。</p>
+				</div>
+			</a>
+			{/if}
+			{if ($agent['1staff']['set']['order_orderedit_xq'] || $agent['is_agent']) && $agent['is_office']==0 }
+			<a href="{php echo $this->createMobileUrl('myinorder')}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-order f-blue"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">进货订单</h4>
+					<p class="weui-media-box__desc">实时查看进货订单的进度，物流情况，以及确认订单到货。</p>
+				</div>
+			</a>
+			{/if}
+			{if $agent['1staff']['set']['order_ordereditout_xq'] || $agent['is_agent']}
+			<a href="{php echo $this->createMobileUrl('myoutorder', array('tm' => TIMESTAMP))}&wxref=mp.weixin.qq.com#wechat_redirect" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-chuku f-red"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">发货订单</h4>
+					<p class="weui-media-box__desc">实时查看下级代理发来的订单，并进行扫码发货，和查看货物的签收情况。</p>
+				</div>
+			</a>
+			{/if}
+			{if $agent['1staff']['set']['order_cart_jiandan'] || $agent['is_agent']}
+			<a href="{php echo $this->createMobileUrl('cart', array('op' => 'zj','tm' => TIMESTAMP))}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-add2 f-orange"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">自建订单发货</h4>
+					<p class="weui-media-box__desc">用在一些特定情况下的发货，如代理是电话订单，或是补录单，或是买方还不是代理</p>
+				</div>
+			</a>
+			{if !empty($abc)}
+			<a href="{php echo $this->createMobileUrl('cart', array('submit' => 'sqxd','tm' => TIMESTAMP))}&wxref=mp.weixin.qq.com#wechat_redirect" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-saomafafuo f-indigo"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">扫码建单发货</h4>
+					<p class="weui-media-box__desc">扫外箱上的物流码或防伪标上的物流码，实现快速建单发货</p>
+				</div>
+			</a>
+			{/if}
+			{/if}
+		</div>
+	</div>
+		</div>
+		<div id="index" class="weui-tab__bd-item {$page[0][0]} bg-zmpag">
+		{if count($settings['css']['indeximg'])>0}
+	<div id="box" class="swiper-container">
+		<div class="swiper-wrapper">
+		{loop $settings['css']['indeximg'] $cla}
+        {if $cla}<div class="swiper-slide"><img src="{php echo tomedia($cla);}" /></div>{/if}
+		{/loop}
+		</div>
+	</div>
+	{/if}	
+	{if !empty($notices)}
+	<div class="zmui-notice">
+		<div class="image"><img src="../addons/zmcn_order/template/mobile/images/hotdot.jpg"></div>
+		<div class="icon"><i class="zmui-icon zmui-icon-msg" style="font-size: 0.7rem;"></i></div>
+		<div class="text">
+			<ul>
+				{loop $notices $item}
+					<li>
+						<a href="{if !empty($item['url'])}{$item['url']}{else}{php echo url('entry',array('do' => 'notice','m' => 'zmcn_sms','id' => $item['id'],'openid' => $openid,'tm' => TIMESTAMP,'mb'=>'2'));}{/if}">{$item['title']}</a>
+					</li>
+				{/loop}
+			</ul>
+		</div>
+	</div>
+	{/if}
+    <div class="weui-grids">
+	{if $_W['zmcn']['navs2']}
+		{loop $_W['zmcn']['navs2'] $row}
+		<a href="{$row['url']}" class="weui-grid">
+			{if !empty($row['icon'])}
+			<p class="weui-grid__label" style='line-height:18px;'><img src="{php echo tomedia($row['icon']);}" style='height:36px;width:36px;'/><br>{$row['name']}</p>
+			{else}
+			<p class="weui-grid__label"><span class="fa {$row['css']['icon']['icon']} f36" style="color:{$row['css']['icon']['color']};"></span><br>{$row['name']}</p>
+			{/if}
+		</a>
+		{/loop}
+	{else}
+	{if $agent['is_agent']}
+      <a href="{php echo url('entry',array('do' => 'myedit','m' => 'zmcn_cer','tm' => TIMESTAMP,'mb'=>'2'));}" class="weui-grid">
+        <p class="weui-grid__label">
+          <span class="zmui-icon zmui-icon-avatar2 f-green"></span><br>我的资料
+        </p>
+      </a>
+	{elseif $agent['is_staff']}
+      <a href="{php echo url('entry',array('do' => 'myedit','m' => 'zmcn_oa','tm' => TIMESTAMP,'mb'=>'2'));}" class="weui-grid">
+        <p class="weui-grid__label">
+          <span class="zmui-icon zmui-icon-avatar2 f-green"></span><br>我的资料
+        </p>
+      </a>
+	{/if}
+	{if ($agent['1staff']['set']['cer_qr'] || $agent['is_agent']) && $agent['is_office']==0 }
+      <a href="javascript:$('#index_popup_add').html('<img class=mycer_img src=index.php?i={$_W['uniacid']}&c=entry&do=mycer&m=zmcn_cer&id={$agent['id']}/>');$('.index_popup_title').html('我的证书');$.hideLoading();" class="weui-grid open-popup" data-target="#index_popup">
+        <p class="weui-grid__label">
+          <span class="zmui-icon zmui-icon-practice f-blue"></span><br>我的证书
+        </p>
+      </a>
+	{/if}
+	{if $agent['1staff']['set']['cer_myteamsq'] || $agent['is_staff']=='0'}
+      <a href="{php echo url('entry',array('do' => 'myteam','m' => 'zmcn_cer','tm' => TIMESTAMP,'mb'=>'2'));}" class="weui-grid">
+        <p class="weui-grid__label" style="position: relative;">
+		{if ($agent['1staff']['set']['cer_myteamcz_sq'] || $agent['is_staff']=='0') && $myteamnew}<b class="weui-badge" style="position: absolute;top:0px;right:15px;">{$myteamnew}</b>{/if}
+          <span class="zmui-icon zmui-icon-team3 f36 f-zi"></span><br>我的团队
+        </p>
+      </a>
+	{/if}
+      <a href="{php echo url('entry',array('do' => 'myprice','m' => 'zmcn_cer','tm' => TIMESTAMP,'mb'=>'2'));}" class="weui-grid">
+        <p class="weui-grid__label">
+          <span class="zmui-icon zmui-icon-jiangjia f36 f-orange"></span><br>我的价格
+        </p>
+      </a>
+	 {if ($agent['1staff']['set']['order_cart_xiadan'] || $agent['is_agent']) && $agent['is_office']==0 }
+      <a href="{php echo $this->createMobileUrl('cart', array('tm' => TIMESTAMP))}" class="weui-grid">
+        <p class="weui-grid__label">
+          <span class="zmui-icon zmui-icon-cart-kong f36 f-zi"></span><br>我要进货
+        </p>
+      </a>
+	{/if}
+	{if $agent['1staff']['set']['order_ordereditout_xq'] || $agent['is_agent']}
+      <a href="{php echo $this->createMobileUrl('myoutorder', array('tm' => TIMESTAMP))}&wxref=mp.weixin.qq.com#wechat_redirect" class="weui-grid">
+        <p class="weui-grid__label">
+          <span class="zmui-icon zmui-icon-chuku f36 f-red"></span><br>我要发货
+        </p>
+      </a>
+	 {/if}
+	 {if $agent['1staff']['set']['order_cart_jiandan'] || $agent['is_agent']}
+      <a href="{php echo $this->createMobileUrl('cart', array('op' => 'zj','tm' => TIMESTAMP))}" class="weui-grid">
+        <p class="weui-grid__label">
+          <span class="zmui-icon zmui-icon-add2 f36 f-orange"></span><br>我要开单
+        </p>
+      </a>
+	{/if} 
+	  
+      <a href="{php echo url('entry',array('do' => 'index','m' => 'zmcn_cer','openid' => $openid,'tm' => TIMESTAMP,'mb'=>'2'));}" class="weui-grid">
+        <p class="weui-grid__label">
+          <span class="zmui-icon zmui-icon-search f36 f-zi"></span><br>授权查询
+        </p>
+      </a>
+	{if $agent['1staff']['set']['cer_qr'] || $agent['is_agent']}
+      <a href="{php echo url('entry',array('do' => 'qr','m' => 'zmcn_cer','openid' => $openid,'tm' => TIMESTAMP,'mb'=>'2'));}" class="weui-grid">
+        <p class="weui-grid__label">
+          <span class="zmui-icon zmui-icon-user-add f36 f-green"></span><br>邀请代理
+        </p>
+      </a>
+	 {else}
+	  
+	  
+	{/if}
+	{if $agent['is_staff']=='0'}
+      <a href="{php echo $this->createMobileUrl('sql', array('openid' => $openid,'tm' => TIMESTAMP))}" class="weui-grid">
+        <p class="weui-grid__label">
+          <span class="zmui-icon zmui-icon-tongji f36 f-blue"></span><br>数据报表
+        </p>
+      </a>
+	{/if}
+      <a href="{php echo $this->createMobileUrl('site', array('openid' => $openid,'tm' => TIMESTAMP))}" class="weui-grid">
+        <p class="weui-grid__label">
+          <span class="zmui-icon zmui-icon-xianshiqi f36 f-orange"></span><br>厂家主页
+        </p>
+      </a>
+	{if $settings['sys']['help']}
+      <a href="{$settings['sys']['help']}" class="weui-grid">
+        <p class="weui-grid__label">
+          <span class="zmui-icon zmui-icon-help f36 f-indigo"></span><br>系统帮助
+        </p>
+      </a>
+	{/if}
+	{/if}
+    </div>
+		</div>
+		<div id="ageat" class="weui-tab__bd-item {$page[3][0]} bg-zmpag">
+   <div class="hd weui-btn_primary" style="background:{$settings['css']['coloryt']};{if !empty($settings['css']['banneryt'])}background:url({php echo tomedia($settings['css']['banneryt']);}) no-repeat center center; background-size:100% auto; -moz-background-size:100% auto; -webkit-background-size:100% auto;{/if}padding:10px;">
+		<div class="weui-row weui-no-gutter">
+			<div class="weui-col-40 tcenter">
+				<img src="{php echo tomedia($agent['avatar']);}" class="weui-avatar-logo img-circle" width='70' height='70'/>
+			</div>
+			<div class="weui-col-60">
+				<h3 class="f-white" >{php echo cutstr($agent['name'],15,true);}</h3>
+				<h4 class="f-white" >{$agentlevel['title']}</h4>
+			</div>
+		</div>
+		<a class="setbtn" href="#"><i class="zmui-icon zmui-icon-help open-popup" data-target="#half"></i></a>
+    </div>
+	<nav class="nav_integral">
+		<ul class="box clearfix">
+			<li><a href="{php echo url('entry',array('do' => 'myteam','m' => 'zmcn_cer','tm' => TIMESTAMP,'mb'=>'2'));}"><b>{$myteam}</b><br><label>我的团队</label></a></li>
+			<li><a href="{php echo url('entry',array('do' => 'myteam','m' => 'zmcn_cer','tm' => TIMESTAMP,'mb'=>'2'));}"><b>{$inconm}</b><br><label>本月加入</label></a></li>
+			<li><a href="{php echo url('mc/bond/credits', array('credittype' => 'credit1','type'=>'record','period'=>'1'), true)}"><b>{$jianjf}</b><br><label>推广积分</label></a></li>
+			<li><a href="{php echo url('mc/bond/credits', array('credittype' => 'credit2','type'=>'record','period'=>'1'), true)}"><b>{$jianye}</b><br><label>推广余额</label></a></li>
+		</ul>
+	</nav>
+	<div class="weui-panel weui-panel__access">
+		<div class="weui-panel__bd">
+			{if $agent['1staff']['set']['cer_myteamsq'] || $agent['is_staff']=='0'}
+			<a href="{php echo url('entry',array('do' => 'myteam','m' => 'zmcn_cer','tm' => TIMESTAMP,'mb'=>'2'));}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd" style="position: relative;margin-right: 10px;">
+					{if ($agent['1staff']['set']['cer_myteamcz_sq'] || $agent['is_staff']=='0') && $myteamnew}<span class="weui-badge" style="position: absolute;top: 0em;right: 0em;">{$myteamnew}</span>{/if}
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-team3 f-zi"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">我的团队</h4>
+					<p class="weui-media-box__desc">查看管理团队成员，给成员授权或是更改授权。</p>
+				</div>
+			</a>
+			{/if}
+			<!---a href="{php echo url('entry',array('do' => 'mytj','m' => 'zmcn_cer','tm' => TIMESTAMP,'mb'=>'2'));}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd" style="position: relative;margin-right: 10px;">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-tuijianren f-blue"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">我的贡献</h4>
+					<p class="weui-media-box__desc">查看我推荐出去的代理，以及他们的业绩贡献。</p>
+				</div>
+			</a--------->
+			{if $agent['is_agent']}
+			<a href="{php echo url('entry',array('do' => 'myedit','m' => 'zmcn_cer','tm' => TIMESTAMP,'mb'=>'2'));}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-avatar2 f-red"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">我的资料</h4>
+					<p class="weui-media-box__desc">在这里修改我的用户资料</p>
+				</div>
+			</a>
+			{elseif $agent['is_staff']}
+			<a href="{php echo url('entry',array('do' => 'myedit','m' => 'zmcn_oa','tm' => TIMESTAMP,'mb'=>'2'));}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-avatar2 f-red"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">我的资料</h4>
+					<p class="weui-media-box__desc">在这里修改我的用户资料</p>
+				</div>
+			</a>
+			{/if}
+			{if $agent['is_agent']}
+			<a href="javascript:indexpopup('index.php?i={$_W['uniacid']}&c=entry&do=myld&m=zmcn_cer','我的上级',2);" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-user-zhanzhang f-indigo"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">我的上级</h4>
+					<p class="weui-media-box__desc">实时查看上级经销商的联系方式。</p>
+				</div>
+			</a>
+			{/if}
+			{if $agent['1staff']['set']['cer_qr'] || $agent['is_agent']}
+			<a href="{php echo url('entry',array('do' => 'qr','m' => 'zmcn_cer','tm' => TIMESTAMP,'mb'=>'2'));}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-user-add f-orange"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">邀请代理</h4>
+					<p class="weui-media-box__desc">发送链接或二维码，邀请对方加入你的团队，（二维码方式还可能有积分喔）。</p>
+				</div>
+			</a>
+			{else}
+			
+			{/if}
+			<a href="{php echo url('entry',array('do' => 'index','m' => 'zmcn_cer','tm' => TIMESTAMP,'mb'=>'2'));}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-search f-green"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">授权查询</h4>
+					<p class="weui-media-box__desc">代理商授权查询验证。</p>
+				</div>
+			</a>
+			{if $settings['sys']['help']}
+			<a href="{$settings['sys']['help']}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					<i class="weui-media-box__thumb zmui-icon zmui-icon-help f45 f-blue"></i>
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">系统帮助</h4>
+					<p class="weui-media-box__desc">代理授权操作说明和帮助文档</p>
+				</div>
+			</a>
+			{/if}
+		</div>
+	</div>
+		</div>
+		{if $settings['sys']['siteid']}
+		<div id="site" class="weui-tab__bd-item {$page[4][0]} bg-zmpag">
+	<div class="weui-btn_primary weui-header">
+		<div class="weui-header-left"><a class="zmui-icon zmui-icon-slider-left f-white" onclick='javascript:history.go(-1);'></a></div>
+		<h1 class="weui-header-title">公司文档</h1>
+		<div class="weui-header-right"><a class="zmui-icon zmui-icon-more f-white open-popup" data-target="#half"></a></div>
+	</div>
+	<div class="weui-panel weui-panel_access">
+		<div class="weui-panel__bd">
+		{loop $_W['zmcn']['navs0'] $nav}
+			<a href="{php echo jialian($nav['url'],$nav['multiid'])}" class="weui-media-box weui-media-box_appmsg zmui-media56">
+				<div class="weui-media-box__hd">
+					{if $nav['icon']}
+                        <img class="weui-media-box__thumb" src="{php echo tomedia($nav['icon']);}" alt="">
+					{else}
+						<i class="weui-media-box__thumb {$nav['css']['icon']['icon']}" style="color: {$nav['css']['icon']['color']};"></i>
+					{/if}
+				</div>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">{$nav['name']}</h4>
+					<p class="weui-media-box__desc">{$nav['description']}</p>
+				</div>
+			</a>
+		{/loop}
+		</div>
+	</div>
+		</div>
+		{/if}
+		<div id="arder" class="weui-tab__bd-item bg-zmpag"></div>
+	</div>
+	<br>
+	<div class="weui-footer">
+		<p class="weui-footer__text">Copyright &copy; 2008-{php echo date('Y')} {$_W['uniaccount']['name']}</p>
+	</div>
+	<br><br><br>
+	<div class="weui-tabbar tab-bottom">
+		{if $_W['zmcn']['navs3']}
+			{loop $_W['zmcn']['navs3'] $row}
+			<a href="{$row['url']}" class="weui-tabbar__item" >
+				{if !empty($row['icon'])}
+				<p class="weui-tabbar__label"><img src="{php echo tomedia($row['icon']);}" style='height:18px;width:18px;'/><br>{$row['name']}</p>
+				{else}
+				<p class="weui-tabbar__label"><span class="fa {$row['css']['icon']['icon']}" style="color:{$row['css']['icon']['color']};"></span><br>{$row['name']}</p>
+				{/if}
+			</a>
+			{/loop}
+		{else}
+		<a href="#myall" class="weui-tabbar__item {$page[1][1]}">
+			<p class="weui-tabbar__label"><span class="zmui-icon zmui-icon-avatar2"></span><br>我的</p>
+		</a>
+		<a href="#order" class="weui-tabbar__item {$page[2][1]}">
+			<p class="weui-tabbar__label"><span class="zmui-icon zmui-icon-order"></span><br>订单</p>
+		</a>
+		<a href="#index" class="weui-tabbar__item {$page[0][1]}">
+			<p class="weui-tabbar__label"><span class="zmui-icon zmui-icon-home"></span><br>首页</p>
+		</a>
+		<a href="#ageat" class="weui-tabbar__item {$page[3][1]}">
+			{if ($agent['1staff']['set']['cer_myteamcz_sq'] || $agent['is_staff']=='0') && $myteamnew}<p class="weui-badge" style="position: absolute;top: 0.3em;right: 1.2em;">{$myteamnew}</p>{/if}
+			<p class="weui-tabbar__label"><span class="zmui-icon zmui-icon-usergroup2"></span><br>代理</p>
+		</a>
+		{if $settings['sys']['siteid']}
+		<a href="#site" class="weui-tabbar__item {$page[4][1]}">
+			<p class="weui-tabbar__label"><span class="zmui-icon zmui-icon-xianshiqi"></span><br>企业</p>
+		</a>
+		{/if}
+		{/if}
+	</div>
+</div>
+<div id="index_popup" class='weui-popup__container'><div class="weui-popup__modal"><div class="weui-btn_primary weui-header close-popup" onclick='javascript:clpro();'><div class="weui-header-left"><a class="zmui-icon zmui-icon-slider-left f-white" ></a></div><h1 class="weui-header-title index_popup_title">系统页面</h1><div class="weui-header-right"><a class="zmui-icon zmui-icon-close2 f20 f-white"></a></div></div><div class="page bg-zmpag" id="index_popup_add">正在加载页面...</div>
+<div class="weui-footer"><p class="weui-footer__text">Copyright &copy; 2008-{php echo date('Y')} {$_W['uniaccount']['name']}</p></div>
+<div class="weui-btn-area"><a href="javascript:clpro();" class="weui-btn weui-btn_disabled weui-btn_default close-popup">关闭</a></div>
+</div></div>
+{template '_footer2'}
+<script type='text/javascript' src="{$_W['siteroot']}addons/zmcn_erp/zmui/js/swiper.min.js" charset='utf-8'></script>
+<script type="text/javascript">
+	function autoScroll(obj){
+		$(obj).find("ul").animate({marginTop : "-22px"},500,function(){
+		$(this).css({marginTop : "0px"}).find("li:first").appendTo(this);})  
+	}
+	function clpro(){ $('#index_popup_add').html('正在关闭......');$.hideLoading();}
+	$(function(){  
+		{if count($notices)>1}setInterval('autoScroll(".zmui-notice .text")',3000);{/if}
+		{if count($settings['css']['indeximg'])>1}$(".swiper-container").swiper({loop: true,autoplay: 3000});{/if}
+	});
+	function indexpopup(url,title,post){$.showLoading();$('.index_popup_title').html(title);$('#index_popup_add').html('正在加载页面...');$.ajax({type:'post',url:url,data:{mb : post},cache:false,dataType:'html',success:function(s){
+		if(s.length<100) {$.hideLoading();$.alert('服务器不在状态！', '连接失败');
+		}else{$("#index_popup").popup();$.hideLoading();$('#index_popup_add').html(s);
+		}},error:function(){
+		$.hideLoading();$.alert('请确认网络是否通畅！', '连接失败');}  
+	});}
+</script>	
+
+	

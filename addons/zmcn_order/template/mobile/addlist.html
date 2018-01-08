@@ -1,0 +1,9 @@
+{loop $rows $row}		
+<div class="weui-media-box weui-media-box_text weui-media-box_appmsg">
+	<div class="weui-media-box__bd">
+		<h4 class="weui-media-box__title f16" id="add1a{$row['id']}">{$row['username']} {$row['mobile']}</h4>
+		<p class="weui-media-box__desc" id="add2a{$row['id']}">{$row['province']} {$row['city']} {$row['district']} {$row['address']}</p>
+	</div>
+	<a href="javascript:chaadd({$row['id']});" class="weui-cell__ft close-popup">选用</a>
+</div>
+{/loop}

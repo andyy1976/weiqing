@@ -1,0 +1,126 @@
+{template '_header'}
+<style>
+.swiper-wrapper .swiper-slide{height:auto !important;}
+.page__bd{background-color:#f8f8f8;min-height:250px;}
+.weui-media-box__hd_ss .f36{padding-top:5px;}
+</style>
+<div class="page bg-zmpag">
+<div style="position:fixed; z-index:1; top:0; width:100%; background-color:#ccc;">
+	<div class="weui-btn_primary weui-header">
+		<div class="weui-header-left"><a class="zmui-icon zmui-icon-slider-left f-white" onclick='javascript:history.go(-1);'></a></div>
+		<h1 class="weui-header-title" onclick="bl(3);">数据中心</h1>
+		<div class="weui-header-right"><a class="zmui-icon zmui-icon-more f-white open-popup" data-target="#half"></a></div>
+	</div>
+</div>
+{if $_W['setting']['remote']['type']}{php $imgxz='thumb';}{else}{php $imgxz='sthumb';}{/if}
+<div class="weui-panel__bd" style="height:48px;"></div>
+<div class="weui-panel weui-panel_access">
+	<div class="weui-panel__bd">
+		<a href="javascript:getpro({$goods['id']});"  class="weui-media-box weui-media-box_appmsg">
+			<div class="weui-media-box__hd"><img class="weui-media-box__thumb" src="{php echo tomedia($goods[$imgxz]);}" alt="" onerror="this.src='{php echo tomedia($goods['thumb']);}'"></div>
+			<div class="weui-media-box__bd">
+				<h4 class="weui-media-box__title">{$goods['name']}</h4>
+				<p class="weui-media-box__desc">{$goods['description']}</p>
+			</div>
+		</a>
+	</div>
+	<div class="weui-panel__ft" onclick="bl(3);">{$_GPC['atime']}至{$_GPC['btime']}出入库情况</div>
+</div>
+
+<div class="weui-row" style="margin-top:12px;margin-bottom:12px;padding-right:12px;padding-left:12px;background-color:#fff!important;">
+	<div class="weui-col-50 weui-btn_primary tcenter radius-md f-white" style="padding: 10px;" onclick="bl(1);"><b>{$kin}<br>入库数量</b></div>
+	<div class="weui-col-50 weui-btn_warn tcenter radius-md f-white" style="padding: 10px;" onclick="bl(0);"><b>{$kout}<br>出库数量</b></div>
+</div>
+
+<div class="weui-panel weui-panel_access"><div class="weui-panel__bd" id="list">
+<div class='weui-msg'><div class='weui-msg__icon-area'><i class='weui-icon-warn weui-icon_msg-primary f-gray'></i></div><div class='weui-msg__text-area'><p class='weui-msg__desc'>暂无数据</p></div></div>
+</div></div>
+</div>
+<div class="clear loadtis"></div>
+<div id="prodetial" class='weui-popup__container'>
+	<div class="weui-popup__modal">
+		<div class="weui-btn_primary weui-header close-popup" onclick='javascript:clpro();'>
+			<div class="weui-header-left"><a class="zmui-icon zmui-icon-slider-left f-white" ></a></div>
+			<h1 class="weui-header-title">商品详情</h1>
+			<div class="weui-header-right"><a class="zmui-icon zmui-icon-close2 f20 f-white"></a></div>
+		</div>
+		<div class="page" id="alladd" style="background-color: #fff">
+			正在加载商品数据...
+		</div>
+	</div>
+</div>
+{template '_footer'}
+<script type='text/javascript' src="{$_W['siteroot']}addons/zmcn_erp/zmui/js/swiper.min.js" charset='utf-8'></script>
+<script>
+      var loading = false;
+	  var i=1;
+	  var gid={$goods['id']};
+	  var ada={$atime};
+	  var bda={$btime};
+	  var io=3;
+      $(document.body).infinite().on("infinite", function() {
+		if(loading) return;
+		loading = true;
+		upgrade()
+      });
+    function upgrade(){
+		$(".loadtis").html("<div class='weui-loadmore'><i class='weui-loading'></i><span class='weui-loadmore__tips'>正在加载</span></div>");
+        $.ajax({
+            url: "{php echo url('entry',array('do' => 'sqllis','m' => 'zmcn_order'),true)}" ,
+            data:{ab:i,gid:gid,ada:ada,bda:bda,io:io},
+            type:'post',
+			error:function() {
+				  $(".loadtis").html("<div class='weui-loadmore weui-loadmore_line'><span class='weui-loadmore__tips'>通信错误！</span></div>");
+					loading = true;
+				},
+            success:function(ret){
+             if(ret==1)      {
+				if(i==1) {
+					$(".loadtis").html("<div></div>");
+				}else{
+					$(".loadtis").html("<div class='weui-loadmore weui-loadmore_line'><span class='weui-loadmore__tips'>已经到底了！</span></div>");
+				}
+				loading = true;
+             }else{
+				if(ret.length<100) {
+					if(i==1) {
+						$(".loadtis").html("<div></div>");
+					}else{
+						$(".loadtis").html("<div class='weui-loadmore weui-loadmore_line'><span class='weui-loadmore__tips'>已经到底了！</span></div>");
+					}
+					loading = true;
+				}else{
+					if(i==1) {
+						$("#list").html(ret);
+					}else{
+						$("#list").append(ret);
+					}
+					loading = false;
+					i++
+					$(".loadtis").html("<div class='weui-loadmore weui-loadmore_line' onclick='upgrade();'><span class='weui-loadmore__tips'>点击加载更多</span></div>");
+				}
+             }
+            }
+        });
+    }
+	upgrade();
+    function bl(id){
+		io=id;i=1;
+		$("#list").html("<div class='weui-msg'><div class='weui-msg__icon-area'><i class='weui-icon-warn weui-icon_msg-primary f-gray'></i></div><div class='weui-msg__text-area'><p class='weui-msg__desc'>暂无数据</p></div></div>");
+		upgrade();
+	}
+    function getpro(id) {
+		$.showLoading();$('#alladd').html('正在加载商品数据......');
+		$.get('index.php?i={$_W['uniacid']}&c=entry&do=detail&pp=1&m=zmcn_goods', {id : id}, function(s){
+			if(s.length<100) {
+				$.hideLoading();$.toast("加载失败", "text");
+			}else{
+				$("#prodetial").popup();
+				$.hideLoading();$('#alladd').html(s);
+			}
+		}, 'html');
+	}
+    function clpro() {
+		$('#alladd').html('正在关闭......');$.hideLoading();
+	}
+</script>

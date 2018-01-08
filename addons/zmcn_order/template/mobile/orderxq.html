@@ -1,0 +1,129 @@
+<style>
+.tleft .weui-media-box__title{font-size:13px !important;}
+.tleft .weui-media-box__desc{font-size:12px !important;font-weight:400;}
+</style>
+{php $tp8=array(1,2,3,4,7);}
+	<div class="weui-panel">
+		<ul class="timeline">
+			{loop $tp8 $i}
+				<li><h3 class="time{if $i==$order['status']} f-blue{/if}">{$_W['zm_o_st'][$i]}</h3></li>
+			{/loop}
+		</ul>
+	</div>
+	<div class="weui-panel">
+		<div class="weui-panel__hd">发货方和收货方</div>
+		<div class="weui-panel__bd">
+		{if $_GPC['do']=="orderedit"}
+			<div class="weui-cell">
+				<div class="weui-cell__hd" style=" width:60px;"><label class="weui-label">发货方：</label></div>
+				<div class="weui-cell__bd">{$fagent['name']} {$fagent['phone']}</div>
+			</div>
+		{else}
+			<div class="weui-cell">
+				<div class="weui-cell__hd" style=" width:60px;"><label class="weui-label">订货方：</label></div>
+				<div class="weui-cell__bd">
+					{if !empty($dagent['id'])} {$dagent['name']}{$dagent['phone']} {else}未知{/if}
+				</div>
+			</div>	
+		{/if}
+			<div class="weui-media-box weui-media-box_text">
+				<h4 class="weui-media-box__title f14">收货方：{$order['consignee']} {$order['tel']}</h4>
+				<p class="weui-media-box__desc" id="add2">{$order['province']} {$order['city']} {$order['district']} {$order['address']} </p>
+			</div>
+		</div>
+	</div>
+	<div class="weui-panel">
+		<div class="weui-panel__hd">货品清单</div>
+		<div class="weui-panel__bd" style="padding-right:5px;padding-left:5px">
+			<table class="ui-table ui-border">
+				<thead><tr><th style="width:60%;">商品</th><th style="width:20%;">数量</th><th style="width:20%;">单价</th></tr></thead>
+				<tbody>
+					{loop $order['ogoods'] $good}
+						<tr><td class="tleft nll"><h5 class="weui-media-box__title">{$good['goodsname']}<h5>{if !empty($good['optionname'])}<p class="weui-media-box__desc">{$good['optionname']}</p>{/if}</td><td class="f14">{$good['total']}</td><td class="tright f14">{$good['price']}</td></tr>
+					{/loop}
+					<tr class="f14"><td colspan="3" class="tright">货款(不含配送费)：{$order['goodsprice']}元</td></tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	{if $order['remark']}
+	<div class="weui-panel">
+        <div class="weui-panel__hd">订单说明</div>
+		<div class="weui-panel__bd" style="padding:10px;">
+			<p class="f14">{$order['remark']}</p>
+		</div>
+	</div>
+	{/if}
+	<div class="weui-panel">
+		<div class="weui-panel__hd">款项明细</div>
+		<div class="weui-panel__bd">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">货款总额：</label></div>
+				<div class="weui-cell__bd">{$order['goodsprice']}元</div>
+				<div class="weui-cell__ft"></div>
+			</div>
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">配送费用：</label></div>
+				<div class="weui-cell__bd">{$order['sendfee']}元</div>
+				<div class="weui-cell__ft"></div>
+			</div>
+			{if $order['youhje']>0}
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">优惠：</label></div>
+				<div class="weui-cell__bd">{$order['youhje']}元</div>
+				<div class="weui-cell__ft"></div>
+			</div>
+			{/if}
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">应收金额：</label></div>
+				<div class="weui-cell__bd">{$order['price']}元</div>
+				<div class="weui-cell__ft"></div>
+			</div>
+		</div>
+	</div>
+	<div class="weui-panel">
+		<div class="weui-panel__hd">付款方式和送货方式</div>
+		<div class="weui-panel__bd">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">付款方式：</label></div>{php $fk8=array('现金','转账','代收款','在线支付','预存款支付');}
+				<div class="weui-cell__bd">{$fk8[$order['paytype']]}</div>
+			</div>
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">送货方式：</label></div>{php $sh8=array('现买','发货','自提');}
+				<div class="weui-cell__bd">{$sh8[$order['sendtype']]}</div>
+			</div>
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label f-black">发货物流：</label></div>
+				<div class="weui-cell__bd f-black">{$order['expcom']}:{$order['expsn']}</div>
+			</div>
+		</div>
+	</div>
+	<div class="weui-panel">
+		<div class="weui-panel__hd">详细时间</div>
+		<div class="weui-panel__bd">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">订单时间：</label></div>
+				<div class="weui-cell__bd">{php echo date('Y-m-d H:i', $order['ordertime'])}</div>
+			</div>
+			{if $order['paytime']>'10000000'}
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">付款时间：</label></div>
+				<div class="weui-cell__bd">{php echo date('Y-m-d H:i', $order['paytime'])}</div>
+			</div>
+			{/if}
+			{if $order['exptime']>'10000000'}
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">发货时间：</label></div>
+				<div class="weui-cell__bd">{php echo date('Y-m-d H:i', $order['exptime'])}</div>
+			</div>
+			{/if}
+			{if $order['oktime']>'10000000'}
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">到货时间：</label></div>
+				<div class="weui-cell__bd">{php echo date('Y-m-d H:i', $order['oktime'])}</div>
+			</div>
+			{/if}
+		</div>
+	</div>
+<br>
+<p class="weui-btn-area"><a href="javascript:clpro();" class="weui-btn weui-btn_disabled weui-btn_default close-popup">关闭</a></p>

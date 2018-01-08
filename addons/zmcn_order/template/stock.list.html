@@ -1,0 +1,65 @@
+{template 'common/header'}
+<style type="text/css">
+
+</style>
+<ul class="nav nav-tabs">
+	<li {if $_GPC['op'] == 'in'}class="active"{/if}><a href="{php echo $this->createWebUrl('stock', array('op'=>'in'));}">商品入库</a></li>
+	<li {if $_GPC['op']=='' || $_GPC['op']=='display' }class="active"{/if}><a href="{php echo $this->createWebUrl('stock', array('op'=>'display'));}">库存查询</a></li>
+	<li {if $_GPC['op']=='ls' }class="active"{/if}><a href="#">流水记录</a></li>
+</ul>
+{php $zt8=array('label-default','label-primary','label-info','label-success','label-warning','label-info','label-success','label-danger','label-default');}
+<div class="panel panel-default">
+	<div class="panel-heading">库存列表</div>
+	<div class="table-responsive panel-body">
+			<table class="table table-hover">
+				<thead class="navbar-inner">
+					<tr>
+						<th style="text-align:center; width:120px;">商品条码</th>
+						<th style="text-align:center; width:150px;">商品名称</th>
+						<th style="text-align:center; width:100px;">型号规格</th>
+						<th style="text-align:center; width:80px;">库存数量</th>
+						<th style="text-align:center; width:80px;">将发数量</th>
+						<th style="text-align:center; width:100px;">状态</th>
+						<th style="text-align:center; width:130px;">操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					{loop $list $item}
+					<tr style="text-align:center;">
+						<td>{$item['good']['tmcode']}</td>
+						<td class="text-left">{$item['good']['name']}</td>
+						<td>{if $item['optionname']}{$item['optionname']}{else}{$item['good']['spec']}{/if}</td>
+						<td>{$item['stock']}</td>
+						<td>{$item['yuout']}</td>
+						<td class="text-left">
+						{if $item['stock']<0}
+							<span class="label {$zt8[2]}">没做入库</span>
+						{elseif  $item['stock'] < $item['yuout']}
+							<span class="label {$zt8[7]}">不足发货</span>
+						{elseif  $item['stock'] < 100}
+							<span class="label {$zt8[4]}">库存预警</span>
+						{else}
+							<span class="label {$zt8[3]}">库存正常</span>
+						{/if}
+						</td>
+						<td>
+							<a rel="tooltip" href="{php echo $this->createWebUrl('stock', array('op'=>'ls','id'=>$item['goodsid'],'opid'=>$item['optionid']));}" title="查看流水" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="查看流水"><i class="fa fa-pencil"></i></a>
+						</td>
+					</tr>
+					{/loop}
+					{if empty($list)}
+					<tr>
+						<td colspan="7">尚未有订单</td>
+					</tr>
+					{/if}
+				</tbody>
+			</table>
+			{$pager}
+	</div>
+</div>
+ <script type="text/javascript">
+ 	require(['bootstrap'],function($){
+		$('[data-toggle="tooltip"]').tooltip();
+	});
+</script>
+{template 'common/footer'}

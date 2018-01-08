@@ -1,0 +1,456 @@
+
+{template '_header'}
+<link rel="stylesheet" href="{$_W['siteroot']}addons/zmcn_erp/zmui/css/mui.min.css">
+<style>
+.mui-row.mui-fullscreen>[class*="mui-col-"] {height:100%;}		
+.mui-col-xs-3,.mui-col-xs-9 {overflow-y: auto;height: 100%;}		
+.mui-segmented-control .mui-control-item {line-height: 50px;width: 100%;}
+.mui-control-content {display: block;}
+.mui-segmented-control.mui-segmented-control-inverted .mui-control-item.mui-active {background-color: #fff;}
+.weui-media-box__bd h4{margin-bottom:2px;}
+.weui-media-box__title{font-size:14px !important;line-height: 15px;}
+.weui-media-box {padding-left: 5px;padding-right:5px;}
+.input-submit{border-radius: 0 !important;-webkit-appearance : none !important; -webkit-border-radius:0px !important;;border:0px !important;font-size: 16px !important;}
+.input-submit-r{background-color: #f75757 !important;}
+.input-submit-b{background-color: #5a98f5 !important;}
+.weui-panel__hd {padding: 3px 15px 0px;}
+.zmui-media74 {padding-bottom: 5px;padding-top: 5px;}
+</style>
+<div class="mui-bar weui-search-bar" id="searchBar">
+	<div class="weui-header-left"><a class="zmui-icon zmui-icon-slider-left f-red" onclick='javascript:history.go(-1);'>　　</a></div>
+	<form class="weui-search-bar__form" id="search-form" onSubmit="searchs();return false;">
+		<div class="weui-search-bar__box">
+			<i class="weui-icon-search"></i>
+			<input type="search" class="weui-search-bar__input" id="searchInput" placeholder="搜索" required="">
+			<a href="javascript:" class="weui-icon-clear noqq" id="searchClear"></a>
+		</div>
+		<label class="weui-search-bar__label" id="searchText">
+			<i class="weui-icon-search"></i>
+			<span>搜索</span>
+		</label>
+	</form>
+	<a href="javascript:searcho();" class="weui-search-bar__cancel-btn noqq">退出</a>　
+	{if $_GPC['op']=='zj'}
+	<a class="zmui-icon zmui-icon-saoyisao f24 f-red" href="{php echo $this->createMobileUrl('cart', array('submit' => 'sqxd','openid' => $openid,'fid' => $_GPC['fid']))}&wxref=mp.weixin.qq.com#wechat_redirect"></a><sup><span class="weui-badge" id="allno">0</span></sup>
+	{else}
+	<span class="zmui-icon zmui-icon-cart-kong f24 f-red"></span><sup><span class="weui-badge" id="allno">0</span></sup>
+	{/if}
+</div>
+<form action="" method="post" class="form-horizontal form" id="buy-form">
+<div class="mui-content mui-row mui-fullscreen" style="padding-bottom: 50px;padding-top:45px;">
+	<div class="mui-col-xs-3">
+		<div id="segmentedControls" class="mui-segmented-control mui-segmented-control-inverted mui-segmented-control-vertical">
+
+		</div>
+	</div>
+	<div id="segmentedControlContents" class="mui-col-xs-9" style="border-left: 1px solid #c8c7cc;">
+		{if $_W['setting']['remote']['type']}{php $imgxz='thumb';}{else}{php $imgxz='sthumb';}{/if}
+		{php $bcid='-1';$clnas='';$i=0;}
+		{loop $goodss $goods}
+			{php $tcid = (int)substr($goods['zclas'].'0000' ,0,2);}
+			{if $bcid=='-1'}
+				{php $bcid = (int)$tcid;}
+				<div id="content{$tcid}" class="weui-panel weui-panel_access mui-control-content"><div class="weui-panel__hd">{$bcla[$tcid]['name']}</div><div class="weui-panel__bd" id="list">
+				{php $clnas .= "<a class='mui-control-item' data-index='".$i."' href='#content".$tcid."' id='dcontent".$tcid."'>".$bcla[$tcid]['name']."</a>";$i++;}
+			{elseif $bcid != $tcid}
+				{php $bcid = (int)$tcid;}
+				</div></div><div id="content{$tcid}" class="weui-panel weui-panel_access mui-control-content"><div class="weui-panel__hd">{$bcla[$tcid]['name']}</div><div class="weui-panel__bd" id="list">
+				{php $clnas .= "<a class='mui-control-item' data-index='".$i."' href='#content".$tcid."' id='dcontent".$tcid."'>".$bcla[$tcid]['name']."</a>";$i++;}
+			{/if}
+			{php $goods['prices'] = iunserializer($goods['prices']);$npric = $pric=='productprice' ? $goods['productprice'] : $goods['prices'][$pric] ;$cou = empty($carts[$goods['id'].'_0']['id']) ? '0' : $carts[$goods['id'].'_0']['total'] ;$ick = empty($carts[$goods['id'].'_0']['isck']) ? '' : " checked='checked' " ;$minp = (int)$goods['prices'][$zxz];$bjp = max(1, intval($goods['prices'][$bjz]));$maxp = (int)$goods['prices'][$zdz];}
+			
+			{if $npric >= 0}
+			<div  class="weui-media-box weui-media-box_appmsg zmui-media74 box{$goods['id']}_0" id="box{$goods['id']}">
+				<a class="weui-media-box__hd zmcn-mark-box" href="javascript:getpro({$goods['id']});">
+					<img class="weui-media-box__thumb" src="../addons/zmcn_erp/n.gif" data-original="{php echo tomedia($goods[$imgxz]);}">
+					{if $goods['isnew']}
+					<span class="zmcn-mark-rts bg-red">新品</span>
+					{elseif $goods['ishot']}
+					<span class="zmcn-mark-rts bg-red">热卖</span>
+					{elseif $goods['isrecommend']}
+					<span class="zmcn-mark-rts bg-red">推荐</span>
+					{/if}
+				</a>
+				<div class="weui-media-box__bd">
+					<h4 class="weui-media-box__title">{if $goods['name']}{$goods['name']}{else}{$goods['title']}{/if}</h4>
+					<p class="weui-media-box__desc">{$goods['spec']} / {$goods['unit']}<br>原：{php echo get_cdr($goods['originalprice']);}元；现：{php echo get_cdr($npric);}元</p>
+				{if $goods['isspec']}
+					{php $cou=0;}
+					<div id="opbox{$goods['id']}">
+						{loop $cartops[$goods['id']] $caopsid=>$caops}
+							<input type='hidden' name='count[{$caopsid}]' id='boxopco{$caopsid}' value='{$caops}'>
+							{php $cou += (int)$caops;$ick = " checked='checked' " ;}
+						{/loop}
+					</div>
+					<p class="zmui-count" onclick='getgoop({$goods['id']})'>
+						<span class="zmui-count-add">＋</span>
+						<input class="zmui-count-input goods" id="co{$goods['id']}_0" value="{$cou}" data-min="{$minp}" data-bj="{$bjp}" readonly="true"/>
+						<span class="zmui-count-reduce">－</span>
+					</p>
+				{else}
+					<p class="zmui-count">
+						<span class="zmui-count-add" onclick='addone({$goods['id']})'>＋</span>
+						<input class="zmui-count-input goods" type="tel" id="co{$goods['id']}_0" name="count[{$goods['id']}_0]" value="{$cou}" data-min="{$minp}" data-bj="{$bjp}" data-max="{$maxp}"/>
+						<span class="zmui-count-reduce" onclick='reduceone({$goods['id']})'>－</span>
+					</p>
+				{/if}
+				</div>
+			</div>
+			{/if}
+			
+		{/loop}
+		{if $i}</div></div>{/if}
+	</div>
+</div>
+<div class="weui-tabbar tab-bottom">
+	<a href="index.php?i={$_W['uniacid']}&t{TIMESTAMP}g=t&c=entry&do=index&id=1&m=zmcn_order" class="weui-tabbar__item" >
+		<p class="weui-tabbar__label"><span class="zmui-icon zmui-icon-avatar2"></span><br>我的</p>
+	</a>
+	<a href="index.php?i={$_W['uniacid']}&t{TIMESTAMP}g=t&c=entry&do=index&id=2&m=zmcn_order"  class="weui-tabbar__item" >
+		<p class="weui-tabbar__label"><span class="zmui-icon zmui-icon-order"></span><br>订单</p>
+	</a>
+	<a href="index.php?i={$_W['uniacid']}&t{TIMESTAMP}g=t&c=entry&do=index&id=0&m=zmcn_order" class="weui-tabbar__item">
+		<p class="weui-tabbar__label"><span class="zmui-icon zmui-icon-home"></span><br>首页</p>
+	</a>
+	<input type="submit" name="submit" value="保存选择" class="weui-tabbar__item input-submit input-submit-b"/>
+	<input type="submit" name="submit" value="{if $_GPC['op']=='zj'}进入建单{else}进入下单{/if}" class="weui-tabbar__item input-submit input-submit-r"/>             
+</div>
+<input type="hidden" name="token" value="{$_W['token']}" />
+</form>
+<div id="prodetial" class='weui-popup__container'>
+	<div class="weui-popup__modal">
+		<div class="weui-btn_primary weui-header close-popup" onclick='javascript:clpro();'>
+			<div class="weui-header-left"><a class="zmui-icon zmui-icon-slider-left f-white" ></a></div>
+			<h1 class="weui-header-title">商品详情</h1>
+			<div class="weui-header-right"><a class="zmui-icon zmui-icon-close2 f20 f-white"></a></div>
+		</div>
+		<div class="page" id="alladd" style="background-color: #fff">
+			正在加载商品数据...
+		</div>
+	</div>
+</div>
+<div id="goplist" class='weui-popup__container'>
+	<div class="weui-popup__modal">
+		<div class="weui-btn_primary weui-header close-popup" onclick='javascript:clpro();'>
+			<div class="weui-header-left"><a class="zmui-icon zmui-icon-slider-left f-white" ></a></div>
+			<h1 class="weui-header-title" id="op_goodsna">商品规格订货</h1>
+			<div class="weui-header-right"><a class="zmui-icon zmui-icon-close2 f20 f-white"></a></div>
+		</div>
+		<input type="hidden" id="goplist_gid" value="0" /><input type="hidden" id="goplist_oid" value="0" />
+		<div class="weui-cells" id="oplist"></div>
+		<div class="weui-cells">
+			<div class='weui-cell' style='height:40px;'>
+				<div class='weui-cell__bd opts'>   </div>
+				<div class='weui-cell__ft'>已下<b class='opcom'>0</b>件</div>
+			</div>
+		</div>
+		<div class="weui-row weui-no-gutter" style="margin:20px 0px;">
+			<div class="weui-col-50"><a href="javascript:ckop();" class="weui-btn weui-btn_primary close-popup" id="btn_incar" style="width:92%;">放弃并退出</a></div>
+			<div class="weui-col-50"><a href="javascript:bcgoodsop();" class="weui-btn  weui-btn_warn " id="btn_tobuy" style="width:92%;">确定选择</a></div>
+		</div>
+	</div>
+</div>
+{template '_footer1'}
+<script type="text/javascript" src="{$_W['siteroot']}addons/zmcn_erp/zmui/js/jquery.lazyload.min.js"></script>
+<script type='text/javascript' src="{$_W['siteroot']}addons/zmcn_erp/zmui/js/swiper.min.js" charset='utf-8'></script>
+<script>
+	var html="{$clnas}";
+	$("#segmentedControls").html(html);
+	var controls = document.getElementById("segmentedControls");
+	var contents = document.getElementById("segmentedControlContents");
+
+	//默认选中第一个
+	controls.querySelector('.mui-control-item').classList.add('mui-active');
+//	contents.querySelector('.mui-control-content').classList.add('mui-active');
+	(function() {
+		var controlsElem = document.getElementById("segmentedControls");
+		var contentsElem = document.getElementById("segmentedControlContents");
+		var controlListElem = controlsElem.querySelectorAll('.mui-control-item');
+		var contentListElem = contentsElem.querySelectorAll('.mui-control-content');
+		var controlWrapperElem = controlsElem.parentNode;
+		var controlWrapperHeight = controlWrapperElem.offsetHeight;
+		var controlMaxScroll = controlWrapperElem.scrollHeight - controlWrapperHeight;//左侧类别最大可滚动高度
+		var maxScroll = contentsElem.scrollHeight - contentsElem.offsetHeight;//右侧内容最大可滚动高度
+		var controlHeight = controlListElem[0].offsetHeight;//左侧类别每一项的高度
+		var controlTops = []; //存储control的scrollTop值
+		var contentTops = [0]; //存储content的scrollTop值
+		var length = contentListElem.length;
+		for (var i = 0; i < length; i++) {
+			controlTops.push(controlListElem[i].offsetTop + controlHeight);
+		}
+		for (var i = 1; i < length; i++) {
+			var offsetTop = contentListElem[i].offsetTop;
+			if (offsetTop + 100 >= maxScroll) {
+				var height = Math.max(offsetTop + 100 - maxScroll, 100);
+				var totalHeight = 0;
+				var heights = [];
+				for (var j = i; j < length; j++) {
+					var offsetHeight = contentListElem[j].offsetHeight;
+					totalHeight += offsetHeight;
+					heights.push(totalHeight);
+				}
+				for (var m = 0, len = heights.length; m < len; m++) {
+					contentTops.push(parseInt(maxScroll - (height - heights[m] / totalHeight * height)));
+				}
+				break;
+			} else {
+				contentTops.push(parseInt(offsetTop));
+			}
+		}
+		contentsElem.addEventListener('scroll', function() {
+			var scrollTop = contentsElem.scrollTop;
+			for (var i = 0; i < length; i++) {
+				var offsetTop = contentTops[i];
+				var offset = Math.abs(offsetTop - scrollTop);
+//				console.log("i:"+i+",scrollTop:"+scrollTop+",offsetTop:"+offsetTop+",offset:"+offset);
+				if (scrollTop < offsetTop) {
+					if (scrollTop >= maxScroll) {
+						onScroll(length - 1);
+					} else {
+						onScroll(i - 1);
+					}
+					break;
+				} else if (offset < 20) {
+					onScroll(i);
+					break;
+				}else if(scrollTop >= maxScroll){
+					onScroll(length - 1);
+					break;
+				}
+			}
+		});
+		var lastIndex = 0;
+		//监听content滚动
+		var onScroll = function(index) {
+			if (lastIndex !== index) {
+				lastIndex = index;
+				var lastActiveElem = controlsElem.querySelector('.mui-active');
+				lastActiveElem && (lastActiveElem.classList.remove('mui-active'));
+				var currentElem = controlsElem.querySelector('.mui-control-item:nth-child(' + (index + 1) + ')');
+				currentElem.classList.add('mui-active');
+				//简单处理左侧分类滚动，要么滚动到底，要么滚动到顶
+				var controlScrollTop = controlWrapperElem.scrollTop;
+				if (controlScrollTop + controlWrapperHeight < controlTops[index]) {
+					controlWrapperElem.scrollTop = controlMaxScroll;
+				} else if (controlScrollTop > controlTops[index] - controlHeight) {
+					controlWrapperElem.scrollTop = 0;
+				}
+			}
+		};
+		//滚动到指定content
+		var scrollTo = function(index) {
+			contentsElem.scrollTop = contentTops[index];
+		};
+	})();
+</script>
+<script type="text/javascript" charset="utf-8">
+	$(function() {
+		$(".weui-media-box__thumb").lazyload({effect: "fadeIn",threshold : 50,container: $("#segmentedControlContents")});
+		$(".zmui-count-input.goods").change(function(){ 
+			var total = parseInt('0'+$(this).val(),10);
+			if(total == 0){
+				$(this).val(0);
+			}else{
+				var minp = parseInt('0' + $(this).data('min'),10);
+				var maxp = parseInt('0' + $(this).data('max'),10);
+				var bjp  = parseInt("0" + $(this).data('bj'),10);
+				var dvs = Math.max(minp,total,1,bjp);
+				if(bjp>1){dvs = Math.ceil(dvs/bjp) * bjp;}
+				if(maxp>0){dvs = Math.min(dvs,maxp);}
+				$(this).val(dvs);
+			}
+			qh();
+		});
+		$("#buy-form").submit(function(){
+			$(".zmui-count-input.goods").each(function(){ 
+				var total = parseInt('0'+$(this).val(),10);
+				if(total==0){
+					var id = $(this).attr("id");
+					id = id.replace('co', '.box');
+					$(id).remove();
+				}
+			});
+		});
+	});
+	var search = 0;
+    function searchs() {
+		var txt=$("#searchInput").val();
+		if($.trim(txt)!=""){
+			$(".weui-media-box_appmsg").hide();
+			$(".weui-media-box__title").filter(":contains('"+txt+"')").parent().parent().show();
+			search=1;
+		}else{
+			$(".weui-media-box_appmsg").show();search=0;
+		}
+    }
+    function searcho() {
+		if(search==1){$(".weui-media-box_appmsg").show();search=0;}
+    }
+    function addone(id) {
+		id = id + "_0";
+		var com=$("#co" + id);
+		var minp = parseInt("0" + com.data('min'),10);
+		var maxp = parseInt('0' + com.data('max'),10);
+		var bjp = Math.max(1,parseInt("0" + com.data('bj'),10));
+		var total = parseInt("0" + com.val(),10);
+		total += bjp;
+		if(total<=0){
+			com.val(0);
+		}else if (maxp>0 && total > maxp) {
+			$.toptip('操作失败，不能多于' + maxp, 'error');return;
+        }else{
+			com.val(Math.max(minp,total));
+		}
+		qh();
+    }
+    function reduceone(id) {
+		id = id + "_0";
+		var com=$("#co" + id);
+		var minp = parseInt("0" + com.data('min'),10);
+		var maxp = parseInt('0' + com.data('max'),10);
+		var bjp = Math.max(1,parseInt("0" + com.data('bj'),10));
+		var total = parseInt("0" + com.val(),10);
+		total -= bjp;
+		if(total<=0){
+			com.val(0);
+		}else if (total < minp) {
+			$.toptip('操作失败，不能少于' + minp, 'error');return;
+        }else{
+			if(maxp>0){total = Math.min(total,maxp);}
+			com.val(total);
+		}
+		qh();
+    }
+	qh();
+	function qh(){ 
+		var allsum=0; 
+		$(".weui-reddot-b").removeClass('weui-reddot-b');
+		$(".mui-control-content").each(function(){ 
+			var id = $(this).attr("id");
+			var sum=0;
+			$("#" + id +" .zmui-count-input").each(function(){ 
+				sum+=parseInt('0'+$(this).val(),10);
+			});
+			if(sum > 0){$("#d"+id).addClass('weui-reddot-b');}
+			allsum+=sum;
+		});
+		$("#allno").html(allsum);
+	}
+    function opaddone(id,op) {
+		idop = id + "_" + op;
+		var com=$("#" + idop);
+		var total = parseInt("0" + com.val(),10);
+		total ++;
+		com.val(Math.max(total,1));
+		opqh(id);
+    }
+    function opreduceone(id,op) {
+		idop = id + "_" + op;
+		var com=$("#" + idop);
+		var total = parseInt("0" + com.val(),10);
+		total --;
+		com.val(Math.max(total,0));
+		opqh(id);
+    }
+	function opqh(id){
+		var sum=0;
+		var com=$("#co" + id + "_0");
+		var minp = parseInt("0" + com.data('min'),10);
+		var maxp = parseInt('0' + com.data('max'),10);
+		var bjp = Math.max(1,parseInt("0" + com.data('bj'),10));
+		$(".zmui-count-input.options").each(function(){ 
+			sum+=parseInt('0'+$(this).val(),10);
+		});
+		$(".opcom").html(sum);
+		$(".opts").html("");
+		$("#btn_tobuy").addClass("weui-btn_warn").removeClass("weui-btn_default").attr("href","javascript:bcgoodsop();");
+		if(sum==0){return;}
+		if(minp>sum){
+			var chae = minp-sum;
+			$(".opts").html("您还得再下" + chae + "件");
+			$("#btn_tobuy").addClass("weui-btn_default").removeClass("weui-btn_warn").attr("href","javascript:;");
+		}else if(bjp>1 && minp<sum){
+			var a=(sum-minp) % bjp;
+			if(a>0){
+				var chae = bjp - a;
+				$(".opts").html("您还得再下" + chae + "件");
+				$("#btn_tobuy").addClass("weui-btn_default").removeClass("weui-btn_warn").attr("href","javascript:;");
+			}
+		}else if(maxp>0 && maxp<sum){
+			var chae = sum-maxp;
+			$(".opts").html("您已经超量" + chae + "件");
+			$("#btn_tobuy").addClass("weui-btn_default").removeClass("weui-btn_warn").attr("href","javascript:;");
+		}
+	}
+    function getpro(id) {
+		$.showLoading();$('#alladd').html('正在加载商品数据......');
+		$.get('index.php?i={$_W['uniacid']}&c=entry&do=detail&pp=1&m=zmcn_goods', {id : id}, function(s){
+			if(s.length<100) {
+				$.hideLoading();$.toast("加载失败", "text");
+			}else{
+				$("#prodetial").popup();
+				$.hideLoading();$('#alladd').html(s);
+			}
+		}, 'html');
+	}
+    function clpro() {
+		$('#alladd').html('正在关闭......');$.hideLoading();
+	}
+	function qhtb(a) {
+		$(".abcd").addClass('hidden');
+		$("#cb" + a).removeClass('hidden');
+		$(".tab-blue").removeClass('tab-blue');
+		$("#bb" + a).addClass('tab-blue');
+	}
+    function getgoop(id) {
+		$.showLoading();$('#oplist').html('');
+		$("#goplist_gid").val(id);
+		$('#op_goodsna').html($('#box'+id+' .weui-media-box__title').html());
+		$.get('index.php?i={$_W['uniacid']}&c=entry&do=options&m=zmcn_goods', {id : id}, function(s){
+			if(s.message.zt==1) {
+				$.hideLoading();$.toast("加载失败", "text");
+			}else{
+				$("#goplist").popup();
+				$.each(s.message.options,function (opna, opti){addgoodsop(opna,opti,id);});
+				$.hideLoading();opqh(id);
+				$(".zmui-count-input.options").change(function(){ 
+					var total = parseInt('0'+$(this).val(),10);
+					$(this).val(Math.max(total,0));
+					opqh(id);
+				});
+			}
+		}, 'json');
+	}
+	function addgoodsop(opna,opti,goid){
+		var html='';
+		var total = Math.max(parseInt("0" + $('#boxopco'+goid+'_'+opti.id).val(),10),0);
+		html += "<div class='weui-cell' style='height:40px;'>";
+		if(opti.thumb!=''){html += "<div class='weui-cell__hd'><img src='{php echo tomedia('"+opti.thumb+"');}' style='width:20px;margin-right:5px;display:block'></div>";}
+		html += "<div class='weui-cell__bd'>"+opna+"</div><div class='weui-cell__ft zmui-count' style='padding-top: 14px !important;'><span class='zmui-count-add' onclick='opaddone("+goid+","+opti.id+")'>＋</span><input class='zmui-count-input options' type='tel' id='"+goid+"_"+opti.id+"' value='"+total+"' /><span class='zmui-count-reduce' onclick='opreduceone("+goid+","+opti.id+")'>－</span></div></div>";
+		$("#oplist").append(html);
+	}
+	function bcgoodsop(){
+		var html='';
+		var gid = $("#goplist_gid").val();
+		var sum=0;
+		$("#opbox"+gid).html('');
+		$(".zmui-count-input.options").each(function(){ 
+			var total = parseInt('0'+$(this).val(),10); 
+			var id = $(this).attr("id");
+			if(total > 0){
+				html = "<input type='hidden' name='count[" + id + "]' id='boxopco" + id + "' value='" + total + "'>";
+				$("#opbox"+gid).append(html);
+				sum += total;
+			}
+		});
+		if(sum>0){
+			$("#co"+gid+"_0").val(sum);
+		}else{
+			$("#co"+gid+"_0").val(0);
+		}
+		qh();
+		$.closePopup();$.alert(s.message.ts, "操作成功！");
+		$("#oplist").html('');
+	}
+	function ckop(){$("#oplist").html('');}
+</script>

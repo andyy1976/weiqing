@@ -1,0 +1,54 @@
+{template 'common/header'}
+<ul class="nav nav-tabs">
+	<li {if $_GPC['op'] == 'display'}class="active"{/if}><a href="{php echo $this->createWebUrl('dispatch', array('op'=>'display'));}">配送方式</a></li>
+	<li {if $_GPC['op'] == 'ud'}class="active"{/if}><a href="{php echo $this->createWebUrl('dispatch', array('op'=>'ud'));}">新增配送区域</a></li>
+</ul>
+<div class="panel panel-default">
+	<div class="panel-heading">配送区域　　　　　　<b>注意：如果系统启用配送功能，则只有下列开通的区域才能下单，请认真设置！</b></div><iframe name='userlog' frameborder=0 width=0 height=0 scrolling=no src='about:blank'></iframe>
+	<div class="table-responsive panel-body">
+			<table class="table table-hover">
+				<thead class="navbar-inner">
+					<tr>
+						<th style="text-align:center; width:60px;">ID</th>
+						<th style="text-align:center; width:200px;">配送区域</th>
+						<th style="text-align:center; width:400px;">配送方式</th>
+						<th style="text-align:center; width:60px;">状态</th>
+						<th style="text-align:center; width:120px;">操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					{loop $dispatchs $item}
+					<tr style="text-align:center;">
+						<td>{$item['id']}</td>
+						<td class="text-left"><b>{$item['province']}</b><br>{$item['city']}</td>
+						<td class="text-left">
+						
+						{loop $item['express'] $spid=>$spe}
+{$spe['expna']}({$spe['expcom']})：{if $spe['free']}<b>不计费</b>；<br>{else} {if $spe['firstweight']}首重 {$spe['firstweight']} ㎏ <b>{$spe['firstprice']}</b> 元；续重 {$spe['secondweight']} ㎏ <b>{$spe['secondprice']}</b> 元；{/if} {if $spe['minprice']}起步价 <b>{$spe['minprice']}</b> 元；{/if}<br>{/if}
+						{/loop}
+						</td>
+						<!----td>{php echo date("Y-m-d", $item['addtime'])}</td------>
+						<td>
+						{if $item['zt']=='0'}<span class="label label-default">不配送</span>{else}<span class="label label-success">配送</span>{/if}
+						</td>
+						<td>
+							<a rel="tooltip" href="{php echo $this->createWebUrl('dispatch', array('op'=>'ud', 'id'=>$item['id']));}" title="编辑" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="编辑"><i class="fa fa-pencil"></i></a>
+							<a onclick="if(!confirm('删除后将不可恢复,确定删除吗?')) return false;" href="{php echo $this->createWebUrl('dispatch', array('op'=>'del', 'id'=>$item['id']));}" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="" data-original-title="删除"><i class="fa fa-times"></i></a>
+						</td>
+					</tr>
+					{/loop}
+					{if empty($dispatchs)}
+					<tr>
+						<td colspan="5">尚未添加配送区域</td>
+					</tr>
+					{/if}
+				</tbody>
+			</table>
+	</div>
+</div>
+ <script type="text/javascript">
+ 	require(['bootstrap'],function($){
+		$('[data-toggle="tooltip"]').tooltip();
+	});
+</script>
+{template 'common/footer'}

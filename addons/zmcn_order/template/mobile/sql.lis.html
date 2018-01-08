@@ -1,0 +1,19 @@
+{loop $list $od}
+<a href="javascript:;"  class="weui-media-box weui-media-box_appmsg zmui_media46">
+	<div class="weui-media-box__hd">
+	{if empty($od['zt'])}
+		<i class="zmui-icon zmui-icon-daochu f-red"></i>
+	{else}
+		<i class="zmui-icon zmui-icon-daoru f-green"></i>
+	{/if}
+	</div>
+	<div class="weui-media-box__bd">
+		<h4 class="weui-media-box__title">{php echo date('Y-m-d H:i', $od['addtime'])}</h4>
+		<p class="weui-media-box__desc">{$od['remark']}</p>
+	</div>
+	<div class="row-remark">
+		<p>{if empty($od['zt'])}出库{else}入库{/if}</p>
+		<p>{$od['sl']}</p>
+	</div>
+</a>
+{/loop}

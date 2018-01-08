@@ -1,0 +1,346 @@
+{template 'common/header'}
+<ul class="nav nav-tabs">
+	<li><a href="{php echo $this->createWebUrl('agent', array('op'=>'display'));}">经销商列表</a></li>
+	<li {if empty($id)}class="active"{/if}><a href="{php echo $this->createWebUrl('agent', array('op'=>'edit'));}">添加经销商</a></li>
+	{if !empty($id)}
+	<li class="active"><a href="{php echo $this->createWebUrl('goods', array('op'=>'agent', 'id'=>$id));}">编辑经销商</a></li>
+	{/if}
+	<li><a href="{php echo $this->createWebUrl('classset');}">经销商分类</a></li>
+</ul>
+<?php
+if(strlen($settings['que']['agenttype'])>1){$agenttype=explode("#" , $settings['que']['agenttype']);}else{$agenttype='#';}
+if(strlen($settings['que']['product'])>1){$product=explode("#" , $settings['que']['product']);}else{$product='';}
+if(strlen($settings['que']['channel'])>1){$channel=explode("#" , $settings['que']['channel']);}else{$channel='';}
+if(strlen($settings['que']['param'])>1){$params=explode("#" , $settings['que']['param']);}else{$params='';}
+if(strlen($settings['que']['idtype'])>1){$idtype=explode("#" , $settings['que']['idtype']);}else{$idtype=array('身份证','营业执照','香港身分证','澳门身分证','台湾身分证','护照','户口本','学生证','士兵证','党员证','签证','居住证','军官证');;}
+?>
+<datalist id="tx_channel">
+	{loop $channel $idt}
+		<option label="{$idt}" value="{$idt}" />
+	{/loop}
+</datalist>
+<datalist id="tx_product">
+	{loop $product $idt}
+		<option label="{$idt}" value="{$idt}" />
+	{/loop}
+</datalist>
+<datalist id="tx_param">
+	{loop $params $idt}
+		<option label="{$idt}" value="{$idt}" />
+	{/loop}
+</datalist>
+<datalist id="tx_agenttype">
+	{loop $agenttype $idt}
+		<option label="{$idt}" value="{$idt}" />
+	{/loop}
+</datalist>
+
+
+
+<form action="" method="post" class="form-horizontal form" id="form" onkeydown="if(event.keyCode==13)return false;">
+<div class="main">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				{if empty($id)}添加{else}编辑{/if}经销商
+			</div>
+			<div class="panel-body">
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">经销商证书</label>
+					<div class="col-xs-12 col-sm-4">
+						<div class="input-group">
+							<select class="form-control input-medium"  id="cerid" name="agent[cerid]">
+								<option value="{$cer['id']}" selected >{$cer['title']}</option>
+							</select>
+							<span class="input-group-addon">编号</span>
+							<input type="text" class="form-control" name="agent[number]" id="number" placeholder="请点击右边按钮获取编号" value="{$agent['number']}" readOnly="true">
+							<span class="input-group-addon" style="cursor:pointer" onclick="javascript:upgrade();" ><i class="fa fa-refresh" id="tubiao"></i></span>
+						</div>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">经销商分类</label>
+					<div class="col-xs-12 col-sm-4">
+						<select class="form-control input-medium" name="agent[class]">
+							<option value="0" {if '0'==(int)$agent['class']}selected{/if}>还未分类</option>
+							{loop $clas $cla}
+								<option value="{$cla['id']}" {if $cla['id']==$agent['class']}selected{/if}>{$cla['title']}</option>
+							{/loop}
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">粉丝绑定</label>
+					<div class="col-xs-12 col-sm-4">
+						<input type="hidden" id="tongzi" name="agent[openid]" value="{$agent['openid']}" />
+						{php $fans=mc_fansinfo($agent['openid'])}
+						<div class='input-group'>
+							<span class="input-group-addon" style="padding: 0 3px 0 10px;"><img id="tongziav" src="{$fans['tag']['avatar']}" width="30" onerror="this.src='resource/images/noavatar_middle.gif'"/></span>
+							<input type="text" name="tongzina" maxlength="300" value="{$fans['tag']['nickname']}" id="tongzina" placeholder="请选择：粉丝绑定" class="form-control" readonly />
+							<div class='input-group-btn'>
+								<button class="btn btn-default" type="button" onclick="document.getElementById('search-type').value='tongzi';popwin = $('#modal-module-menus2').modal();">选择</button>
+							</div>
+						</div>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">上级经销商</label>
+					<div class="col-xs-12 col-sm-4">
+						<input type="hidden" id="fid" name="agent[fid]" value="{$agent['fid']}" />
+						{php $fuser=$this->zm_fuserinfo($agent['fid'])}
+						<div class='input-group'>
+							<span class="input-group-addon" style="padding: 0 3px 0 10px;"><img id="fidav" src="{php echo tomedia($fuser['avatar']);}" width="30" onerror="this.src='resource/images/noavatar_middle.gif'"/></span>
+							<input type="text" name="fidna" maxlength="300" value="{$fuser['name']}" id="fidna" placeholder="请选择：期上级经销商" class="form-control" readonly />
+							<div class='input-group-btn'>
+								<button class="btn btn-default" type="button" onclick="document.getElementById('search-type').value='fid';popwin = $('#modal-module-menus2').modal();">选择</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">经销商名称</label>
+					<div class="col-xs-12 col-sm-4">
+						<input type="text" name="agent[name]" class="form-control" placeholder="单位或个人名称" value="{$agent['name']}" />
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">授权产品</label>
+					<div class="col-xs-12 col-sm-4">
+						<input type="text" name="agent[product]" class="form-control" placeholder="填写品牌名称或是具体产品名称" value="{$agent['product']}" list="tx_product" autocomplete="off"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">联系人</label>
+					<div class="col-xs-12 col-sm-4">
+						<input type="text" name="agent[user]" class="form-control" value="{$agent['user']}" />
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">授权地区</label>
+					<div class="col-xs-12 col-sm-4">
+						<div class="input-group">
+							<input type="text" name="agent[area]" class="form-control" value="{$agent['area']}" />
+							<span class="input-group-addon">等级</span>
+							<select class="form-control input-medium" name="agent[level]">
+							<option value="0" {if '0'==(int)$agent['level']}selected{/if}>还未分等级</option>
+							{loop $levs $cla}
+								<option value="{$cla['id']}" {if $cla['id']==$agent['level']}selected{/if}>{$cla['title']}</option>
+							{/loop}
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">经销商手机号</label>
+					<div class="col-xs-12 col-sm-4">
+						<input type="text" name="agent[phone]" class="form-control" value="{$agent['phone']}" />
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">授权渠道</label>
+					<div class="col-xs-12 col-sm-4">
+						<input type="text" name="agent[channel]" class="form-control" placeholder="如微商" value="{$agent['channel']}" list="tx_channel" autocomplete="off"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">经销商微信号</label>
+					<div class="col-xs-12 col-sm-4">
+						<input type="text" name="agent[wechat]" class="form-control" value="{$agent['wechat']}" />
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">授权网店</label>
+					<div class="col-xs-12 col-sm-4">
+						<input type="text" name="agent[webehop]" class="form-control" placeholder="http://" value="{$agent['webehop']}" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">证件</label>
+					<div class="col-xs-12 col-sm-4">
+						<div class="input-group">
+							<select class="form-control input-medium" name="agent[idtype]">
+								{loop $idtype $idt}
+									<option value="{$idt}" {if $idt==$agent['idtype']}selected{/if}>{$idt}</option>
+								{/loop}
+							</select>
+							<span class="input-group-addon">NO.</span>
+							<input type="text" class="form-control" name="agent[idno]"  placeholder="证件编号:身份证号或营业执照号" value="{$agent['idno']}">
+						</div>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">授权时间</label>
+					<div class="col-xs-12 col-sm-4">
+						{php echo tpl_form_field_daterange('agent[cer_time]', $agent['cer_time']);}
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">经销商照片<br>(头像/店面/LOGO)</label>
+					<div class="col-xs-12 col-sm-4">
+						{php echo tpl_form_field_image('agent[avatar]', $agent['avatar']);}
+						<div class="help-block">尺寸300*300或其它正方形图片</div>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">管理选项</label>
+					<div class="col-xs-12 col-sm-4">
+						<div class='input-group form-group'>
+							<span class="input-group-addon">星级</span>
+							<select class="form-control input-medium" name="agent[star]">
+								<option value="0" {if '0'==(int)$agent['star']}selected{/if}>没有星级</option>
+								<option value="1" {if '1'==$agent['star']}selected{/if}>一星级</option>
+								<option value="2" {if '2'==$agent['star']}selected{/if}>二星级</option>
+								<option value="3" {if '3'==$agent['star']}selected{/if}>三星级</option>
+								<option value="4" {if '4'==$agent['star']}selected{/if}>四星级</option>
+								<option value="5" {if '5'==$agent['star']}selected{/if}>五星级</option>
+							</select>
+							<span class="input-group-addon">称号</span>
+							<input type="text" class="form-control"  name="agent[agenttype]" placeholder="请输入授权称号" list="tx_agenttype" value="{$agent['agenttype']}">
+						</div>
+						<div class='input-group form-group'>
+							<span class="input-group-addon">状态</span>
+							<select class="form-control input-medium" name="agent[type]">
+								<option value="3" {if '3'==$agent['type']}selected{/if}>通过审核</option>
+								<option value="0" {if '0'==(int)$agent['type']}selected{/if}>已删除</option>
+								<option value="1" {if '1'==$agent['type']}selected{/if}>不通过</option>
+								<option value="2" {if '2'==$agent['type']}selected{/if}>新注册</option>
+							</select>
+							<span class="input-group-addon">来路</span>
+							<select class="form-control input-medium" name="agent[source]">
+								<option value="0" {if '0'==(int)$agent['source']}selected{/if}>后台添加</option>
+								<option value="1" {if '1'==$agent['source']}selected{/if}>本人注册</option>
+								<option value="2" {if '2'==$agent['source']}selected{/if}>前台添加</option>
+								<option value="3" {if '3'==$agent['source']}selected{/if}>上级添加</option>
+								<option value="4" {if '4'==$agent['source']}selected{/if}>邀请加入</option>
+								<option value="9" {if '9'==$agent['source']}selected{/if}>其它</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">地址：</label>
+					<div class="col-xs-12 col-md-6">
+						{php echo tpl_form_field_district('agent', array('province' => $agent['province'],'city' => $agent['city'],'district' => $agent['district']));}
+					</div>	
+					<div class="col-xs-12 col-sm-4">
+						<input type="text" name="agent[address]" class="form-control" value="{$agent['address']}" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">扩展资料</label>
+					<div class="col-xs-12 col-sm-4">
+						<div class='input-group form-group'>
+							<span class="input-group-addon">EMAIL：</span>
+							<input type="text" name="agent[email]" class="form-control" value="{$agent['email']}" />
+						</div>
+						<div class='input-group form-group'>
+							<span class="input-group-addon">代理QQ：</span>
+							<input type="text" name="agent[qq]" class="form-control" value="{$agent['qq']}" />
+						</div>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">备注</label>
+					<div class="col-xs-12 col-sm-4">
+						<textarea class="form-control" name="agent[remark]" placeholder="" rows="4">{$agent['remark']}</textarea>
+					</div>
+				</div>
+				<div class="form-group clearfix">
+					<label class="control-label col-md-2">自定义项目</label>
+					<div class="col-md-10">
+						<table class="table table-hover" style="width:100%;">
+							<thead class="navbar-inner"  style="width:100%;">
+								<tr>
+									<th class="row-hover span3" style="width:20%;">项目标题<i></i></th>
+									<th class="row-hover span3" style="width:70%;">项目内容<i></i></th>
+									<th style="text-align:right;" style="width:10%;">操作</th>
+								</tr>
+							</thead>
+							<tbody id="status-items">
+								{loop $agent['param'] $param}
+								<tr>
+									<td><input name="agent[param][title][]" type="text" value="{$param['title']}" class="form-control" list="tx_param" autocomplete="off"></td>
+									<td><input name="agent[param][value][]" type="text" value="{$param['value']}" class="form-control"></td>
+									<td style="text-align:right;">
+										<a onclick="if (confirm('删除操作不可恢复，确认吗？')){ $(this).parent().parent().remove(); return true;} else {return false;}" href="javascript:;" class="btn btn-small" title="删除此条目"><i class="glyphicon glyphicon-remove-circle"></i> 删除</a></td>
+								</tr>
+								{/loop}
+							</tbody>
+							<tr>
+								<td colspan="3">
+									<a href="javascript:;" onclick="addStatusItem()"><i class="icon-plus-sign-alt"></i> 添加新项目</a>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>	
+			</div>
+		</div>
+</div>
+<input type="hidden" name="id" value="{$agent['id']}" />
+<input type="hidden" name="token" value="{$_W['token']}" />
+<button type="submit" class="btn btn-primary span3" name="submit" value="提交">提交</button>
+</form>
+
+<script>
+	require(['jquery', 'util'], function ($, util) {
+		$(function() {
+			$('#form').submit(function () {
+				if($('input[name="agent[number]"]').val() == ''){
+					util.message('请填写经销商编号！');
+					return false;
+				}
+				if($('input[name="agent[name]"]').val() == ''){
+					util.message('请填写经销商名称！');
+					return false;
+				}
+				if($('input[name="agent[phone]"]').val() == ''){
+					util.message('请填写经销商电话！');
+					return false;
+				}
+				if($('input[name="agent[channel]"]').val() == ''){
+					util.message('请填写授权渠道！');
+					return false;
+				}
+				if($('input[name="agent[avatar]"]').val() == ''){
+					util.message('请上传经销商LOGO！');
+					return false;
+				}
+				if($('input[name="agent[wechat]"]').val() == ''){
+					util.message('请填写经销商微信号！');
+					return false;
+				}
+				if($('input[name="agent[area]"]').val() == ''){
+					util.message('请填写授权地区！');
+					return false;
+				}
+				if($('input[name="agent[product]"]').val() == ''){
+					util.message('请填写授权产品！');
+					return false;
+				}
+				if($('input[name="agent[cer_time]"]').val() == ''){
+					util.message('请填写授权时间！');
+					return false;
+				}
+				return true;
+			});
+		});
+	});
+</script>
+
+<script type="text/javascript">
+<!--
+	function addStatusItem() {
+		var html = '' +
+				'<tr>' +
+					'<td><input name="agent[param][title][]" type="text" class="form-control" list="tx_param" autocomplete="off" placeholder=""/></td>' +
+					'<td><input name="agent[param][value][]" type="text" value="" class="form-control" placeholder=""></td>' +
+					'<td style="text-align:right;"><a href="javascript:;" onclick="$(this).parent().parent().remove();" class="btn btn-small" title="删除此条目"><i class="glyphicon glyphicon-remove-circle"></i> 删除</a></td>' +
+				'</tr>';
+		$('#status-items').append(html);
+	}
+	
+    function upgrade(){
+		document.getElementById("tubiao").className="fa fa-spinner";
+		var sqid = $("#cerid").val();
+        $.ajax({
+            url: "{php echo $this->createWebUrl('getno')}" ,
+            data:{sq:sqid},
+            type:'post',
+			error:function() { document.getElementById("tubiao").className="fa fa-times-circle"; },
+            success:function(ret){
+				if(ret.length=={php echo $cer['weis']+2;}) {
+					$("#number").val(ret);
+					document.getElementById("tubiao").className="fa fa-check-circle";
+				}else{
+					document.getElementById("tubiao").className="fa fa-times-circle"; 
+				}
+            }
+        });
+    }
+//-->
+</script>
+
+{template 'fsqueryac'}
+{template 'common/footer'}

@@ -1,0 +1,176 @@
+{template '_header'}
+<style>
+.weui-picker-container{z-index:1000;}
+.weui-media-box__hd_ss>i{padding-top:5px;}
+</style>
+<div class="page bg-zmpag">
+<div style="position:fixed; z-index:1; top:0; width:100%; background-color:#ccc;">
+	<div class="weui-btn_primary weui-header">
+		<div class="weui-header-left"><a class="zmui-icon zmui-icon-slider-left f-white" onclick='javascript:history.go(-1);'></a></div>
+		<h1 class="weui-header-title" onclick="bl(0);">我的提成</h1>
+		<div class="weui-header-right"><a class="zmui-icon zmui-icon-more f-white open-popup" data-target="#half"></a></div>
+	</div>
+</div>
+<div class="weui-panel__bd" style="height:48px;"></div>
+<nav class="nav_integral">
+	<ul class="box clearfix">
+		<li><a href="javascript:bl(1);"><b>{$noin}笔</b><br><label>待收提成</label></a></li>
+		<li><a href="javascript:bl(2);"><b>{$noout}笔</b><br><label>待付提成</label></a></li>
+		<li><a href="javascript:bl(3);"><b>{$allin}元</b><br><label>提成收入</label></a></li>
+		<li><a href="javascript:bl(4);"><b>{$allout}元</b><br><label>提成支出</label></a></li>
+	</ul>
+</nav>
+<div class="weui-panel weui-panel_access"><div class="weui-panel__bd" id="list">
+<div class='weui-msg'><div class='weui-msg__icon-area'><i class='weui-icon-warn weui-icon_msg-primary f-gray'></i></div><div class='weui-msg__text-area'><p class='weui-msg__desc'>暂无数据</p></div></div>
+</div></div>
+</div>
+<div class="clear loadtis"></div>
+<div id="yjxq" class='weui-popup__container'>
+	<div class="weui-popup__modal">
+		<div class="weui-btn_primary weui-header close-popup" onclick='javascript:clpro();'>
+			<div class="weui-header-left"><a class="zmui-icon zmui-icon-slider-left f-white" ></a></div>
+			<h1 class="weui-header-title">提成明细</h1>
+			<div class="weui-header-right"><a class="zmui-icon zmui-icon-close2 f20 f-white"></a></div>
+		</div>
+		<div class="page" id="alladd" style="background-color: #fff">
+			正在加载数据...
+		</div>
+	</div>
+</div>
+{template '_footer'}
+<script>
+	var loading = false;
+	var i=1;
+	var io=0;
+	$(document.body).infinite().on("infinite", function() {
+		if(loading) return;
+		loading = true;
+		upgrade();
+	});
+    function upgrade(){
+		$(".loadtis").html("<div class='weui-loadmore'><i class='weui-loading'></i><span class='weui-loadmore__tips'>正在加载</span></div>");
+        $.ajax({
+            url: "{php echo url('entry',array('do' => 'yongjinglis','m' => 'zmcn_order'),true)}" ,
+            data:{ab:i,io:io},
+            type:'post',
+			error:function() {
+				 $(".loadtis").html("<div class='weui-loadmore weui-loadmore_line'><span class='weui-loadmore__tips'>通信错误！</span></div>");
+					loading = true;
+				},
+            success:function(ret){
+             if(ret==1)      {
+				if(i==1) {
+					$(".loadtis").html("<div></div>");
+				}else{
+					$(".loadtis").html("<div class='weui-loadmore weui-loadmore_line'><span class='weui-loadmore__tips'>已经到底了！</span></div>");
+				}
+				loading = true;
+             }else{
+				if(ret.length<100) {
+					if(i==1) {
+						$(".loadtis").html("<div></div>");
+					}else{
+						$(".loadtis").html("<div class='weui-loadmore weui-loadmore_line'><span class='weui-loadmore__tips'>已经到底了！</span></div>");
+					}
+					loading = true;
+				}else{
+					if(i==1) {
+						$("#list").html(ret);
+					}else{
+						$("#list").append(ret);
+					}
+					loading = false;
+					i++
+					$(".loadtis").html("<div class='weui-loadmore weui-loadmore_line' onclick='upgrade();'><span class='weui-loadmore__tips'>点击加载更多</span></div>");
+				}
+             }
+            }
+        });
+    }
+	upgrade();
+    function bl(id){
+		io=id;i=1;$.hideLoading();
+		$("#list").html("<div class='weui-msg'><div class='weui-msg__icon-area'><i class='weui-icon-warn weui-icon_msg-primary f-gray'></i></div><div class='weui-msg__text-area'><p class='weui-msg__desc'>暂无数据</p></div></div>");
+		upgrade();
+	}
+	function yjdk(id) {
+		$.actions({title: "选择操作",onClose: function() {console.log("close");$.showLoading();$.hideLoading();},
+			actions: [
+				{text: "查看明细",className: "color-primary",onClick: function() {
+					getyjxq(id);
+				}}
+				,{text: "确认到款",className: "f-zi",onClick: function() {
+					$.confirm("您确定已经收到该笔提成了吗?", "确认到款", function() {
+						$.showLoading();
+						$.post('{php echo $this->createMobileUrl('yongjing',array('op' => 'dk'))}', {'id' : id }, function(s){
+							$.hideLoading();
+							if (s.message.zt==0) {
+								$.toast("操作成功！");
+							}else{
+								$.alert(s.message.ts, "操作失败！");
+							}
+						}, 'json');
+					}, function() {
+					  //取消操作
+					});
+				}}
+			]
+		});
+	}
+	function yjfk(id) {
+		$.actions({title: "选择操作",onClose: function() {console.log("close");$.showLoading();$.hideLoading();},
+			actions: [
+				{text: "查看明细",className: "color-primary",onClick: function() {
+					getyjxq(id);
+				}}
+				{if $settings['sys']['isye']=='1'}
+				,{text: "用余额支付",className: "color-warning",onClick: function() {
+					$.confirm("您确定用余额支付方式支付该笔提成了吗?", "确认支付", function() {
+						$.showLoading();
+						$.post('{php echo $this->createMobileUrl('yongjing',array('op' => 'yf'))}', {'id' : id }, function(s){
+							$.hideLoading();
+							if (s.message.zt==0) {
+								$.toast("操作成功！");
+							}else{
+								$.alert(s.message.ts, "操作失败！");
+							}
+						}, 'json');
+					}, function() {
+					  //取消操作
+					});
+				}}
+				{/if}
+				,{text: "已线下转账",className: "f-zi",onClick: function() {
+				
+					$.confirm("您确定已经通过线下转账的方式付了该笔提成了吗?", "确认支付", function() {
+						$.showLoading();
+						$.post('{php echo $this->createMobileUrl('yongjing',array('op' => 'hk'))}', {'id' : id }, function(s){
+							$.hideLoading();
+							if (s.message.zt==0) {
+								$.toast("操作成功！");
+							}else{
+								$.alert(s.message.ts, "操作失败！");
+							}
+						}, 'json');
+					}, function() {
+					  //取消操作
+					});
+				}}
+			]
+		});
+	}
+    function getyjxq(id) {
+		$.closePopup();$.showLoading();$('#alladd').html('正在加载数据......');
+		$.get('{php echo $this->createMobileUrl('yongjing',array('op' => 'xq'))}', {id : id}, function(s){
+			if(s.length<100) {
+				$.hideLoading();$.toast("加载失败", "text");
+			}else{
+				$("#yjxq").popup();
+				$.hideLoading();$('#alladd').html(s);
+			}
+		}, 'html');
+	}
+    function clpro() {
+		$('#alladd').html('正在关闭......');$.hideLoading();
+	}
+</script>

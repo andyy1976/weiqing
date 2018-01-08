@@ -1,0 +1,103 @@
+{template '_header'}
+<style>
+.weui-picker-container{z-index:1000;}
+.chart {height: 200px;margin: 0px;padding: 0px;}
+h5 {margin-top: 30px;font-weight: bold;}
+h5:first-child {margin-top: 15px;}
+</style>
+<div class="page bg-zmpag">
+	<div class="weui-btn_primary weui-header">
+		<div class="weui-header-left"><a class="zmui-icon zmui-icon-slider-left f-white" onclick='javascript:history.go(-1);'></a></div>
+		<h1 class="weui-header-title">数据中心</h1>
+		<div class="weui-header-right"><a class="zmui-icon zmui-icon-more f-white open-popup" data-target="#half"></a></div>
+	</div>
+	<div class="chart" id="barChart"></div>
+	<div class="weui-cells__title">我的业绩报表</div>
+	<div class="weui-cells">
+		<a class="weui-cell weui-cell_access" href="{php echo $this->createMobileUrl('sqlorder', array('op' => '3','openid' => $openid,'fid' => $_GPC['fid']))}">
+			<div class="weui-cell__bd"><p>销售日报表</p></div>
+			<div class="weui-cell__ft">30天内销售业绩</div>
+		</a>
+		<a class="weui-cell weui-cell_access" href="{php echo $this->createMobileUrl('sqlorder', array('op' => '1','openid' => $openid,'fid' => $_GPC['fid']))}">
+			<div class="weui-cell__bd"><p>销售月报表</p></div>
+			<div class="weui-cell__ft">12个月内销售业绩</div>
+		</a>
+		<a class="weui-cell weui-cell_access" href="{php echo $this->createMobileUrl('sqlorder', array('op' => '2','openid' => $openid,'fid' => $_GPC['fid']))}">
+			<div class="weui-cell__bd"><p>进货月报表</p></div>
+			<div class="weui-cell__ft">12个月内进货统计</div>
+		</a>
+	</div>
+	<div class="weui-panel">
+	<form action="" method="post" class="form-horizontal form" id="setting-form">
+	<div class="weui-cells__title">商品进销统计</div>		
+	<div class="weui-cells">
+		<div class="weui-cell weui-cell_select weui-cell_select-after">
+			<div class="weui-cell__hd"><label class="weui-label">选择商品</label></div>
+			<div class="weui-cell__bd"> 
+				<select class="weui-select" name="goodid">
+					{loop $list $sgo}
+						<option value="{$sgo['goodsid']}" >{$sgo['name']}({$sgo['st']})</option>
+					{/loop}
+				</select>
+			</div>
+		</div>
+		<div class="weui-cell  weui-cells_form">
+			<div class="weui-cell__hd"><label for="date" class="weui-label">开始日期</label></div>
+			<div class="weui-cell__bd"><input type="text" class="weui-input" id="date1" name="atime" value="{php echo date('Y-m-d', TIMESTAMP)}"></div>
+		</div>
+		<div class="weui-cell  weui-cells_form">
+			<div class="weui-cell__hd"><label for="date" class="weui-label">结束日期</label></div>
+			<div class="weui-cell__bd"><input type="text" class="weui-input" id="date2" name="btime" value="{php echo date('Y-m-d', TIMESTAMP)}"></div>
+		</div>
+	</div>
+	<div class="weui-btn-area">
+	<input type="hidden" name="token" value="{$_W['token']}" />
+		<input type="submit" name="submit" value="提 交" class="weui-btn weui-btn_primary"/>
+	</div>
+	</form>
+	</div>
+</div>
+{template '_footer'}
+<script type="text/javascript" src="{$_W['siteroot']}addons/zmcn_erp/zmui/js/echarts.min.js"></script>
+<script type="text/javascript" src="{$_W['siteroot']}addons/zmcn_erp/zmui/js/fastclick.js"></script>
+    <script>
+      $("#date1").calendar({
+        onChange: function (p, values, displayValues) {
+          console.log(values, displayValues);
+        }
+      });
+      $("#date2").calendar({
+        onChange: function (p, values, displayValues) {
+          console.log(values, displayValues);
+        }
+      });
+    </script>
+<script type="text/javascript">
+	var myChart = echarts.init(document.getElementById('barChart'));
+	var option = {
+		backgroundColor: '#FFF',
+		title: {text: '进出货概况'},
+		legend: {data:['进货','出货']},
+		grid: {x: 60,x2: 10,y: 30,y2: 25},
+		xAxis: {data: ["{php echo implode('","', $ac['na']);}"]},
+		yAxis: [{type : 'value'}],
+		series: [{name: '进货',type: 'bar',data: [{php echo implode(',', $ac['jh']);}]},{name: '出货',type: 'bar',data: [{php echo implode(',', $ac['xs']);}]}]
+	};
+	myChart.setOption(option);
+</script>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

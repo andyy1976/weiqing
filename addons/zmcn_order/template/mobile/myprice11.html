@@ -1,0 +1,38 @@
+{template '_header'}
+<div class="page">
+<div style="position:fixed; z-index:1; top:0; width:100%; background-color:#ccc;}">
+	<div class="weui-btn_primary weui-header">
+		<div class="weui-header-left"><a class="icon icon-109 f-white" onclick='javascript:history.go(-1);'></a></div>
+		<h1 class="weui-header-title">我要下单</h1>
+		<div class="weui-header-right"><a class="icon icon-22 f-white open-popup" data-target="#half"></a></div>
+	</div>
+	<!---div class="weui-tab weui-tab_blue" style="height:44px;">
+		<div class="weui-navbar" style="height:44px;">
+				<div class="weui-navbar__item"> </div>
+		</div>
+	</div--->
+</div>
+<div class="weui-panel__bd" style="height:38px;"></div>
+	<div class="weui-panel weui-panel_access"><div class="weui-panel__bd" id="list">
+	
+{loop $goodss $goods}
+	{php $goods['prices'] = iunserializer($goods['prices']);}
+	{if $pric=='productprice'} {php $npric=$goods['productprice'];} {else} {php $npric=$goods['prices'][$pric];} {/if}
+	<a href="javascript:;;"  class="weui-media-box weui-media-box_appmsg zmui_media_box_ss open-popup" data-target="#full"><div class="weui-media-box__hd_ss">
+				{if empty($goods['sthumb'])}
+					<i class="icon icon-54"></i>
+				{else}
+				 <img class="weui-media-box__thumb" src="{php echo tomedia($goods['sthumb']);}" alt='' onerror="this.src='resource/images/noavatar_middle.gif'">
+				{/if}
+	</div><div class="weui-media-box__bd"><h4 class="weui-media-box__title">
+					  {if $goods['name']}{$goods['name']}{else}{$goods['title']}{/if}
+					</h4>
+					<p class="weui-media-box__desc">{$goods['spec']} / {$goods['unit']}</p></div>
+			<div class="row-remark"><p class="del">{php echo get_cdr($goods['originalprice']);}元</p><p>{php echo get_cdr($npric);}元</p></div></a>
+{/loop}
+	
+	</div></div>
+	<br>
+	<a href='javascript:;' class='weui-btn weui-btn_plain_primary' style='width:92%;'>我 要 下 单</a>
+</div>
+{template '_footer'}

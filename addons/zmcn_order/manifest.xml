@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.milisky.com" versionCode="0.8,1.0">
+	<application setting="true">
+		<name><![CDATA[订单管理系统]]></name>
+		<identifie><![CDATA[zmcn_order]]></identifie>
+		<version><![CDATA[1.1.7]]></version>
+		<type><![CDATA[business]]></type>
+		<ability><![CDATA[订单管理系统]]></ability>
+		<description><![CDATA[订单管理系统]]></description>
+		<author><![CDATA[Milisky]]></author>
+		<url><![CDATA[http://www.milisky.com]]></url>
+	</application>
+	<platform>
+		<subscribes>
+		</subscribes>
+		<handles>
+			<message type="qr" />
+			<message type="text" />
+		</handles>
+		<rule embed="true" />
+		<card embed="false" />
+	</platform>
+	<bindings>
+		<cover>
+			<entry title="主页" do="index" state="" direct="false" />
+			<entry title="订单" do="order" state="" direct="false" />
+			<entry title="我的" do="my" state="" direct="false" />
+		</cover>
+		<menu>
+			<entry title="" do="" state="" direct="false" />
+			<entry title="订单管理" do="order" state="" direct="false" />
+			<entry title="管控中心" do="guangkong" state="" direct="false" />
+			<entry title="发货管理" do="fahuo" state="" direct="false" />
+			<entry title="打印设置" do="print" state="" direct="false" />
+			<entry title="配送区域" do="dispatch" state="" direct="false" />
+			<entry title="佣金管理" do="yongjing" state="" direct="false" />
+		</menu>
+		<profile>
+			<entry title="我的订单" do="order" state="" direct="false" />
+		</profile>
+	</bindings>
+	<permissions>
+	</permissions>
+	<install><![CDATA[CREATE TABLE IF NOT EXISTS `ims_zmcn_order_Printer` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) NOT NULL DEFAULT '0',
+  `agentid` int(11) NOT NULL DEFAULT '0',
+  `title` varchar(50) DEFAULT '',
+  `prinserver` varchar(20) DEFAULT '',
+  `prinset` varchar(500) DEFAULT '',
+  `princss` varchar(1000) DEFAULT '',
+  `prinstatus` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `province` varchar(20) NOT NULL COMMENT '省',
+  `com` int(11) NOT NULL DEFAULT '0',
+  `zt` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `addtime` int(10) NOT NULL DEFAULT '0',
+  `laiy` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `uniacid` (`uniacid`),
+  KEY `agentid` (`agentid`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_zmcn_order_cart` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) NOT NULL DEFAULT '0',
+  `agentid` int(11) NOT NULL DEFAULT '0',
+  `goodsid` int(11) NOT NULL DEFAULT '0',
+  `optionid` int(11) NOT NULL DEFAULT '0',
+  `isck` tinyint(1) NOT NULL DEFAULT '0',
+  `openid` varchar(32) NOT NULL,
+  `total` int(11) NOT NULL DEFAULT '0',
+  `addprice` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `lasttime` int(10) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `uniacid` (`uniacid`),
+  KEY `agentid` (`agentid`),
+  KEY `openid` (`openid`),
+  KEY `goodsid` (`goodsid`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_zmcn_order_order` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) NOT NULL DEFAULT '0',
+  `agentid` int(11) NOT NULL DEFAULT '0',
+  `fagentid` int(11) NOT NULL DEFAULT '0',
+  `openid` varchar(32) NOT NULL,
+  `orderno` varchar(32) NOT NULL,
+  `yorder` int(11) NOT NULL DEFAULT '0',
+  `isdf` int(11) NOT NULL DEFAULT '0',
+  `price` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `sendprice` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `goodsprice` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `sendfee` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `com` int(11) NOT NULL DEFAULT '0',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `sendtype` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `paytype` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `payimg` varchar(80) NOT NULL,
+  `paytime` int(10) NOT NULL DEFAULT '0',
+  `province` varchar(20) NOT NULL COMMENT '省',
+  `city` varchar(30) NOT NULL COMMENT '市',
+  `district` varchar(30) NOT NULL COMMENT '区',
+  `address` varchar(100) NOT NULL COMMENT '地址',
+  `tel` varchar(50) NOT NULL COMMENT '电话',
+  `consignee` varchar(30) NOT NULL COMMENT '收货人',
+  `pos` varchar(6) NOT NULL,
+  `remark` varchar(255) NOT NULL COMMENT '说明',
+  `expcom` varchar(30) NOT NULL,
+  `expsn` varchar(30) NOT NULL,
+  `expid` varchar(30) NOT NULL,
+  `expna` varchar(30) NOT NULL,
+  `weight` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `exptime` int(10) NOT NULL DEFAULT '0',
+  `expstatus` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `pinstatus` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `cktime` int(10) NOT NULL DEFAULT '0',
+  `oktime` int(10) NOT NULL DEFAULT '0',
+  `addtime` int(10) NOT NULL DEFAULT '0',
+  `lasttime` int(10) NOT NULL DEFAULT '0',
+  `ordertime` int(10) NOT NULL DEFAULT '0',
+  `youhje` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `youhtp` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `uniacid` (`uniacid`),
+  KEY `agentid` (`agentid`),
+  KEY `fagentid` (`fagentid`),
+  KEY `openid` (`openid`),
+  KEY `status` (`status`),
+  KEY `pinstatus` (`pinstatus`)
+) ENGINE=MyISAM AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_zmcn_order_order_goods` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) NOT NULL DEFAULT '0',
+  `orderid` int(11) NOT NULL DEFAULT '0',
+  `goodsid` int(11) NOT NULL DEFAULT '0',
+  `optionid` int(11) NOT NULL DEFAULT '0',
+  `price` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `total` int(11) NOT NULL DEFAULT '0',
+  `addtime` int(10) NOT NULL DEFAULT '0',
+  `goodsname` varchar(50) NOT NULL,
+  `optionname` varchar(50) NOT NULL,
+  `hd` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `uniacid` (`uniacid`),
+  KEY `orderid` (`orderid`)
+) ENGINE=MyISAM AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
+]]></install>
+	<uninstall><![CDATA[DROP TABLE IF EXISTS `ims_zmcn_order_Printer`;
+DROP TABLE IF EXISTS `ims_zmcn_order_cart`;
+DROP TABLE IF EXISTS `ims_zmcn_order_order`;
+DROP TABLE IF EXISTS `ims_zmcn_order_order_goods`;
+]]></uninstall>
+	<upgrade><![CDATA[]]></upgrade>
+</manifest>

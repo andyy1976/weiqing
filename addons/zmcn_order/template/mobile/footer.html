@@ -1,0 +1,82 @@
+<br>
+<div class="weui-footer">
+    <p class="weui-footer__text">Copyright &copy; 2008-{php echo date('Y')} {$_W['uniaccount']['name']}</p>
+</div>
+<br><br><br>
+	<div class="weui-tabbar tab-bottom">
+		<a href="{php echo url('entry',array('do' => 'my','m' => 'zmcn_order','openid' => $openid,'fid' => $_GPC['fid']));}" class="weui-tabbar__item" >
+			<p class="weui-tabbar__label"><span class="icon icon-85"  style="font-size: 20px;"></span><br>我的</p>
+		</a>
+		<a href="{php echo url('entry',array('do' => 'order','m' => 'zmcn_order','openid' => $openid,'fid' => $_GPC['fid']));}"  class="weui-tabbar__item" >
+			<p class="weui-tabbar__label"><span class="icon icon-106"  style="font-size: 20px;"></span><br>订单</p>
+		</a>
+		<a href="{php echo url('entry',array('do' => 'index','m' => 'zmcn_order','openid' => $openid,'fid' => $_GPC['fid']));}" class="weui-tabbar__item">
+			<p class="weui-tabbar__label"><span class="icon icon-27"  style="font-size: 20px;"></span><br>首页</p>
+		</a>
+		<a href="{php echo url('entry',array('do' => 'mycenter','mb' => '2','m' => 'zmcn_cer','openid' => $openid,'fid' => $_GPC['fid']));}" class="weui-tabbar__item">
+			<p class="weui-tabbar__label"><span class="icon icon-99"  style="font-size: 20px;"></span><br>代理</p>
+		</a>
+		<a href="{php echo url('entry',array('do' => 'site','m' => 'zmcn_order','openid' => $openid,'fid' => $_GPC['fid']));}" class="weui-tabbar__item">
+			<p class="weui-tabbar__label"><span class="icon icon-98"  style="font-size: 20px;"></span><br>企业</p>
+		</a>              
+	</div>
+<div id="half" class='weui-popup-container popup-bottom'>
+	<div class="weui-popup-modal">
+		<div class="toolbar">
+			<div class="toolbar-inner">
+				<a href="javascript:;" class="picker-button close-popup">关闭</a>
+				<h1 class="title">系统菜单111</h1>
+			</div>
+		</div>
+		<div class="modal-content">
+			<div class="weui-grids">
+				<a href="{php echo url('entry',array('do' => 'myedit','m' => 'zmcn_cer','openid' => $openid,'fid' => $_GPC['fid']));}" class="weui-grid">
+					<p class="weui-grid__label">
+						<span class="icon icon-106"  style="font-size: 36px;"></span><br>我的订单
+					</p>
+				</a>
+				<a href="{php echo url('entry',array('do' => 'mycer','m' => 'zmcn_cer','openid' => $openid,'fid' => $_GPC['fid']));}" class="weui-grid">
+					<p class="weui-grid__label">
+						<span class="icon icon-24"  style="font-size: 36px;"></span><br>我要进货
+					</p>
+				</a>
+				<a href="{php echo url('entry',array('do' => 'myteam','m' => 'zmcn_cer','openid' => $openid,'fid' => $_GPC['fid']));}" class="weui-grid">
+					<p class="weui-grid__label">
+						<span class="icon icon-103"  style="font-size: 36px;"></span><br>我要发货
+					</p>
+				</a>
+				<a href="{php echo url('entry',array('do' => 'qr','m' => 'zmcn_cer','openid' => $openid,'fid' => $_GPC['fid']));}" class="weui-grid">
+					<p class="weui-grid__label">
+						<span class="icon icon-86"  style="font-size: 36px;"></span><br>物流查询
+					</p>
+				</a>
+				<a href="{php echo url('entry',array('do' => 'index','m' => 'zmcn_cer','openid' => $openid,'fid' => $_GPC['fid']));}" class="weui-grid">
+					<p class="weui-grid__label">
+						<span class="icon icon-54"  style="font-size: 36px;"></span><br>产品资料
+					</p>
+				</a>
+				<a href="{$settings['sys']['help']}" class="weui-grid">
+					<p class="weui-grid__label">
+						<span class="icon icon-88"  style="font-size: 36px;"></span><br>系统帮助
+					</p>
+				</a>
+			</div>
+		</div><br><br>
+	</div>
+</div>
+</body>
+<script src="{$_W['siteroot']}addons/zmcn_order/template/mobile/zmuijs/jquery.min.js"></script>
+<script src="{$_W['siteroot']}addons/zmcn_order/template/mobile/zmuijs/jquery-weui.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+$(function() {
+	$("a").click(function(e){
+		if($(e.target).hasClass("open-popup"))return;
+		if($(e.target).hasClass("close-popup"))return;
+		if($(e.target).hasClass("weui-btn"))return;
+		if($(e.target).hasClass("noqq"))return;
+		$.showLoading();
+		setTimeout(function() {$.hideLoading();}, 3000);
+	});  
+});
+</script>
+</html>

@@ -1,0 +1,45 @@
+
+{php $this->pay($params);}
+
+<link rel="stylesheet" href="{$_W['siteroot']}addons/zmcn_erp/zmui/css/weui.min.css?a={ZMUIVS}"/>
+<link rel="stylesheet" href="{$_W['siteroot']}addons/zmcn_erp/zmui/icon/iconfont.css?a={ZMUIVS}"/><!--加快统一素质材-->
+<link rel="stylesheet" href="{$_W['siteroot']}addons/zmcn_erp/zmui/css/zmcnui.css?a={ZMUIVS}"/>
+<style>
+.weui-popup__container{z-index:21;}
+.weui-tabbar{z-index:20;}
+[class^="icon-"], [class*=" icon-"] {
+    font-family: 'icomoon';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+</style>
+<div class="weui-footer">
+    <p class="weui-footer__text">Copyright &copy; 2008-2016 {$_W['uniaccount']['name']}</p>
+</div>
+	<div class="weui-tabbar tab-bottom" style="height: 50px;">
+		<a href="index.php?i={$_W['uniacid']}&t{TIMESTAMP}g=t&c=entry&do=my&m=zmcn_order" class="weui-tabbar__item" >
+			<p class="weui-tabbar__label"><span class="zmui-icon zmui-icon-avatar2"></span><br>我的</p>
+		</a>
+		<a href="index.php?i={$_W['uniacid']}&t{TIMESTAMP}g=t&c=entry&do=order&m=zmcn_order"  class="weui-tabbar__item" >
+			<p class="weui-tabbar__label"><span class="zmui-icon zmui-icon-order"></span><br>订单</p>
+		</a>
+		<a href="index.php?i={$_W['uniacid']}&t{TIMESTAMP}g=t&c=entry&do=index&m=zmcn_order" class="weui-tabbar__item">
+			<p class="weui-tabbar__label"><span class="zmui-icon zmui-icon-home"></span><br>首页</p>
+		</a>
+		<a href="index.php?i={$_W['uniacid']}&t{TIMESTAMP}g=t&c=entry&do=mycenter&m=zmcn_cer&mb=2" class="weui-tabbar__item">
+			<p class="weui-tabbar__label"><span class="zmui-icon zmui-icon-usergroup2"></span><br>代理</p>
+		</a>
+		<a href="index.php?i={$_W['uniacid']}&t{TIMESTAMP}g=t&c=entry&do=site&m=zmcn_order" class="weui-tabbar__item">
+			<p class="weui-tabbar__label"><span class="zmui-icon zmui-icon-xianshiqi"></span><br>企业</p>
+		</a>              
+	</div>
+
+

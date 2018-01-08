@@ -1,0 +1,194 @@
+{template '_header'}
+<style type="text/css">
+.swiper-wrapper .swiper-slide{height:auto !important;}
+.page__bd{background-color:#f8f8f8;min-height:250px;}
+.weui-cell{min-height:25px;font-size: 15px;}
+</style>
+<div class="page">
+<div style="position:fixed; z-index:1; top:0; width:100%; background-color:#ccc;">
+	<div class="weui-btn_primary weui-header">
+		<div class="weui-header-left"><a class="zmui-icon zmui-icon-slider-left f-white" onclick='javascript:history.go(-1);'></a></div>
+		<h1 class="weui-header-title" onclick="bl(888);">我的进货订单</h1>
+		<div class="weui-header-right"><a class="zmui-icon zmui-icon-filter f-white open-popup" data-target="#saixuan"></a></div>
+	</div>
+	<div id="tagnav" class="weui-tab weui-tab_blue" style="height:44px;">
+		<div class="weui-navbar" style="height:44px;">{php $tp8=array(1,2,3,4,7,0);}
+			{loop $tp8 $i}
+				<div onclick="bl({$i});" id="navbar{$i}" class="weui-navbar__item{if $i==$tb} tab-blue{/if}">{$_W['zm_o_st'][$i]}</div>
+			{/loop}
+		</div>
+	</div>
+</div>
+<div class="weui-panel__bd" style="height:88px;"></div>
+<div class="page__bd" id="list">
+	<div class='weui-msg'><div class='weui-msg__icon-area'><i class='weui-icon-warn weui-icon_msg-primary f-gray'></i></div><div class='weui-msg__text-area'><p class='weui-msg__desc'>暂无数据</p></div>
+	</div>
+</div>
+<div class="clear loadtis"></div>
+</div>
+<input type="hidden" name="usid" id="usid" value="0" />
+<div id="full" class='weui-popup__container' style="width:100%;"><div class="weui-popup__modal" id="userin" style="width:100%;"></div></div>
+<div id="prodetial" class='weui-popup__container'>
+	<div class="weui-popup__modal">
+		<div class="weui-btn_primary weui-header close-popup" onclick='javascript:clpro();'>
+			<div class="weui-header-left"><a class="zmui-icon zmui-icon-slider-left f-white" ></a></div>
+			<h1 class="weui-header-title xqtitle">商品详情</h1>
+			<div class="weui-header-right"><a class="zmui-icon zmui-icon-close2 f20 f-white"></a></div>
+		</div>
+		<div class="page bg-zmpag" id="alladd">
+			正在加数据...
+		</div>
+	</div>
+</div>
+<div id="saixuan" class='weui-popup__container popup-bottom'>
+	<div class="weui-popup__overlay weui-popup-overlay"></div>
+	<div class="weui-popup__modal">
+		<div class="toolbar">
+			<div class="toolbar-inner">
+				<a href="javascript:;" class="picker-button close-popup">关闭</a>
+				<h1 class="title">订单筛选</h1>
+			</div>
+		</div>
+		<div class="modal-content">
+			<div class="weui-cells">
+				<div class="weui-cell  weui-cells_form">
+					<div class="weui-cell__hd"><label for="date" class="weui-label">开始日期</label></div>
+					<div class="weui-cell__bd"><input type="text" class="weui-input" id="date1" value="{php echo date('Y-m-d', TIMESTAMP-7776000)}"></div>
+				</div>
+				<div class="weui-cell  weui-cells_form">
+					<div class="weui-cell__hd"><label for="date" class="weui-label">结束日期</label></div>
+					<div class="weui-cell__bd"><input type="text" class="weui-input" id="date2" value="{php echo date('Y-m-d', TIMESTAMP)}"></div>
+				</div>
+			</div>
+			<div class="weui-btn-area">
+				<a href="javascript:bl(clid);" class="weui-btn weui-btn_warn close-popup" style="width:92%;">查找订单</a>
+			</div><br>
+		</div>
+	</div>
+</div>
+{template '_footer'}
+<script type="text/javascript" src="{$_W['siteroot']}addons/zmcn_erp/zmui/js/jquery.lazyload.min.js"></script>
+<script type='text/javascript' src="{$_W['siteroot']}addons/zmcn_erp/zmui/js/swiper.min.js" charset='utf-8'></script>
+<script>
+      var loading = false;
+	  var i=1;
+	  var clid={$tb};
+      $(document.body).infinite().on("infinite", function() {
+		if(loading) return;
+		loading = true;
+		upgrade()
+      });
+    function upgrade(){
+		$(".loadtis").html("<div class='weui-loadmore'><i class='weui-loading'></i><span class='weui-loadmore__tips'>正在加载</span></div>");
+        var atime = $("#date1").val();
+        var btime = $("#date2").val();
+        $.ajax({
+            url: "{php echo url('entry',array('do' => 'myinorderlis','m' => 'zmcn_order'),true)}" ,
+            data:{ab:i,clid:clid,atime:atime,btime:btime},
+            type:'post',
+			error:function() {
+				 $(".loadtis").html("<div class='weui-loadmore weui-loadmore_line'><span class='weui-loadmore__tips'>通信错误！</span></div>");
+					loading = true;
+				},
+            success:function(ret){
+             if(ret==1)      {
+				if(i==1) {
+					$(".loadtis").html("<div></div>");
+				}else{
+					$(".loadtis").html("<div class='weui-loadmore weui-loadmore_line'><span class='weui-loadmore__tips'>已经到底了！</span></div>");
+				}
+				loading = true;
+             }else{
+				if(ret.length<100) {
+					if(i==1) {
+						$(".loadtis").html("<div></div>");
+					}else{
+						$(".loadtis").html("<div class='weui-loadmore weui-loadmore_line'><span class='weui-loadmore__tips'>已经到底了！</span></div>");
+					}
+					loading = true;
+				}else{
+					if(i==1) {
+						$("#list").html(ret);
+					}else{
+						$("#list").append(ret);
+					}
+					loading = false;
+					i++
+					$(".weui-media-box__thumb").lazyload({effect: "fadeIn",threshold : 50});
+					$(".loadtis").html("<div class='weui-loadmore weui-loadmore_line' onclick='upgrade();'><span class='weui-loadmore__tips'>点击加载更多</span></div>");
+				}
+             }
+            }
+        });
+    }
+	upgrade();
+    function bl(id){
+		if(id==888){
+			$(".tab-blue").removeClass('tab-blue');
+		}else{
+			$("#navbar" + id ).addClass("tab-blue").siblings().removeClass('tab-blue');
+		}
+		clid=id;i=1;
+		$("#list").html("<div class='weui-msg'><div class='weui-msg__icon-area'><i class='weui-icon-warn weui-icon_msg-primary f-gray'></i></div><div class='weui-msg__text-area'><p class='weui-msg__desc'>暂无数据</p></div></div>");
+		upgrade();
+	}
+	function quxiao(id){$.confirm("您确定要取消订单吗?", "取消订单", function() {window.location  = "{php echo $this->createMobileUrl('orderedit', array('op' => 'qx'))}&id=" + id;}, function() {});}
+	function shpuh(id){$.confirm("您确定已经如数收到货了吗?", "确认收货", function() {window.location  = "{php echo $this->createMobileUrl('orderedit', array('op' => 'sh'))}&id=" + id;}, function() {});}
+	function del(id){$.confirm("您确定要删除订单吗?", "删除订单", function() {window.location  = "{php echo $this->createMobileUrl('orderedit', array('op' => 'del'))}&id=" + id;}, function() {});}
+    function getpro(id) {
+		$.showLoading();$('#alladd').html('正在加载商品数据......');$('.xqtitle').html('商品详情');
+		$.get('index.php?i={$_W['uniacid']}&c=entry&do=detail&pp=1&m=zmcn_goods', {id : id}, function(s){
+			if(s.length<100) {
+				$.hideLoading();$.toast("加载失败", "text");
+			}else{
+				$("#prodetial").popup();
+				$.hideLoading();$('#alladd').html(s);
+			}
+		}, 'html');
+	}
+    function getexp(expid,expsn) {
+		$.showLoading();$('#alladd').html('正在加载物流数据......');$('.xqtitle').html('货物路由');
+		$.get('{php echo $this->createMobileUrl('address', array('op' => 'kuaidi','z' => TIMESTAMP))}', {expid : expid,expsn : expsn}, function(s){
+			if (s.message.zt==0) {
+				$("#prodetial").popup();
+				$.hideLoading();$('#alladd').html("<div class='ytimeline'><ul></ul></div><br><p class='weui-btn-area'><a href='javascript:clpro();' class='weui-btn weui-btn_disabled weui-btn_default weui_btn weui_btn_default close-popup'>关闭</a></p>");
+				$.each(s.message.data,function (id, wl){
+					$(".ytimeline").append("<li class='ytimeline-item'><div class='ytimeline-item-head'><i class='weui-icon-success-no-circle ytimeline-item-checked hide'></i></div><div class='ytimeline-item-tail'></div><div class='ytimeline-item-content'><h4>"+wl.context+"</h4><p>"+wl.time+"</p></div></li>");
+				});
+			}else{
+				$.hideLoading();$.alert(s.message.ts, "操作失败！");
+			}
+		}, 'json');
+	}
+    function getorder(id) {
+		$.showLoading();$('#alladd').html('正在加载订单数据......');$('.xqtitle').html('订单详情');
+		$.get('{php echo $this->createMobileUrl('orderedit', array('op' => 'xq','vs' => '2'))}', {id : id}, function(s){
+			if(s.length<100) {
+				$.hideLoading();$.toast("加载失败", "text");
+			}else{
+				$("#prodetial").popup();
+				$.hideLoading();$('#alladd').html(s);
+			}
+		}, 'html');
+	}
+    function clpro() {
+		$('#alladd').html('正在关闭......');$.hideLoading();
+	}
+	function qhtb(a) {
+		$(".abcd").addClass('hidden');
+		$("#cb" + a).removeClass('hidden');
+		$(".tab-blue").removeClass('tab-blue');
+		$("#bb" + a).addClass('tab-blue');
+	}
+	$("#date1").calendar({
+		onChange: function (p, values, displayValues) {
+			console.log(values, displayValues);
+		}
+	});
+	$("#date2").calendar({
+		onChange: function (p, values, displayValues) {
+			console.log(values, displayValues);
+		}
+	});
+</script>
+{if $_GPC['id']} <script type="text/javascript">getorder({$_GPC['id']});</script>{/if}

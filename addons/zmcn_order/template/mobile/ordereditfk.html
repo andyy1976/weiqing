@@ -1,0 +1,103 @@
+{template '_header'}
+<div class="page bg-zmpag">
+	<div class="weui-btn_primary weui-header">
+		<div class="weui-header-left"><a class="zmui-icon zmui-icon-slider-left f-white" href="{php echo $this->createMobileUrl('order')}"></a></div>
+		<h1 class="weui-header-title">确认付款</h1>
+		<div class="weui-header-right"><a class="zmui-icon zmui-icon-more f-white open-popup" data-target="#half"></a></div>
+	</div>
+	<div class="weui-msg center">
+        <div class="weui-msg__text-area center">
+            <h2 class="weui-msg__title">上传付款凭证</h2>
+            <p class="weui-msg__desc f13">订单：{$order['orderno']}；金额：{$order['price']}元</p>
+			<div class="weui-uploader__bd center" style="width:152px;padding-top:5px">
+				<div class="weui-uploader__input-box center" style="width:150px;height:150px;">
+					<img src="" id='img' style="width:100%;height:100%;">
+					<input class="weui-uploader__input" type="file" accept="image/*" id="headimgurl" />
+					<input  type="hidden"  id="headimgurl1" />
+				</div>
+			</div>
+            <p class="weui-msg__desc">如实在没有凭证请联系发货方对账后再点确认</p>
+        </div>
+        <div class="weui-msg__opr-area">
+			<p class="weui-btn-area">
+                <a href="javascript:cbd(0);" class="weui-btn weui-btn_primary">确认已经汇款</a>
+				{if empty($order['fagentid'])}
+                <a href="{php echo $this->createMobileUrl('orderedit', array('op' => 'efk','id' => $order['id']))}" class="weui-btn weui-btn_warn">我要在线付款</a>
+				{elseif $settings['sys']['isye']=='1'}
+                <a href="javascript:cbd(1);" class="weui-btn weui-btn_warn">我要余额付款</a>
+				{/if}
+                <a href="{php echo $this->createMobileUrl('order')}" class="weui-btn weui-btn_default">退出</a>
+            </p>
+        </div>
+	</div>
+</div>
+{template '_footer'}
+<script ype='text/javascript' src="{$_W['siteroot']}addons/zmcn_erp/zmui/js/lrz/lrz.bundle.js"></script>
+<script>
+var zmd=new Object();
+var istp=0;
+var isks=0;
+$(function(){
+var f = document.querySelector('#headimgurl');
+f.onchange = function () {
+    lrz(this.files[0], {width: 600})
+        .then(function (rst) {
+            var img = new Image();
+            img.src = rst.base64;
+            img.onload = function () {
+                $("#img").attr('src',''+img.src+'');
+            };
+			zmd = rst;istp=1;
+            return rst;
+        })
+        .catch(function (err) {
+            alert(err);
+        })
+        .always(function () {
+        });
+}
+})
+
+function cbd(tp) {
+if(isks==0){isks=1;}else{return false;}
+$.showLoading();
+if(istp==0){
+	$.ajax({
+		url: '{php echo $this->createMobileUrl('orderedit', array('op' => 'fks','id' => $id))}', 
+		data: {'appid' : 'zmcn.com','isye' : tp},
+		type: 'POST',
+		dataType: 'json',
+		success: function (data) {
+			$.hideLoading();
+			if(data.message.zt=='1'){
+				$.alert(data.message.ts, "操作失败！");isks=0;
+			}else{
+				$.alert(data.message.ts, "操作成功！");
+				window.location  = "{php echo $this->createMobileUrl('order')}";
+			}
+		}
+	});
+}else{
+	zmd.formData.append('fileLen', zmd.fileLen);
+	zmd.formData.append('appid', 'zmcn.com');
+	$.ajax({
+		url: '{php echo $this->createMobileUrl('orderedit', array('op' => 'fks','id' => $id))}', 
+		data: zmd.formData,
+		processData: false,
+		contentType: false,
+		type: 'POST',
+		dataType: 'json',
+		success: function (data) {
+			$.hideLoading();
+			if(data.message.zt=='1'){
+				$.alert(data.message.ts, "操作失败！");isks=0;
+			}else{
+				$.alert(data.message.ts, "操作成功！");
+				window.location  = "{php echo $this->createMobileUrl('order')}";
+			}
+		}
+	});
+}
+
+}
+ </script>

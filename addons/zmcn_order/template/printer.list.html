@@ -1,0 +1,56 @@
+{template 'common/header'}
+<ul class="nav nav-tabs">
+	<li {if $_GPC['op'] == 'display'}class="active"{/if}><a href="{php echo $this->createWebUrl('print', array('op'=>'display'));}">打印机列表</a></li>
+	<li {if $_GPC['op'] == 'ud'}class="active"{/if}><a href="{php echo $this->createWebUrl('print', array('op'=>'ud'));}">编辑打印机</a></li>
+</ul>
+<div class="panel panel-default">
+	<div class="panel-heading">打印机列表</div><iframe name='userlog' frameborder=0 width=0 height=0 scrolling=no src='about:blank'></iframe>
+	<div class="table-responsive panel-body">
+			<table class="table table-hover">
+				<thead class="navbar-inner">
+					<tr>
+						<th style="text-align:center; width:60px;">ID</th>
+						<th style="text-align:center; width:150px;">名称</th>
+						<th style="text-align:center; width:60px;">品牌</th>
+						<th style="text-align:center; width:100px;">地点</th>
+						<th style="text-align:center; width:100px;">次数</th>
+						<th style="text-align:center; width:100px;">时间</th>
+						<th style="text-align:center; width:100px;">状态</th>
+						<th style="text-align:center; width:120px;">操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					{loop $prins $item}
+					<tr style="text-align:center;">
+						<td>{$item['id']}</td>
+						<td class="text-left">{$item['title']}</td>
+						<td>{$item['prinserver']}</td>
+						<td>{$item['province']}</td>
+						<td>{$item['com']}</td>
+						<td>{php echo date("Y-m-d", $item['addtime'])}</td>
+						<td class="text-left">
+						{if $item['zt']=='0'}<span class="label label-default">关闭</span>{else}<span class="label label-success">启用</span>{/if}
+						{if $item['prinstatus']=='3'}<span class="label label-info">通过</span>{elseif $item['prinstatus']=='2'}<span class="label label-primary">在线不正常</span>{elseif $item['prinstatus']=='1'}<span class="label label-success">在线正常</span>{else}<span class="label label-default">离线</span> {/if}
+						</td>
+						<td>
+							<a rel="tooltip" href="{php echo $this->createWebUrl('print', array('op'=>'ud', 'id'=>$item['id']));}" title="编辑" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="编辑"><i class="fa fa-pencil"></i></a>
+							<a onclick="if(!confirm('删除后将不可恢复,确定删除吗?')) return false;" href="{php echo $this->createWebUrl('print', array('op'=>'del', 'id'=>$item['id']));}" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="" data-original-title="删除"><i class="fa fa-times"></i></a>
+						</td>
+					</tr>
+					{/loop}
+					{if empty($prins)}
+					<tr>
+						<td colspan="6">尚未添加打印机</td>
+					</tr>
+					{/if}
+				</tbody>
+			</table>
+			{$pager}
+	</div>
+</div>
+ <script type="text/javascript">
+ 	require(['bootstrap'],function($){
+		$('[data-toggle="tooltip"]').tooltip();
+	});
+</script>
+{template 'common/footer'}

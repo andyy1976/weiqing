@@ -1,0 +1,4 @@
+{loop $order['ogoods'] $good}
+	<tr id="tr{$good['goodsid']}_{$good['optionid']}"><td class="text-left nll">{$good['goodsname']}{if !empty($good['optionname'])}<br>{$good['optionname']}{/if}</td><td id="y{$good['goodsid']}_{$good['optionid']}">{$good['total']}</td><td class="tright" id="j{$good['goodsid']}_{$good['optionid']}">0</td></tr>
+{/loop}
+<tr><td colspan="3" class="tright">总订货量：<b>{$order['com']}</b>件 总校验量<b id="zxyl">0</b>件</td></tr>

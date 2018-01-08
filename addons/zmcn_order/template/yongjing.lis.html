@@ -1,0 +1,185 @@
+{template 'common/header'}
+<link rel="stylesheet" href="{MODULE_URL}template/zmcnuicss/zmcnui.css"/>
+<ul class="nav nav-tabs">
+	<li {if ($_GPC['op'] == 'display' || empty($_GPC['op'])) && empty($_GPC['io'])}class="active"{/if}><a href="{php echo $this->createWebUrl('yongjing', array('op'=>'display'));}">佣金记录</a></li>
+	<li {if $_GPC['io'] == '1'}class="active"{/if}><a href="{php echo $this->createWebUrl('yongjing', array('op'=>'display','io'=>'1'));}">未付</a></li>
+	<li {if $_GPC['io'] == '2'}class="active"{/if}><a href="{php echo $this->createWebUrl('yongjing', array('op'=>'display','io'=>'2'));}">已付</a></li>
+	<li {if $_GPC['io'] == '3'}class="active"{/if}><a href="{php echo $this->createWebUrl('yongjing', array('op'=>'display','io'=>'3'));}">完成</a></li>
+	<li class="pull-right active"><a data-toggle="collapse" href="#shus" aria-expanded="true" aria-controls="shus">高级筛选</a></li>
+</ul>
+<div class="panel panel-default collapse" id="shus">
+	<div class="panel-heading" data-toggle="collapse" href="#shus" aria-expanded="true" aria-controls="shus" style="cursor:pointer">高级筛选</div>
+	<div class="panel-body">
+	<form action="./index.php" method="get" role="form" id="form1" class="form-horizontal form" onkeydown="if(event.keyCode==13)return false;">
+		<input type="hidden" name="c" value="site" />
+		<input type="hidden" name="a" value="entry" />
+		<input type="hidden" name="m" value="zmcn_order" />
+		<input type="hidden" name="do" value="yongjing" />
+		<input type="hidden" name="op" value="{$_GPC['op']}" />
+		<input type="hidden" name="io" value="{$_GPC['io']}" />
+		<div class="form-group">
+			<label class="col-xs-12 col-sm-1 col-md-1 col-lg-1 control-label">日期</label>
+			<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+				<select class="form-control input-medium" name="search[timetp]">
+					{php $timetp=empty($_GPC['search']['timetp']) ? $_GPC['io'] : $_GPC['search']['timetp'];}
+					<option value="1" {if $timetp == '1'}selected{/if}>产生日期</option>
+					<option value="2" {if $timetp == '2'}selected{/if}>付款日期</option>
+					<option value="3" {if $timetp == '3'}selected{/if}>完成日期</option>
+				</select>
+			</div>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				{php echo tpl_form_field_daterange('search[shday]', $_GPC['search']['shday']);}
+			</div>
+			<label class="col-xs-12 col-sm-1 col-md-1 col-lg-1 control-label">收款人</label>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<input type="hidden" id="fid" name="search[agentid]" value="" />
+				<div class='input-group'>
+					<span class="input-group-addon" style="padding: 0 3px 0 10px;"><img id="fidav" src="{php echo tomedia($fuser['avatar']);}" width="30" onerror="this.src='resource/images/noavatar_middle.gif'"/></span>
+					<input type="text" name="fidna" maxlength="300" value="" id="fidna" placeholder="请选择：收款人" class="form-control" readonly />
+					<div class='input-group-btn'>
+						<button class="btn btn-default" type="button" onclick="document.getElementById('search-type').value='fid';popwin = $('#modal-module-menus2').modal();">选择</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-xs-1 col-sm-3 col-md-4 col-lg-4"></div>
+			<div class="col-xs-5 col-sm-3 col-md-2 col-lg-2 text-center center" align="center">
+				<input type="hidden" name="token" value="{$_W['token']}" />
+				<button type="submit" class="btn btn-primary span3" name="submit" value="1" style="width:100%;">提交</button>
+			</div>
+			<div class="col-xs-5 col-sm-3 col-md-2 col-lg-2 text-center center" align="center">
+				<button type="submit" class="btn btn-primary span3" name="submit" value="2" style="width:100%;">导出</button>
+			</div>
+		</div>
+	</form>
+	</div>
+</div>
+<div class="panel panel-default">
+	<div class="panel-heading" data-toggle="collapse" href="#shus" aria-expanded="true" aria-controls="shus" style="cursor:pointer">佣金列表</div><iframe name='userlog' frameborder=0 width=0 height=0 scrolling=no src='about:blank'></iframe>
+	<div class="table-responsive panel-body">
+			<table class="table table-hover">
+				<thead class="navbar-inner">
+					<tr>
+						<th style="text-align:center; width:60px;">ID</th>
+						<th style="text-align:center; width:100px;">日期</th>
+						<th style="text-align:center; width:120px;">代理商</th>
+						<th style="text-align:center; width:250px;">摘要</th>
+						<th style="text-align:center; width:80px;">佣金金额</th>
+						<th style="text-align:center; width:100px;">状态</th>
+						<th style="text-align:center; width:120px;">操作</th>
+					</tr>
+				</thead>
+				<tbody>
+				{php $lab = array("<span class='label label-primary'>待结算</span>","<span class='label label-info'>已付款</span>","<span class='label label-success'>已完成</span>","<span class='label label-default'>取消</span>");}
+					{loop $list $item}
+					<tr style="text-align:center;">
+						<td>{$item['id']}</td>
+						<td>{php echo date("Y-m-d", $item['addtime'])}</td>
+						<td>{$item['dag']['name']}</td>
+						<td class="text-left">{$item['remark']}</td>
+						<td>{$item['commission']}</td>
+						<td class="text-left">
+						{$lab[$item['isok']]}
+						</td>
+						<td>
+							<a rel="tooltip" href="javascript:yjjs({$item['id']});" title="佣金结算（线上付款或线下转账）" data-original-title="佣金结算（线上付款或线下转账）" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" data-zmcnyj="{$item['commission']}" id="js{$item['id']}"><i class="fa fa-money"></i></a>
+							<a onclick="if(!confirm('取消后将不可恢复,确定删除吗?')) return false;" href="{php echo $this->createWebUrl('yongjing', array('op'=>'qx', 'id'=>$item['id']));}" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" data-original-title="取消"><i class="fa fa-ban"></i></a>
+						</td>
+					</tr>
+					{/loop}
+					{if empty($list)}
+					<tr>
+						<td colspan="6">尚未有佣金记录</td>
+					</tr>
+					{/if}
+				</tbody>
+			</table>
+			{$pager}
+	</div>
+</div>
+
+<input type="hidden" name="gyid" id="gyid" value="0" />
+<div class="modal fade" id="myModal" tabindex="-3" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+	<div class="modal-dialog" style='width:750px;'>
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close two" data-dismiss="modal" aria-hidden="true" >&times;</button>
+				<h4 class="modal-title" id="myModalLabel">佣金结算</h4>
+			</div>
+			<div class="modal-body" style='max-height:500px;overflow:auto;'>
+				<div class='input-group form-group'>
+					<span class="input-group-addon">结算方式</span>
+					<select class="form-control input-medium" name="js" id="jss">
+						<option value="0" >转为余额</option>
+						<option value="1" >公众号付款</option>
+						<option value="2" >其它付款</option>
+					</select>
+					<span class="input-group-addon">付款日期</span>
+					<input type="date" min="2013-09-23" max="2050-09-23" class="form-control" name="tm" id="tm" value="{php echo date("Y-m-d", TIMESTAMP)}"> 
+				</div>
+				<div class='input-group form-group'>
+					<span class="input-group-addon">付款账号</span>
+					<select class="form-control input-medium" name="zh" id="zh">
+					{loop $accounts $item}
+						<option value="{$item['id']}" >{$item['title']}</option>
+					{/loop}
+					</select>
+					<span class="input-group-addon">付款方式</span>
+					<select class="form-control input-medium" name="fk" id="fk">
+						<option value="1" >转账</option>
+						<option value="3" >在线支付</option>
+						<option value="0" >现金</option>
+					</select>
+					<span class="input-group-addon">结算金额</span>
+					<input type="text" name="je" id="je" class="form-control" placeholder="" value="0" size="4" />
+					<span class="input-group-addon">元</span>
+				</div>
+				<div class='input-group form-group'>
+					<span class="input-group-addon">摘要</span>
+					<input type="text" name="bz" id="bz" class="form-control" placeholder="" value="" />
+				</div>
+				<div class='input-group form-group' id="tis"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" onclick="yjjsok()">提交结算</button>
+			</div>
+		</div>
+	</div>
+</div>
+{template 'fsqueryac'}
+<script src="{$_W['siteroot']}addons/zmcn_order/template/zmcnuijs/zmcnuijs.js"></script>
+<script type="text/javascript">
+    function yjjs(id) {
+		$("#gyid").val(id);
+		 var fk= $("#js"+id).data('zmcnyj');
+		$("#je").val(fk);
+		$('#myModal').modal();
+	}
+    function yjjsok() {
+		$("#tis").html('正在加载数据....');
+		 var id= $("#gyid").val();
+		 $("#gyid").val(0);
+		 var fk= $("#fk").val();
+		 var tm= $("#tm").val();
+		 var zh= $("#zh").val();
+		 var je= $("#je").val();
+		 var bz= $("#bz").val();
+		 var js= $("#jss").val();
+		$.post('{php echo $this->createWebUrl('yongjing', array('op'=>'js'));}', {'id' : id ,'fk' : fk ,'tm' : tm ,'zh' : zh ,'je' : je ,'bz' : bz,'js' : js}, function(s){
+			if (s.message.zt==0) {
+				$("#tis").html(s.message.ts);
+				alert(s.message.ts);
+				$("#js"+id).remove();
+				$(".two").click();
+			}else{
+				$("#gyid").val(id);
+				$("#tis").html(s.message.ts);
+				alert(s.message.ts); 
+			}
+		}, 'json');
+	}
+</script>
+
+{template 'common/footer'}

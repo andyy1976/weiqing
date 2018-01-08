@@ -1,0 +1,361 @@
+{template 'common/header'}
+<link rel="stylesheet" href="{MODULE_URL}template/zmcnuicss/zmcnui.css?a={TIMESTAMP}"/>
+<style type="text/css">
+@charset "utf-8";
+.timeline {width: 100%;height: auto;margin: 10px auto;padding-bottom: 0rem;text-align: center;font-size: 0;}
+.timeline li {position: relative;display: inline-block;*display: inline;zoom: 1;width: auto;font-size: 0.5rem;padding: 0rem 1rem 1.4rem 1rem;}
+.timeline li .time:before {content: '';display: block;position: absolute;width: 10px;height: 10px;bottom: 0;margin-bottom: -4px;left: 50%;margin-left: -5px;background: #D7BB67;-moz-border-radius: 100%;-webkit-border-radius: 100%;border-radius: 100%;background-size: 10px 10px;}
+.timeline li .time:after {content: '';display: block;position: absolute;width: 100%;height: 2px;background: #D7BB67;left: 0;bottom: 0;margin-left: -2px;}
+</style>
+<ul class="nav nav-tabs">
+	<li {if $_GPC['op'] == 'ud'}class="active"{/if}><a href="{php echo $this->createWebUrl('order', array('op'=>'ud'));}">新建订单</a></li>
+	<li {if $_GPC['op']=='' || $_GPC['clid']=='888'}class="active"{/if}><a href="{php echo $this->createWebUrl('order', array('op'=>'display','clid'=>'888'));}">全部订单</a></li>
+	{php $tp8=array(1,2,3,4,7,0);}
+	{loop $tp8 $i}	
+	<li {if $_GPC['clid'] == $i && $_GPC['op']=='display'}class="active"{/if}><a href="{php echo $this->createWebUrl('order', array('op'=>'display','clid'=>$i));}">{$_W['zm_o_st'][$i]}</a></li>		
+	{/loop}
+	<li class="pull-right active"><a data-toggle="collapse" href="#shus" aria-expanded="true" aria-controls="shus">高级筛选</a></li>
+</ul>
+{php $fk8=array('现金','转账','代收款','在线支付','预存款支付');}
+{php $sh8=array('现买','发货','自提');}
+{php $zt8=array('label-default','label-primary','label-info','label-success','label-warning','label-info','label-success','label-danger','label-default');}
+
+<div class="panel panel-default collapse" id="shus">
+	<div class="panel-heading" data-toggle="collapse" href="#shus" aria-expanded="true" aria-controls="shus" style="cursor:pointer">高级筛选</div>
+	<div class="panel-body">
+	<form action="./index.php" method="get" role="form" id="form1" class="form-horizontal form" onkeydown="if(event.keyCode==13)return false;">
+		<input type="hidden" name="c" value="site" />
+		<input type="hidden" name="a" value="entry" />
+		<input type="hidden" name="m" value="zmcn_order" />
+		<input type="hidden" name="do" value="order" />
+		<input type="hidden" name="op" value="display" />
+		<input type="hidden" name="clid" value="{$_GPC['clid']}" />
+		<div class="form-group">
+			<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">订单日期</label>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				{php echo tpl_form_field_daterange('search[shday]', $_GPC['search']['shday']);}
+			</div>
+			<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">订货人</label>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<input type="hidden" id="fid" name="search[agentid]" value="-1" />
+				<div class='input-group'>
+					<span class="input-group-addon" style="padding: 0 3px 0 10px;"><img id="fidav" src="{php echo tomedia($fuser['avatar']);}" width="30" onerror="this.src='resource/images/noavatar_middle.gif'"/></span>
+					<input type="text" name="fidna" maxlength="300" value="" id="fidna" placeholder="请选择：订货经销商" class="form-control" readonly />
+					<div class='input-group-btn'>
+						<button class="btn btn-default" type="button" onclick="document.getElementById('search-type').value='fid';popwin = $('#modal-module-menus2').modal();">选择</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">日期类型</label>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<select class="form-control input-medium" name="search[timetp]">
+					<option value="0" {if $_GPC['search']['timetp'] == '0'}selected{/if}>下单日期</option>
+					<option value="1" {if $_GPC['search']['timetp'] == '1'}selected{/if}>付款日期</option>
+					<option value="2" {if $_GPC['search']['timetp'] == '2'}selected{/if}>发货日期</option>
+					<option value="4" {if $_GPC['search']['timetp'] == '4'}selected{/if}>查款日期</option>
+					<option value="3" {if $_GPC['search']['timetp'] == '3'}selected{/if}>完成日期</option>
+				</select>
+			</div>
+			<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">物流单位</label>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<select class="form-control input-medium" name="search[expid]">
+					<option value="">不指定</option>
+					{loop $_W['setting']['zmcn:kuaidi'] $key=>$value}
+					<option value="{$key}" {if $_GPC['search']['expid'] == $key}selected{/if}>{$value}</option>
+					{/loop}
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">收货电话</label>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<input type="text" class="form-control" name="search[tel]" value=""/>
+			</div>
+			<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">物流单号</label>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<input type="text" class="form-control" name="search[expsn]" value=""/>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">发货地区</label>
+			<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+			{php echo tpl_form_field_district('search', array('province' =>$_GPC['search']['province'],'city' =>$_GPC['search']['city'],'district' =>$_GPC['search']['district']));}
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-xs-1 col-sm-3 col-md-4 col-lg-4"></div>
+			<div class="col-xs-5 col-sm-3 col-md-2 col-lg-2 text-center center" align="center">
+				<input type="hidden" name="token" value="{$_W['token']}" />
+				<button type="submit" class="btn btn-primary span3" name="submit" value="1" style="width:100%;">提交</button>
+			</div>
+			<div class="col-xs-5 col-sm-3 col-md-2 col-lg-2 text-center center" align="center">
+				<button type="submit" class="btn btn-primary span3" name="submit" value="2" style="width:100%;">导出</button>
+			</div>
+		</div>
+	</form>
+	</div>
+</div>
+<div class="panel panel-default">
+	<div class="panel-heading" data-toggle="collapse" href="#shus" aria-expanded="true" aria-controls="shus" style="cursor:pointer">订单列表</div>
+	<div class="table-responsive panel-body">
+			<table class="table table-hover">
+				<thead class="navbar-inner">
+					<tr>
+						<th style="text-align:center; width:150px;">订单号<br>订货商</th>
+						<th style="text-align:center; width:100px;">收货方</th>
+						<th style="text-align:center; width:100px;">付款方式<br>送货方式</th>
+						<th style="text-align:center; width:100px;">发货地区</th>
+						<th style="text-align:center; width:100px;">订单金额</th>
+						<th style="text-align:center; width:100px;">下单日期<br>付款日期</th>
+						<th style="text-align:center; width:60px;">状态</th>
+						<th style="text-align:center; width:180px;">操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					{loop $list $item}
+					<tr style="text-align:center;">
+						<td class="text-left">{$item['orderno']}<br>{$item['dagent']['name']} {$item['dagent']['phone']}</td>
+						<td>{$item['consignee']}<br>{$item['tel']}</td>
+						<td>{$fk8[$item['paytype']]}<br>{$sh8[$item['sendtype']]} {$item['expcom']}</td>
+						<td>{$item['province']}<br>{$item['city']}</td>
+						<td>{$item['goodsprice']}<br>{$item['price']}</td>
+						<td>{php echo date("Y-m-d", $item['addtime'])}
+						{if $item['paytime']>'10000000'}
+						<br>{php echo date("Y-m-d", $item['paytime'])}
+						{/if}
+						</td>
+						<td class="text-left">
+						<span class="label {$zt8[$item['status']]}">{$_W['zm_o_st'][$item['status']]}</span>
+						</td>
+						<td class="text-left">
+							<a rel="tooltip" href="javascript:xq({$item['id']});" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="查看订单详情" data-zmcnpt="{$item['pinstatus']}" id="xqa{$item['id']}"><i class="fa fa-pencil"></i></a>
+			{if $item['status']=='1'}
+							<!---a rel="tooltip" href="{php echo $this->createWebUrl('order', array('op'=>'ud', 'id'=>$item['id']));}" title="编辑" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="编辑"><i class="fa fa-pencil"></i></a--->
+							<a onclick="if(!confirm('取消后将不可恢复,确定删除吗?')) return false;" href="{php echo $this->createWebUrl('order', array('op'=>'qx', 'id'=>$item['id']));}" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="" data-original-title="取消"><i class="fa fa-ban"></i></a>
+							<a rel="tooltip" href="javascript:fukuan({$item['id']});" id="dka{$item['id']}" title="确认到款" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="确认到款" data-zmcnfk="{$item['paytype']}" data-zmcntm="{if $item['paytime']}{php echo date("Y-m-d", $item['paytime'])}{/if}" data-zmcnje="{$item['price']}" data-zmcnbz="订单：{$item['orderno']}" data-zmcntp="{php echo tomedia($item['payimg']);}"><i class="fa fa-money"></i></a>
+							<a rel="tooltip" {if !empty($item['pinstatus'])} onclick="if(!confirm('这个订单已经打印过 {$item['pinstatus']} 次，是否还要再打印?')) return false;" {/if} href="javascript:prin({$item['id']});" title="打印" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" id="dya{$item['id']}" title="打印"><i class="fa fa-print" id="dyi{$item['id']}"></i></a>
+			{elseif $item['status']=='2'}
+							<a onclick="if(!confirm('你确定没收到该货款吗?')) return false;" href="{php echo $this->createWebUrl('order', array('op'=>'dh', 'id'=>$item['id']));}" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="没收到该货款" data-original-title="没收到该货款"><i class="fa fa-reply"></i></a>
+							<a rel="tooltip" href="javascript:fukuan({$item['id']});" id="dka{$item['id']}" title="确认到款" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="确认到款" data-zmcnfk="{$item['paytype']}" data-zmcntm="{php echo date("Y-m-d", $item['paytime'])}" data-zmcnje="{$item['price']}" data-zmcnbz="订单：{$item['orderno']}" data-zmcntp="{php echo tomedia($item['payimg']);}"><i class="fa fa-money"></i></a>
+							<a rel="tooltip" {if !empty($item['pinstatus'])} onclick="if(!confirm('这个订单已经打印过 {$item['pinstatus']} 次，是否还要再打印?')) return false;" {/if} href="javascript:prin({$item['id']});" title="打印" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" id="dya{$item['id']}" title="打印"><i class="fa fa-print" id="dyi{$item['id']}"></i></a>
+			{elseif $item['status']=='3'}
+							<a rel="tooltip" href="javascript:fh({$item['id']});" title="订单发货" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="订单发货" data-zmcnhf="{$item['sendtype']}" data-zmcneid="{$item['expid']}" data-zmcnesn="{$item['expsn']}" id="fha{$item['id']}"><i class="fa fa-send"></i></a>
+							<a rel="tooltip" {if !empty($item['pinstatus'])} onclick="if(!confirm('这个订单已经打印过 {$item['pinstatus']} 次，是否还要再打印?')) return false;" {/if} href="javascript:prin({$item['id']});" title="打印" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" id="dya{$item['id']}" title="打印"><i class="fa fa-print" id="dyi{$item['id']}"></i></a>
+			{elseif $item['status']=='0'}
+							<a onclick="if(!confirm('删除后将不可恢复,确定删除吗?')) return false;" href="{php echo $this->createWebUrl('order', array('op'=>'del', 'id'=>$item['id']));}" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="" data-original-title="删除"><i class="fa fa-times"></i></a>
+			{/if}	
+						</td>
+					</tr>
+					{/loop}
+					{if empty($list)}
+					<tr>
+						<td colspan="6">尚未有订单</td>
+					</tr>
+					{/if}
+				</tbody>
+			</table>
+			{$pager}
+	</div>
+</div>
+<input type="hidden" name="gyid" id="gyid" value="0" />
+<div class="modal fade" id="myModal" tabindex="-3" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+	<div class="modal-dialog" style='width:750px;'>
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close two" data-dismiss="modal" aria-hidden="true" >&times;</button>
+				<h4 class="modal-title" id="myModalLabel">订单收款确认</h4>
+			</div>
+			<div class="modal-body" style='max-height:500px;overflow:auto;'>
+				<div class='input-group form-group'>
+					<span class="input-group-addon">收款方式</span>
+					<select class="form-control input-medium" name="fk" id="fk">
+						<option value="1" >转账</option>
+						<option value="0" >现金</option>
+						<option value="2" >代收款</option>
+						<!---option value="3" >挂账</option--->
+					</select>
+					<span class="input-group-addon">收款日期</span>
+					<input type="date" min="2013-09-23" max="2050-09-23" class="form-control" name="tm" id="tm" value="{php echo date("Y-m-d", TIMESTAMP)}"> 
+				</div>
+				<div class='input-group form-group'>
+					<span class="input-group-addon">收款账号</span>
+					<select class="form-control input-medium" name="zh" id="zh">
+					{loop $accounts $item}
+						<option value="{$item['id']}" >{$item['title']}</option>
+					{/loop}
+					</select>
+					<span class="input-group-addon">实收金额</span>
+					<input type="text" name="je" id="je" class="form-control" placeholder="" value="0" size="4" />
+					<span class="input-group-addon">元</span>
+				</div>
+				<div class='input-group form-group'>
+					<span class="input-group-addon">摘要</span>
+					<input type="text" name="bz" id="bz" class="form-control" placeholder="" value="" />
+				</div>
+				<div class='input-group form-group' id="tis"></div>
+				<div class='input-group form-group' id="pyimg"></div>
+			</div>
+			<div class="modal-footer">
+				<a href="javascript:$('.two').click();xq($('#gyid').val());" class="btn btn-default">详情</a>
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" onclick="fukuanok()">提交更改</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="myModal2" tabindex="-2" role="dialog" aria-labelledby="myModalLabel2" aria-hidden="true" >
+	<div class="modal-dialog" style='width:750px;'>
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close two" data-dismiss="modal" aria-hidden="true" >&times;</button>
+				<h4 class="modal-title" id="myModalLabel2">订单发货</h4>
+			</div>
+			<div class="modal-body">
+				<div class='input-group form-group'>
+					<span class="input-group-addon">发货方式</span>
+					<select class="form-control input-medium" name="fhfs" id="fhfs">
+						<option value="1" >发货</option>
+						<option value="0" >现买</option>
+						<option value="2" >自提</option>
+					</select>
+					<span class="input-group-addon">发货日期</span>
+					<input type="date" min="2013-09-23" max="2050-09-23" class="form-control" name="fhtm" id="fhtm" value="{php echo date('Y-m-d', TIMESTAMP)}"> 
+				</div>
+				<div class='input-group form-group'>
+					<span class="input-group-addon">发货物流</span>
+					<select class="form-control input-medium" name="expid" id="expid">
+						<option value="my">自己填写</option>
+						{loop $_W['setting']['zmcn:kuaidi'] $key=>$value}
+						<option value="{$key}">{$value}</option>
+						{/loop}
+					</select>
+					<span class="input-group-addon">:</span>
+					<input type="text" name="mykd" id="mykd" placeholder="在这里填写" class="form-control" value="" size="4" />
+					<span class="input-group-addon">单号</span>
+					<input type="text" name="expsn" id="expsn" placeholder="请输入单号或扫码录入" class="form-control" placeholder="" value=""  />
+				</div>
+				<div class='input-group form-group' id="wltis"></div>
+			</div>
+			<div class="modal-footer">
+				<a href="javascript:$('.two').click();xq($('#gyid').val());" class="btn btn-default">详情</a>
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" onclick="fahouok()">提交更改</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="dindxq"  class="modal fade" tabindex="-1">
+	<div class="modal-dialog" style='width:800px;'>
+		<div class="modal-content">
+			<div class="modal-header"><button aria-hidden="true" data-dismiss="modal" class="close two" type="button">×</button><h3>订单详情</h3></div>
+			<div class="modal-body" ><div id="dindxqdw" style="padding-top:5px;"></div></div>
+			<div class="modal-footer">
+			<a href="javascript:prin($('#gyid').val());" class="btn btn-default">打印</a>
+			<a href="javascript:$('.two').click();fukuan($('#gyid').val());" class="btn btn-default">到款</a>
+			<a href="javascript:$('.two').click();fh($('#gyid').val());" class="btn btn-default">发货</a>
+			<a href="#" class="btn btn-default" data-dismiss="modal" aria-hidden="true" id="c2">关闭</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="{$_W['siteroot']}addons/zmcn_order/template/zmcnuijs/zmcnuijs.js?a={TIMESTAMP}"></script>
+<script>
+    function fh(id) {
+		$("#gyid").val(id);
+		var fk= $("#fha"+id).data('zmcnhf');
+		var je= $("#fha"+id).data('zmcneid');
+		var tm= $("#fha"+id).data('zmcnesn');
+		$("#fhfs").val(fk);
+		$("#expsn").val(tm);
+		$("#expid").val(je);
+		$('#myModal2').modal();
+	}
+    function fahouok() {
+		$("#wltis").html('正在加载数据....');
+		 var id= $("#gyid").val();
+		 var fs= $("#fhfs").val();
+		 var tm= $("#fhtm").val();
+		 var eid=$("#expid").val();
+		 var my= $("#mykd").val();
+		 var esn=$("#expsn").val();
+		$.post('{php echo $this->createWebUrl('order', array('op'=>'fh'));}', {'id' : id ,'fs' : fs ,'tm' : tm ,'eid' : eid ,'my' : my ,'esn' : esn}, function(s){
+			if (s.message.zt==0) {
+				$("#wltis").html(s.message.ts);
+				alert(s.message.ts);
+				$("#fha"+id).remove();
+				$(".two").click();
+			}else{
+				$("#wltis").html(s.message.ts);
+				alert(s.message.ts); 
+			}
+		}, 'json');
+	}
+    function fukuan(id) {
+		$("#gyid").val(id);
+		 var fk= $("#dka"+id).data('zmcnfk');
+		 var je= $("#dka"+id).data('zmcnje');
+		 var tm= $("#dka"+id).data('zmcntm');
+		 var bz= $("#dka"+id).data('zmcnbz');
+		 var tp= $("#dka"+id).data('zmcntp');
+		$("#fk").val(fk);
+		if(tm!=''){$("#tm").val(tm);}
+		$("#je").val(je);
+		if(tp.length>30){
+			$("#pyimg").html("<img src='" + tp + "' style='width:100%;' />");
+		}else{
+			$("#pyimg").html("");
+		}
+		//$("#bz").val(bz);
+		$('#myModal').modal();
+	}
+    function fukuanok() {
+		$("#tis").html('正在加载数据....');
+		 var id= $("#gyid").val();
+		 var fk= $("#fk").val();
+		 var tm= $("#tm").val();
+		 var zh= $("#zh").val();
+		 var je= $("#je").val();
+		 var bz= $("#bz").val();
+		$.post('{php echo $this->createWebUrl('order', array('op'=>'dk'));}', {'id' : id ,'fk' : fk ,'tm' : tm ,'zh' : zh ,'je' : je ,'bz' : bz}, function(s){
+			if (s.message.zt==0) {
+				$("#tis").html(s.message.ts);
+				alert(s.message.ts);
+				$("#dka"+id).remove();
+				$(".two").click();
+			}else{
+				$("#tis").html(s.message.ts);
+				alert(s.message.ts); 
+			}
+		}, 'json');
+	}
+    function xq(id) {
+		$("#gyid").val(id);
+		$('#dindxq').modal();
+		$("#dindxqdw").html('正在加载数据....');
+		$.post('{php echo $this->createWebUrl('order', array('op'=>'xq'));}', {'id' : id }, function(s){
+			if (s.length < 200) {
+				$("#dindxqdw").html(s.message);
+			}else{
+				$("#dindxqdw").html(s);
+			}
+		});
+	}	
+    function prin(id) {
+		//if(id == -1){id = $("#gyid").val();}
+		$("#dyi"+id).attr("class", "fa fa-spinner");
+		$.post('{php echo $this->createWebUrl('order', array('op'=>'dy'));}', {'id' : id}, function(s){
+			if (s.message.zt==0) {
+				alert(s.message.ts);
+				$("#dya"+id).remove();
+			}else{
+				alert(s.message.ts);
+				$("#dyi"+id).attr("class", "fa fa-print"); 
+			}
+		}, 'json');
+	}
+</script>
+{template 'fsqueryac'}
+{template 'common/footer'}

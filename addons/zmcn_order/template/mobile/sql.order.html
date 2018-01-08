@@ -1,0 +1,25 @@
+{template '_header'}
+<style>
+.weui-picker-container{z-index:1000;}
+</style>
+<div class="page bg-zmpag">
+	<div class="weui-btn_primary weui-header">
+		<div class="weui-header-left"><a class="zmui-icon zmui-icon-slider-left f-white" onclick='javascript:history.go(-1);'></a></div>
+		<h1 class="weui-header-title">业绩报表</h1>
+		<div class="weui-header-right"><a class="zmui-icon zmui-icon-more f-white open-popup" data-target="#half"></a></div>
+	</div>
+	{if is_array($ac)}
+		<div class="weui-cells__title">{$title}</div>
+		<div class="weui-cells">
+			{loop $ac $p}
+				<div class="weui-cell">
+					<div class="weui-cell__bd"><p>{$p['title']}</p></div>
+					<div class="weui-cell__ft">
+					{if empty($p['a'])}无业绩{else}{$p['a']}单,{php echo (int)$p['com']}件,值{php echo get_cdr($p['goodsprice'])}元,{$io[$op]}{php echo get_cdr($p['price'])}元{/if}
+					</div>
+				</div>		
+			{/loop}
+		</div>
+	{/if}
+</div>
+{template '_footer'}

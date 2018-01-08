@@ -1,0 +1,57 @@
+{template 'common/header'}
+<style type="text/css">
+
+</style>
+<ul class="nav nav-tabs">
+	<li {if $_GPC['op'] == 'in'}class="active"{/if}><a href="{php echo $this->createWebUrl('stock', array('op'=>'in'));}">商品入库</a></li>
+	<li {if $_GPC['op']=='' || $_GPC['op']=='display' }class="active"{/if}><a href="{php echo $this->createWebUrl('stock', array('op'=>'display'));}">库存查询</a></li>
+	<li {if $_GPC['op']=='ls' }class="active"{/if}><a href="#">流水记录</a></li>
+</ul>
+{php $sh8=array('出库','入库','盘点');}
+{php $zt8=array('label-default','label-primary','label-info','label-success','label-warning','label-info','label-success','label-danger','label-default');}
+<div class="panel panel-default">
+	<div class="panel-heading">商品 {$good['name']} {$option['title']} 出入库日记</div>
+	<div class="table-responsive panel-body">
+			<table class="table table-hover">
+				<thead class="navbar-inner">
+					<tr>
+						<th style="text-align:center; width:120px;">日期</th>
+						<th style="text-align:center; width:200px;">摘要</th>
+						<th style="text-align:center; width:80px;">类型</th>
+						<th style="text-align:center; width:100px;">入库数量</th>
+						<th style="text-align:center; width:100px;">出库数量</th>
+						<th style="text-align:center; width:80px;">经办人</th>
+					</tr>
+				</thead>
+				<tbody>
+					{loop $list $item}
+					<tr style="text-align:center;">
+						<td>{php echo date("Y-m-d", $item['addtime'])}</td>
+						<td class="text-left">{$item['remark']}</td>
+						<td>{$sh8[$item['zt']]}</td>
+						{if $item['zt']}
+							<td>{$item['sl']}</td>
+							<td></td>
+						{else}
+							<td></td>
+							<td>{$item['sl']}</td>
+						{/if}
+						<td>{$member[$item['cid']]['realname']}</td>
+					</tr>
+					{/loop}
+					{if empty($list)}
+					<tr>
+						<td colspan="6">尚未有记录</td>
+					</tr>
+					{/if}
+				</tbody>
+			</table>
+			{$pager}
+	</div>
+</div>
+ <script type="text/javascript">
+ 	require(['bootstrap'],function($){
+		$('[data-toggle="tooltip"]').tooltip();
+	});
+</script>
+{template 'common/footer'}

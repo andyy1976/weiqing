@@ -1,0 +1,137 @@
+{template 'common/header'}
+<ul class="nav nav-tabs">
+	<li><a href="{php echo $this->createWebUrl('pay', array('ty'=>'2'));}">收支账户管理</a></li>
+	<li  class="active"><a href="{php echo $this->createWebUrl('pay', array('op'=>'jl'));}">收支记录</a></li>
+	<li class="pull-right active"><a data-toggle="collapse" href="#shus" aria-expanded="true" aria-controls="shus">高级筛选</a></li>
+</ul>
+<div class="panel panel-default collapse" id="shus">
+	<div class="panel-heading" data-toggle="collapse" href="#shus" aria-expanded="true" aria-controls="shus" style="cursor:pointer">高级筛选</div>
+	<div class="panel-body">
+	<form action="./index.php" method="get" role="form" id="form1" class="form-horizontal form" onkeydown="if(event.keyCode==13)return false;">
+		<input type="hidden" name="c" value="site" />
+		<input type="hidden" name="a" value="entry" />
+		<input type="hidden" name="m" value="zmcn_order" />
+		<input type="hidden" name="do" value="pay" />
+		<input type="hidden" name="op" value="{$_GPC['op']}" />
+		<input type="hidden" name="id" value="{$_GPC['id']}" />
+		<div class="form-group">
+			<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">日期</label>
+			<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+				<select class="form-control input-medium" name="search[timetp]">
+					<option value="0" {if (int)$_GPC['search']['timetp'] == '0'}selected{/if}>收支日期</option>
+					<option value="1" {if $_GPC['search']['timetp'] == '1'}selected{/if}>记录日期</option>
+				</select>
+			</div>
+			<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+				{php echo tpl_form_field_daterange('search[shday]', $_GPC['search']['shday']);}
+			</div>
+			<label class="col-xs-12 col-sm-1 col-md-1 col-lg-1 control-label">对象</label>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<input type="hidden" id="fid" name="search[usid]" value="" />
+				<div class='input-group'>
+					<span class="input-group-addon" style="padding: 0 3px 0 10px;"><img id="fidav" src="{php echo tomedia($fuser['avatar']);}" width="30" onerror="this.src='resource/images/noavatar_middle.gif'"/></span>
+					<input type="text" name="fidna" maxlength="300" value="" id="fidna" placeholder="请选择：收支对象" class="form-control" readonly />
+					<div class='input-group-btn'>
+						<button class="btn btn-default" type="button" onclick="document.getElementById('search-type').value='fid';popwin = $('#modal-module-menus2').modal();">选择</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">收支方式</label>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<select class="form-control input-medium" name="search[fkfs]">
+					{loop $fkfs $key=>$value}
+					<option value="{$key}" {if $_GPC['search']['fkfs'] == (int)$key}selected{/if}>{$value}</option>
+					{/loop}
+					<option value="" {if $_GPC['search']['fkfs'] == ''}selected{/if}>不指定</option>
+				</select>
+			</div>
+			<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">收支类型</label>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<select class="form-control input-medium" name="search[zt]">
+					{loop $zt $key=>$value}
+					<option value="{$key}" {if $_GPC['search']['zt'] == (int)$key}selected{/if}>{$value}</option>
+					{/loop}
+					<option value="" {if $_GPC['search']['zt'] == ''}selected{/if}>不指定</option>
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">收支项目</label>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<select class="form-control input-medium" name="search[Project]">
+					{loop $Project $key=>$value}
+					<option value="{$key}" {if $_GPC['search']['Project'] == (int)$key}selected{/if}>{$value}</option>
+					{/loop}
+					<option value="" {if $_GPC['search']['Project'] == ''}selected{/if}>不指定</option>
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-xs-1 col-sm-3 col-md-4 col-lg-4"></div>
+			<div class="col-xs-5 col-sm-3 col-md-2 col-lg-2 text-center center" align="center">
+				<input type="hidden" name="token" value="{$_W['token']}" />
+				<button type="submit" class="btn btn-primary span3" name="submit" value="1" style="width:100%;">提交</button>
+			</div>
+			<div class="col-xs-5 col-sm-3 col-md-2 col-lg-2 text-center center" align="center">
+				<button type="submit" class="btn btn-primary span3" name="submit" value="2" style="width:100%;">导出</button>
+			</div>
+		</div>
+	</form>
+	</div>
+</div>
+<div class="panel panel-default">
+	<div class="panel-heading" data-toggle="collapse" href="#shus" aria-expanded="true" aria-controls="shus" style="cursor:pointer">收支日记</div>
+	<div class="table-responsive panel-body">
+			<table class="table table-hover">
+				<thead class="navbar-inner">
+					<tr>
+						<th style="text-align:center; width:60px;">ID</th>
+						<th style="text-align:center; width:100px;">日期</th>
+						<th style="text-align:center; width:60px;">类型</th>
+						<th style="text-align:center; width:60px;">方式</th>
+						<th style="text-align:center; width:80px;">项目</th>
+						<th style="text-align:center; width:120px;">对象</th>
+						<th style="text-align:center; width:200px;">摘要</th>
+						<th style="text-align:center; width:80px;">账户</th>
+						<th style="text-align:center; width:100px;">收入</th>
+						<th style="text-align:center; width:100px;">支出</th>
+						<th style="text-align:center; width:100px;">余额</th>
+						<!---th style="text-align:center; width:100px;">客户名称</th----->
+						<!---th style="text-align:center; width:100px;">经办人</th------>
+					</tr>
+				</thead>
+				<tbody>
+					{loop $list $item}
+					<tr style="text-align:center;">
+						<td>{$item['id']}</td>
+						<td>{php echo date("Y-m-d", $item['paytime'])}</td>
+						<td>{$zt[$item['zt']]}</td>
+						<td>{$fkfs[$item['fkfs']]}</td>
+						<td>{$Project[$item['Project']]}</td>
+						<td>{$agents[$item['usid']]['name']}</td>
+						<td>{$item['remark']}</td>
+						<td>{$clas[$item['fkid']]['title']}</td>
+					{if empty($item['zt'])}
+						<td>0</td>
+						<td>{$item['money']}</td>
+					{else}
+						<td>{$item['money']}</td>					
+						<td>0</td>
+					{/if}
+						<td>{$item['balance']}</td>
+					</tr>
+					{/loop}
+					{if empty($list)}
+					<tr>
+						<td colspan="10">尚未有收支记录</td>
+					</tr>
+					{/if}
+				</tbody>
+			</table>
+			{$pager}
+	</div>
+</div>
+{template 'fsqueryac'}
+{template 'common/footer'}
