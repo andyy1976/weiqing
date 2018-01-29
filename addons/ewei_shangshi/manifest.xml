@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.haoid.cn" versionCode="0.6">
+	<application setting="true">
+		<name><![CDATA[敲钟上市]]></name>
+		<identifie><![CDATA[ewei_shangshi]]></identifie>
+		<version><![CDATA[1.2]]></version>
+		<type><![CDATA[activity]]></type>
+		<ability><![CDATA[敲钟上市，娱乐模块]]></ability>
+		<description><![CDATA[敲钟上市，娱乐模块]]></description>
+		<author><![CDATA[好站长资源网(www.haoid.cn)]]></author>
+		<url><![CDATA[http://www.haoid.cn]]></url>
+	</application>
+	<platform>
+		<subscribes>
+		</subscribes>
+		<handles>
+			<message type="text" />
+		</handles>
+		<rule embed="false" />
+	</platform>
+	<bindings>
+		<cover>
+		    <entry title="敲钟上市入口" do="index" state="" direct="false" />
+		</cover>
+	</bindings>
+	<install><![CDATA[]]></install>
+	<uninstall><![CDATA[]]></uninstall>
+	<upgrade><![CDATA[]]></upgrade>
+</manifest>

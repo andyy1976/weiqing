@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.haoid.cn" versionCode="0.6">
+    <application setting="true">
+        <name><![CDATA[新版文字回复]]></name>
+        <identifie><![CDATA[abc_basic]]></identifie>
+        <version><![CDATA[4.3]]></version>
+        <type><![CDATA[services]]></type>
+        <ability><![CDATA[新版文字回复]]></ability>
+        <description><![CDATA[新版文字回复]]></description>
+		<author><![CDATA[好站长资源网(www.haoid.cn)]]></author>
+		<url><![CDATA[http://www.haoid.cn]]></url>
+    </application>
+    <platform>
+        <subscribes>
+        </subscribes>
+        <handles>
+            <message type="text" />
+        </handles>
+        <rule embed="true" />
+    </platform>
+    <bindings>
+
+    </bindings>
+	
+    <install><![CDATA[install.php]]></install>
+	  
+    <uninstall><![CDATA[]]></uninstall>
+    <upgrade><![CDATA[upgrade.php]]></upgrade>
+</manifest>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.haoid.cn" versionCode="0.6">
+	<application setting="true">
+		<name><![CDATA[便民电话]]></name>
+		<identifie><![CDATA[cyl_phone]]></identifie>
+		<version><![CDATA[1.4]]></version>
+		<type><![CDATA[customer]]></type>
+		<ability><![CDATA[可用于电话收录、电话黄页、便民电话类栏目]]></ability>
+		<description><![CDATA[可用于电话收录、电话黄页、便民电话类栏目]]></description>
+		<author><![CDATA[好站长资源网(www.haoid.cn)]]></author>
+		<url><![CDATA[http://www.haoid.cn]]></url>
+	</application>
+	<platform>
+		
+		<subscribes>
+			<message type="text" />
+		</subscribes>
+		<handles>
+			<message type="text" />
+		</handles>
+		<rule embed="false" />
+		<card embed="false" />
+	</platform>
+	<bindings>
+		<cover>
+			<entry title="便民电话首页" do="index" state="" direct="false" />
+		</cover>
+		<menu>
+			<entry title="商家管理" do="business" state="" direct="false" />
+			<entry title="分类管理" do="category" state="" direct="false" />
+		</menu>
+	</bindings>
+	<permissions>
+	</permissions>
+	<install><![CDATA[
+	CREATE TABLE IF NOT EXISTS `ims_cyl_phone_business` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `openid` varchar(255) NOT NULL,
+  `uniacid` int(10) unsigned NOT NULL,
+  `categoryid` int(11) NOT NULL,
+  `logo` varchar(255) NOT NULL,
+  `title` varchar(30) NOT NULL,
+  `phone` varchar(25) NOT NULL,
+  `industry_1` varchar(20) NOT NULL,
+  `industry_2` varchar(20) NOT NULL,
+  `weixin` varchar(25) NOT NULL,
+  `net` varchar(255) NOT NULL,
+  `lng` varchar(255) NOT NULL,
+  `lat` varchar(255) NOT NULL,
+  `address` varchar(255) NOT NULL,
+  `ewm` varchar(255) NOT NULL,
+  `zy` text NOT NULL,
+  `desc` text NOT NULL,
+  `time` varchar(255) NOT NULL,
+  `status` int(11) NOT NULL DEFAULT '2',
+  `click` int(25) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+CREATE TABLE IF NOT EXISTS `ims_cyl_phone_category` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(30) NOT NULL COMMENT '分类名称',
+  `orderno` int(10) unsigned NOT NULL COMMENT '分类排序',
+  `thumb` varchar(255) NOT NULL COMMENT '分类图标',
+  `uniacid` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+CREATE TABLE IF NOT EXISTS `ims_cyl_phone_message` (
+  `id` int(20) unsigned NOT NULL AUTO_INCREMENT,
+  `contentid` int(20) NOT NULL,
+  `uniacid` int(20) NOT NULL,
+  `openid` varchar(255) NOT NULL,
+  `nickname` varchar(255) NOT NULL,
+  `content` text NOT NULL,
+  `time` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+	]]></install>
+	<uninstall><![CDATA[
+	DROP TABLE IF EXISTS `ims_cyl_phone_business`;
+	DROP TABLE IF EXISTS `ims_cyl_phone_category`;
+	DROP TABLE IF EXISTS `ims_cyl_phone_message`;
+	]]></uninstall>
+	<upgrade><![CDATA[upgrade.php]]></upgrade>
+</manifest>

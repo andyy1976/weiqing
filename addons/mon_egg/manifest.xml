@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.haoid.cn" versionCode="0.6">
+	<application setting="false">
+		<name><![CDATA[炫酷砸金蛋]]></name>
+		<identifie><![CDATA[mon_egg]]></identifie>
+		<version><![CDATA[1.7]]></version>
+		<type><![CDATA[activity ]]></type>
+		<ability><![CDATA[炫酷微每天砸金蛋]]></ability>
+		<description><![CDATA[炫酷微每天砸金蛋]]></description>
+		<author><![CDATA[好站长资源网(www.haoid.cn)]]></author>
+		<url><![CDATA[http://www.haoid.cn]]></url>
+	</application>
+	<platform>
+
+		<handles>
+			<message type="text" />
+		</handles>
+		<rule embed="true" />
+	</platform>
+	<bindings>
+
+		<menu>
+			<entry title="砸活动管理" do="eggManage" state="" />
+		</menu>
+	</bindings>
+
+	<install><![CDATA[install.php]]></install>
+	<uninstall><![CDATA[uninstall.php]]></uninstall>
+	<upgrade><![CDATA[upgrade.php]]></upgrade>
+</manifest>

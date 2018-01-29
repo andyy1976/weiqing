@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.haoid.cn" versionCode="0.6">
+	<application setting="false">
+		<name><![CDATA[通用预约订单]]></name>
+		<identifie><![CDATA[mon_orderform]]></identifie>
+		<version><![CDATA[1.4]]></version>
+		<type><![CDATA[activity ]]></type>
+		<ability><![CDATA[通用预约订单]]></ability>
+		<description><![CDATA[通用预约订单]]></description>
+		<author><![CDATA[好站长资源网(www.haoid.cn)]]></author>
+		<url><![CDATA[http://www.haoid.cn]]></url>
+	</application>
+	<platform>
+
+		<handles>
+			<message type="text" />
+		</handles>
+		<rule embed="true" />
+	</platform>
+	<bindings>
+		<menu>
+			<entry title="商家管理" do="formManage" state="" />
+			<entry title="模板消息配置" do="TemplateSetting" state="" />
+			<entry title="支付参数配置" do="orderSetting" state="" />
+		</menu>
+	</bindings>
+
+	<install><![CDATA[install.php]]></install>
+	<uninstall><![CDATA[uninstall.php]]></uninstall>
+	<upgrade><![CDATA[upgrade.php]]></upgrade>
+</manifest>

@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.we7.cc" versionCode="0.6">
+	<application setting="false">
+ 	    <name><![CDATA[每日签到]]></name>
+ 	    <identifie><![CDATA[wwx_sign]]></identifie>
+ 	    <version><![CDATA[3.5]]></version>
+ 	    <type><![CDATA[activity]]></type>
+ 	    <ability><![CDATA[每日签到，积分签到]]></ability>
+ 	    <description><![CDATA[每日签到]]></description>
+ 	    <author><![CDATA[好资源]]></author>
+ 	    <url><![CDATA[[]]></url>
+	</application>
+	<platform>
+		<subscribes>
+		</subscribes>
+    <handles>
+        <message type="text" />
+    </handles>
+    <rule embed="true" />
+</platform>
+<bindings>
+		<rule>
+			<entry title="签到管理" do="Sign" state="" />
+		</rule>
+    <menu>
+			<entry title="签到管理" do="Sign" />
+    </menu>
+</bindings>
+	<install><![CDATA[install.php]]></install>
+	<uninstall><![CDATA[uninstall.php]]></uninstall>
+	<upgrade><![CDATA[upgrade.php]]></upgrade>
+</manifest>

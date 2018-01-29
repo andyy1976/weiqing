@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.haoid.cn" versionCode="0.6">
+	<application setting="false">
+		<name><![CDATA[家政服务]]></name>
+		<identifie><![CDATA[xm_housekeep_we7]]></identifie>
+		<version><![CDATA[1.3]]></version>
+		<type><![CDATA[business]]></type>
+		<ability><![CDATA[家政服务，为你找家政]]></ability>
+		<description><![CDATA[家政服务，为你找家政]]></description>
+		<author><![CDATA[好站长资源网(www.haoid.cn)-7]]></author>
+		<url><![CDATA[http://www.haoid.cn]]></url>
+	</application>
+	<platform>
+		<subscribes>
+			<message type="text" />
+			<message type="image" />
+			<message type="voice" />
+			<message type="video" />
+			<message type="shortvideo" />
+			<message type="location" />
+			<message type="link" />
+			<message type="subscribe" />
+			<message type="unsubscribe" />
+			<message type="qr" />
+			<message type="trace" />
+			<message type="click" />
+			<message type="view" />
+			<message type="enter" />
+			<message type="merchant_order" />
+		</subscribes>
+		<handles>
+			<message type="image" />
+			<message type="voice" />
+			<message type="video" />
+			<message type="shortvideo" />
+			<message type="location" />
+			<message type="link" />
+			<message type="subscribe" />
+			<message type="qr" />
+			<message type="trace" />
+			<message type="click" />
+			<message type="enter" />
+			<message type="merchant_order" />
+			<message type="text" />
+		</handles>
+		<rule embed="true" />
+		<card embed="false" />
+	</platform>
+	<bindings>
+		<cover call="getCoverItems">
+			<entry title="入口设置" do="xmcover" state="" direct="false" />
+			<entry title="身份验证" do="validate" state="" direct="false" />
+		</cover>
+		
+		<menu>
+			<entry title="员工管理" do="staff" state="" direct="false" />
+			<entry title="服务管理" do="type" state="" direct="false" />
+			<entry title="订单管理" do="order" state="" direct="false" />
+			<entry title="常见问题" do="question" state="" direct="false" />
+			<entry title="服务说明" do="service" state="" direct="false" />
+			<entry title="幻灯片"   do="adv" state="" direct="false" />
+			<entry title="基础数据" do="base" state="" direct="false" />
+			
+			<entry title="提成管理" do="cut" state="" direct="false" />
+			<entry title="用户列表" do="user" state="" direct="false" />
+		</menu>
+	</bindings>
+	<install><![CDATA[CREATE TABLE IF NOT EXISTS `ims_xm_housekeep_staff` (
+  	   `id` int(11) NOT NULL AUTO_INCREMENT,
+	   `weid` int(11) NOT NULL,
+	   `openid` nvarchar(100) NOT NULL,
+       `name` nvarchar(100) NOT NULL,
+	   `mobile` nvarchar(100) NOT NULL,
+	   `sex` int(11),
+	   `avatar` varchar(200),
+	   `qrcode` varchar(200),
+	   `flag` int(11),
+	   `ticket` varchar(200),
+	   `accept` int(11) DEFAULT '0',
+	   `cutmoney` float DEFAULT '0',
+	   `getmoney` float DEFAULT '0',
+	   `addtime` nvarchar(100) NOT NULL,
+	   `updatetime` nvarchar(100) NOT NULL,	   
+       PRIMARY KEY (`id`)
+    ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+	
+	CREATE TABLE IF NOT EXISTS `ims_xm_housekeep_type` (
+  	   `id` int(11) NOT NULL AUTO_INCREMENT,
+	   `weid` int(11) NOT NULL,
+       `name` nvarchar(100) NOT NULL,
+	   `icon` nvarchar(100),
+	   `top` int(11) DEFAULT '0',
+	   `addtime` varchar(500),
+	   `updatetime` nvarchar(100) NOT NULL,	   
+       PRIMARY KEY (`id`)
+    ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+	
+	CREATE TABLE IF NOT EXISTS `ims_xm_housekeep_project` (
+  	   `id` int(11) NOT NULL AUTO_INCREMENT,
+	   `weid` int(11) NOT NULL,
+       `name` nvarchar(100) NOT NULL,
+	   `type_id` int(11) NOT NULL,
+	   `jianjie` nvarchar(500) NOT NULL,
+	   `icon` nvarchar(100) NOT NULL,
+	   `price` varchar(500),
+	   `price_con` nvarchar(8000) NOT NULL,
+	   `istop1` int(11),
+	   `istop2` int(11),
+	   `typeorder` int(11),
+	   `addtime` nvarchar(100) NOT NULL,
+	   `updatetime` nvarchar(100),	   
+       PRIMARY KEY (`id`)
+    ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+	
+	CREATE TABLE IF NOT EXISTS `ims_xm_housekeep_question` (
+  	   `id` int(11) NOT NULL AUTO_INCREMENT,
+	   `weid` int(11) NOT NULL,
+       `name` nvarchar(100) NOT NULL,
+	   `content` nvarchar(8000) NOT NULL,
+	   `addtime` nvarchar(100) NOT NULL,
+	   `updatetime` nvarchar(100) NOT NULL,	   
+       PRIMARY KEY (`id`)
+    ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+	
+	CREATE TABLE IF NOT EXISTS `ims_xm_housekeep_service` (
+  	   `id` int(11) NOT NULL AUTO_INCREMENT,
+	   `weid` int(11) NOT NULL,
+       `name` nvarchar(100) NOT NULL,
+	   `content` nvarchar(8000) NOT NULL,
+	   `addtime` nvarchar(100) NOT NULL,
+	   `updatetime` nvarchar(100) NOT NULL,	   
+       PRIMARY KEY (`id`)
+    ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+	
+	CREATE TABLE IF NOT EXISTS `ims_xm_housekeep_adv` (
+  	   `id` int(11) NOT NULL AUTO_INCREMENT,
+	   `weid` int(11) NOT NULL,
+       `name` nvarchar(300) NOT NULL,
+	   `link` nvarchar(300) NOT NULL,
+	   `pic` nvarchar(100) NOT NULL,
+	   `top` int(11) NOT NULL,
+	   `addtime` nvarchar(100) NOT NULL,	   
+       PRIMARY KEY (`id`)
+    ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+	CREATE TABLE IF NOT EXISTS `ims_xm_housekeep_orderform` (
+	  `orderformid` int(11) NOT NULL AUTO_INCREMENT,
+	  `weid` int(11) DEFAULT NULL,
+	  `openid` varchar(80) DEFAULT NULL,
+	  `typeid` int(11) DEFAULT NULL,
+	  `ftime` datetime DEFAULT NULL,
+	  `address` varchar(120) DEFAULT NULL,
+	  `mark` varchar(500) DEFAULT NULL,
+	  `mobile` varchar(100) DEFAULT NULL,
+	  `state` int(11) DEFAULT '0',
+	  `addtime` datetime DEFAULT NULL,
+	  `waiterid` int(11) DEFAULT '0',
+	  `paitime` datetime DEFAULT NULL,
+	  `closemoney` float DEFAULT NULL,
+	  `closetime` datetime DEFAULT NULL,
+	  `xing` int(11) DEFAULT NULL,
+	  PRIMARY KEY (`orderformid`)
+	) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+	
+	CREATE TABLE IF NOT EXISTS `ims_xm_housekeep_base` (
+  	   `id` int(11) NOT NULL AUTO_INCREMENT,
+	   `weid` int(11) NOT NULL,
+       `yyopenid` nvarchar(100) DEFAULT NULL,
+	   `bili` float DEFAULT NULL,
+	   `lead` nvarchar(100) DEFAULT NULL,
+	   `sbili` float DEFAULT NULL,
+	   `comment1` nvarchar(500) DEFAULT NULL,
+	   `comment2` nvarchar(500) DEFAULT NULL,
+	   `comment3` nvarchar(500) DEFAULT NULL,
+	   `msg1` nvarchar(100) DEFAULT NULL,
+	   `hello1` nvarchar(500) DEFAULT NULL,
+	   `remark1` nvarchar(500) DEFAULT NULL,
+	   `msg2` nvarchar(100) DEFAULT NULL,
+	   `hello2` nvarchar(500) DEFAULT NULL,
+	   `remark2` nvarchar(500) DEFAULT NULL,
+	   `msg3` nvarchar(100) DEFAULT NULL,
+	   `hello3` nvarchar(500) DEFAULT NULL,
+	   `remark3` nvarchar(500) DEFAULT NULL,
+	   `msg4` nvarchar(100) DEFAULT NULL,
+	   `hello4` nvarchar(500) DEFAULT NULL,
+	   `remark4` nvarchar(500) DEFAULT NULL,
+	   `msg5` nvarchar(100) DEFAULT NULL,
+	   `hello5` nvarchar(500) DEFAULT NULL,
+	   `remark5` nvarchar(500) DEFAULT NULL,
+	   `share_title` nvarchar(500) DEFAULT NULL,
+	   `share_icon` nvarchar(100) DEFAULT NULL,
+	   `share_content` nvarchar(500) DEFAULT NULL,
+	   `link` nvarchar(100) DEFAULT NULL,
+	   `addtime` datetime DEFAULT NULL,
+	   `updatetime` datetime DEFAULT NULL,
+       PRIMARY KEY (`id`)
+    ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+	
+	CREATE TABLE IF NOT EXISTS `ims_xm_housekeep_userfrom` (
+	  `id` int(11) NOT NULL AUTO_INCREMENT,
+	  `weid` int(11) NOT NULL,
+	  `openid` varchar(80) DEFAULT NULL,
+	  `fromopenid` varchar(80) DEFAULT NULL,
+	  `addtime` datetime DEFAULT NULL,
+	  PRIMARY KEY (`id`)
+	) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+	
+	CREATE TABLE IF NOT EXISTS `ims_xm_housekeep_cutlog` (
+  	   `id` int(11) NOT NULL AUTO_INCREMENT,
+	   `weid` int(11) NOT NULL,
+	   `orderformid` int(11) DEFAULT NULL,
+	   `waiterid` int(11) DEFAULT NULL,
+       `openid` nvarchar(100) DEFAULT NULL,
+	   `closemoney` float DEFAULT NULL,
+	   `cut` float DEFAULT NULL,
+	   `staff_id` int(11) DEFAULT NULL,
+	   `staff_openid` nvarchar(100) DEFAULT NULL,	   
+	   `staff_name` nvarchar(100) DEFAULT NULL,
+	   `staff_mobile` nvarchar(100) DEFAULT NULL,
+	   `flag` int(11) DEFAULT '0',
+	   `addtime` datetime DEFAULT NULL,
+       PRIMARY KEY (`id`)
+    ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+	
+	
+	CREATE TABLE IF NOT EXISTS `ims_xm_housekeep_givecut` (
+	  `id` int(11) NOT NULL AUTO_INCREMENT,
+	  `weid` varchar(80) DEFAULT NULL,
+	  `staff_id` int(11) DEFAULT NULL,
+	  `openid` varchar(80) DEFAULT NULL,
+	  `staff_name` varchar(100) DEFAULT NULL,
+	  `cut` float DEFAULT NULL,
+	  `addtime` datetime DEFAULT NULL,
+	  PRIMARY KEY (`id`)
+	) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+	
+	CREATE TABLE IF NOT EXISTS `ims_xm_housekeep_comment` (
+	  `id` int(11) NOT NULL AUTO_INCREMENT,
+	  `weid` int(11) DEFAULT NULL,
+	  `openid` varchar(80) DEFAULT NULL,
+	  `staff_id` varchar(100) DEFAULT NULL,
+	  `xing` int(11) DEFAULT NULL,
+	  `comment` varchar(500) DEFAULT NULL,
+	  `orderid` int(11) DEFAULT NULL,
+	  `addtime` datetime DEFAULT NULL,
+	  PRIMARY KEY (`id`)
+	) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+	]]></install>
+	<uninstall><![CDATA[]]></uninstall>
+	<upgrade><![CDATA[]]></upgrade>
+</manifest>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.haoid.cn" versionCode="0.6">
+	<application setting="true">
+		<name><![CDATA[H新年签]]></name>
+		<identifie><![CDATA[healer_newyear]]></identifie>
+		<version><![CDATA[0.0.1]]></version>
+		<type><![CDATA[customer]]></type>
+		<ability><![CDATA[healer出品H系列模块——H新年签]]></ability>
+		<description><![CDATA[healer出品H系列模块——H新年签]]></description>
+		<author><![CDATA[好站长资源网(www.haoid.cn)]]></author>
+		<url><![CDATA[http://www.haoid.cn]]></url>
+	</application>
+	<platform>
+		<subscribes>
+			<message type="text" />
+		</subscribes>
+		<handles>
+			<message type="text" />
+		</handles>
+		<rule embed="true" />
+		<card embed="false" />
+	</platform>
+	<bindings>
+		<menu>
+		</menu>
+	</bindings>
+	<permissions>
+	</permissions>
+	<install><![CDATA[
+CREATE TABLE `ims_healer_newyear` (
+  `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '表id',
+  `rid` int(10) NOT NULL COMMENT '回复规则',
+  `uniacid` int(10) NOT NULL COMMENT '统一公号',
+  `sortition` text NOT NULL COMMENT '新年签',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+]]></install>
+	<uninstall><![CDATA[
+DROP TABLE IF EXISTS `ims_healer_newyear`;
+]]></uninstall>
+	<upgrade><![CDATA[]]></upgrade>
+</manifest>
